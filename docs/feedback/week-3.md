@@ -41,6 +41,8 @@ Feedback:
 
 #### Attitude & Relation
 
+Mark: Good
+
 Feedback:
 - The team took the ownership of the meeting, but still needed my intervensions sometimes. It felt like you were not that prepared for the meeting or how you wanted to order tasks.
 - Everybody was very active and cooperant
