@@ -8,10 +8,10 @@ Add your own name (do not add the names for others!) to the section below.
 
 ## Group members
 
-| Profile Picture | Name | Email |
-|---|---|---|
-| ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Your Name Here | Y.NameHere@student.tudelft.nl |
-| ![](https://placekitten.com/200/301) | Oleh Grypas | o.grypas@student.tudelft.nl |
+| Profile Picture                                                                           | Name          | Email |
+|-------------------------------------------------------------------------------------------|---------------|---|
+| ![](https://placekitten.com/200/301)                                                      | Oleh Grypas   | o.grypas@student.tudelft.nl |
+| ![](https://secure.gravatar.com/avatar/03df265b4d72976dae0672c815e8fbaa?s=50&d=identicon) | Tudor Chirilă | t.chirila@student.tudelft.nl |
 
 <!-- Instructions (remove once assignment has been completed -->
 <!-- - Add (only!) your own name to the table above (use Markdown formatting) -->
