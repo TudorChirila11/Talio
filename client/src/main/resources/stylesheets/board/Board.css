@@ -1,0 +1,31 @@
+/* This is cs config for the element with the id: boardPane*/
+#boardPane{
+    -fx-background-color:  #6096B4;
+}
+
+/* This is a css config for the class of image Buttons*/
+.imageButton{
+    -fx-background-color: transparent;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#boardChoiceBox{
+    -fx-background-color: #93BFCF;
+}
+
+.collection{
+    -fx-background-color: #BDCDD6;
+    -fx-background-radius: 20;
+}
+
+.list-cell, .list-cell::focused {
+        -fx-border-radius: 20;
+ }
+
+.collectionLabel{
+    -fx-font-size: 18pt;
+}
+
+
+
