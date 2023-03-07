@@ -41,21 +41,39 @@ public class Person {
         // for object mapper
     }
 
+    /**
+     * Constructor for the Person class
+     * @param firstName fName of person
+     * @param lastName lName of person
+     */
     public Person(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
+    /**
+     * Equals method for the person class
+     * @param obj potentially another person
+     * @return true/false
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    /**
+     * Hashcode equality for Person
+     * @return hashcode
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * Human readable String representation of Person
+     * @return String
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);

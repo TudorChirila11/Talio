@@ -33,10 +33,21 @@ public class MyFXML {
 
     private Injector injector;
 
+    /**
+     * Constructor for myFXML
+     * @param injector injector for FXML
+     */
     public MyFXML(Injector injector) {
         this.injector = injector;
     }
 
+    /**
+     * Abstract load defintion for FXML loader
+     * @param c a class
+     * @param parts number of parts declaring path
+     * @return a new pair or exception
+     * @param <T> A class instance/type
+     */
     public <T> Pair<T, Parent> load(Class<T> c, String... parts) {
         try {
             var loader = new FXMLLoader(getLocation(parts), null, null, new MyFactory(), StandardCharsets.UTF_8);

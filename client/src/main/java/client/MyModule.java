@@ -25,6 +25,11 @@ import client.scenes.QuoteOverviewCtrl;
 
 public class MyModule implements Module {
 
+    /**
+     * My Module binder method
+     * binds the ctrls to the scope.
+     * @param binder
+     */
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);

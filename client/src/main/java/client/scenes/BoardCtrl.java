@@ -7,6 +7,11 @@ public class BoardCtrl {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
+    /**
+     * Board Ctrl constructor
+     * @param server serverUtils ref
+     * @param mainCtrl mainCtrl controller ref
+     */
     @Inject
     public BoardCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;

@@ -36,17 +36,34 @@ public class CollectionOverviewCtrl implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
+    /**
+     * Constructor for the CollectionOverview Ctrl
+     * @param server serverUtils ref
+     * @param mainCtrl main controller ref
+     */
     @Inject
     public CollectionOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
 
-
+    /**
+     * add Card method
+     */
     public void addCard() {
         mainCtrl.showAdd();
     }
 
+    /**
+     * Initialization method fo the labels within the collection
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         labels = new ArrayList<>();
