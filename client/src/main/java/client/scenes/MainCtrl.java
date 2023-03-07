@@ -30,14 +30,21 @@ public class MainCtrl {
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
+    private BoardCtrl boardCtrl;
+
+    private Scene board;
+
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+            Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
+
+        this.boardCtrl = board.getKey();
+        this.board = new Scene(board.getValue());
 
         showOverview();
         primaryStage.show();
@@ -54,4 +61,10 @@ public class MainCtrl {
         primaryStage.setScene(add);
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
     }
+
+    public void showBoard(){
+        primaryStage.setTitle("Board Overview: Board");
+        primaryStage.setScene(board);
+    }
+
 }
