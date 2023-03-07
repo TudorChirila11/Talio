@@ -1,3 +1,4 @@
+
 ## Example agenda
 
 This is a template agenda. It gives an overview of what could be in your weekly agenda.
@@ -60,3 +61,4 @@ In italics, you will find some additional explanations of the agenda points. You
 
 # Closing
 *Now you can start working on the project. Good luck!*
+
