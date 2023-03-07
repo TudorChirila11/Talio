@@ -42,7 +42,7 @@ public class CardInformationCtrl {
 
     public void goBack()
     {
-        mainCtrl.showOverview();
+        mainCtrl.showBoard();
         //TODO Change to showBoard()
     }
 

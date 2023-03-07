@@ -30,12 +30,15 @@ public class MainCtrl {
     private AddQuoteCtrl addCtrl;
 
     private Scene add;
-
     private Scene cardInformation;
     private CardInformationCtrl cardInformationCtrl;
 
+    private BoardCtrl boardCtrl;
+
+    private Scene board;
+
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add, Pair<CardInformationCtrl, Parent> cardInfo) {
+            Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -46,7 +49,10 @@ public class MainCtrl {
         this.cardInformationCtrl = cardInfo.getKey();
         this.cardInformation = new Scene(cardInfo.getValue());
 
-        showCardInformation();
+        this.boardCtrl = board.getKey();
+        this.board = new Scene(board.getValue());
+
+        showBoard();
         primaryStage.show();
     }
 
@@ -66,5 +72,9 @@ public class MainCtrl {
     {
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
+    }
+    public void showBoard(){
+        primaryStage.setTitle("Board Overview: Board");
+        primaryStage.setScene(board);
     }
 }
