@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
