@@ -8,7 +8,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="741.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
+<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="741.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
    <children>
       <Button id="settingsButton" layoutX="658.0" layoutY="87.0" minWidth="41.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
          <graphic>
@@ -38,5 +38,6 @@
       <Label layoutX="105.0" layoutY="146.0" styleClass="collectionLabel" text="To-do" />
       <Label layoutX="339.0" layoutY="146.0" styleClass="collectionLabel" text="Doing" />
       <Label layoutX="575.0" layoutY="146.0" styleClass="collectionLabel" text="Done" />
+      <Button layoutX="104.0" layoutY="218.0" mnemonicParsing="false" onAction="#addCard" text="Add Card" />
    </children>
 </AnchorPane>

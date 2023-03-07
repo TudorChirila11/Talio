@@ -18,7 +18,7 @@ public class BoardCtrl {
      * Adding a card from the + button
      */
     public void addCard(){
-        System.out.println("Can't add Card yet!");
+        mainCtrl.showCardInformation();
     }
 
 
