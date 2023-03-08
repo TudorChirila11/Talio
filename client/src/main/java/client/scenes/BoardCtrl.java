@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
-import org.checkerframework.checker.fenum.qual.Fenum;
 
 import java.net.URL;
 import java.util.ResourceBundle;
