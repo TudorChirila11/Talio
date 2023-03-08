@@ -41,6 +41,11 @@ public class AddQuoteCtrl {
     @FXML
     private TextField quote;
 
+    /**
+     * Constructor for the Add Quote Ctrl
+     * @param server server util ref
+     * @param mainCtrl mainCtrl controller ref
+     */
     @Inject
     public AddQuoteCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
@@ -48,11 +53,17 @@ public class AddQuoteCtrl {
 
     }
 
+    /**
+     * Cancel method for the add Control scene
+     */
     public void cancel() {
         clearFields();
         mainCtrl.showOverview();
     }
 
+    /**
+     * Creation of a quote
+     */
     public void ok() {
         try {
             server.addQuote(getQuote());
@@ -81,16 +92,20 @@ public class AddQuoteCtrl {
         quote.clear();
     }
 
+    /**
+     * Key pressed event Management method
+     * @param e (key event)
+     */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-        case ENTER:
-            ok();
-            break;
-        case ESCAPE:
-            cancel();
-            break;
-        default:
-            break;
+            case ENTER:
+                ok();
+                break;
+            case ESCAPE:
+                cancel();
+                break;
+            default:
+                break;
         }
     }
 }

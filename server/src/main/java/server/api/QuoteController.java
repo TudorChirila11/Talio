@@ -36,16 +36,30 @@ public class QuoteController {
     private final Random random;
     private final QuoteRepository repo;
 
+    /**
+     * QuoteController constructor
+     * @param random random object
+     * @param repo repo reference
+     */
     public QuoteController(Random random, QuoteRepository repo) {
         this.random = random;
         this.repo = repo;
     }
 
+    /**
+     * Hardcoded mapping all quotes
+     * @return List of quote objectss
+     */
     @GetMapping(path = { "", "/" })
     public List<Quote> getAll() {
         return repo.findAll();
     }
 
+    /**
+     * getById method for a quote with path var
+     * @param id of Quote
+     * @return a response Entity
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Quote> getById(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
@@ -54,6 +68,11 @@ public class QuoteController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    /**
+     * Initalization of a quote
+     * @param quote a new quote obj
+     * @return the Response Entity
+     */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Quote> add(@RequestBody Quote quote) {
 
@@ -70,6 +89,10 @@ public class QuoteController {
         return s == null || s.isEmpty();
     }
 
+    /**
+     * getRandom quote method
+     * @return a response entity with a random entry
+     */
     @GetMapping("rnd")
     public ResponseEntity<Quote> getRandom() {
         var quotes = repo.findAll();

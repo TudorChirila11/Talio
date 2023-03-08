@@ -44,21 +44,39 @@ public class Quote {
         // for object mappers
     }
 
+    /**
+     * Quote Constructor
+     * @param person Person object
+     * @param quote A literal string
+     */
     public Quote(Person person, String quote) {
         this.person = person;
         this.quote = quote;
     }
 
+    /**
+     * Equals method for a quote
+     * @param obj potentially another quote
+     * @return true/false
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    /**
+     * Hashcode method for Quote
+     * @return hashcode
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * toString method fo Quote
+     * @return string representation
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);

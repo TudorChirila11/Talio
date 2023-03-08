@@ -24,6 +24,11 @@ public class CardInformationCtrl {
     private TextArea cardDescription;
 
 
+    /**
+     * Card Information Ctrl Constructor
+     * @param server serverUtils ref
+     * @param mainCtrl mainCtrl controller ref
+     */
     @Inject
     public CardInformationCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
@@ -40,13 +45,18 @@ public class CardInformationCtrl {
         button.setLayoutY(44);*/
     }
 
+    /**
+     * Method to return to the board
+     */
     public void goBack()
     {
         mainCtrl.showBoard();
-        //TODO Change to showBoard()
     }
 
 
+    /**
+     * Refresh method
+     */
     public void refresh()
     {
         //int baseTextX = 265, baseY = 44, baseButtonX = 427, offsetY = 72-44;
