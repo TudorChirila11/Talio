@@ -4,6 +4,7 @@ import client.Main;
 import commons.Card;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -18,11 +19,23 @@ public class CardCell extends ListCell<Card> {
     @FXML
     private Label descriptionLabel;
 
+    @FXML
+    private Button removeButton;
+
     /**
      * Constructor for the Custom Task Cell of type Card
      */
     public CardCell() {
         loadFXML();
+
+        // Defining the current ref
+        ListCell<Card> current = this;
+
+        current.setOnDragDetected(event -> {
+
+        });
+        removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
+
     }
 
     /**
