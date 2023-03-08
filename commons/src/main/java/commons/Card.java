@@ -1,10 +1,14 @@
 package commons;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Objects;
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Card {
@@ -14,13 +18,16 @@ public class Card {
     private long id;
 
     private String title;
+    private String description;
 
     /**
      * @param title used by the user to see what card is what
+     * @param description the description used to describe the task
      * constructor of the card class
      */
-    public Card(String title) {
+    public Card(String title, String description) {
         this.title = title;
+        this.description = description;
     }
 
     /**
@@ -60,36 +67,48 @@ public class Card {
     }
 
     /**
-     * the equals methode is used to test if two cards are the same
-     * @param o other object
-     * @return boolean true if same false if not
+     * getter for the description of a card
+     * @return a description
      */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Card card = (Card) o;
-        return getId() == card.getId() && Objects.equals(getTitle(), card.getTitle());
+    public String getDescription() {
+        return description;
     }
 
     /**
-     * generate a hashcode of the object
+     * setter for the description of a card
+     * @param description
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Equals method for the card class
+     * @param obj potentially another card
+     * @return true/false
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * Hashcode equality for card
      * @return hashcode
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getTitle());
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     /**
-     * the to string methode
-     * @return string of the object
+     * Human readable String representation of card
+     * @return String
      */
     @Override
     public String toString() {
-        return "Card{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                '}';
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
+
+
 }

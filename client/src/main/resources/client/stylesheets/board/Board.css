@@ -19,8 +19,10 @@
     -fx-background-radius: 20;
 }
 
-.list-cell, .list-cell::focused {
+.list-cell{
         -fx-border-radius: 20;
+        -fx-background-color: transparent;
+
  }
 
 .collectionLabel{
