@@ -28,12 +28,6 @@ public class CardCell extends ListCell<Card> {
     public CardCell() {
         loadFXML();
 
-        // Defining the current ref
-        ListCell<Card> current = this;
-
-        current.setOnDragDetected(event -> {
-
-        });
         removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
 
     }

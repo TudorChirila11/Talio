@@ -3,6 +3,37 @@
     -fx-background-color:  #6096B4;
 }
 
+#collectionContainer{
+    -fx-background-color: transparent;
+}
+
+#collectionContainer .viewport {
+       -fx-background-color: transparent;
+}
+
+#collectionContainer .scroll-bar:horizontal {
+    -fx-background-color: #BDCDD6;
+}
+
+#collectionContainer .scroll-bar .thumb {
+    -fx-background-color: #6096B4;
+    -fx-background-radius: 10;
+}
+
+#collectionContainer .scroll-bar .thumb:hover {
+    -fx-background-color: #93BFCF;
+}
+
+#collectionContainer .scroll-bar .increment-button,
+#collectionContainer .scroll-bar .decrement-button {
+    -fx-background-color: #6096B4;
+}
+
+#collectionContainer .scroll-bar .increment-arrow,
+#collectionContainer .scroll-bar .decrement-arrow {
+    -fx-background-color: #FFFFFF;
+}
+
 /* This is a css config for the class of image Buttons*/
 .imageButton{
     -fx-background-color: transparent;
@@ -11,6 +42,11 @@
 }
 
 #boardChoiceBox{
+    -fx-background-color: #93BFCF;
+}
+
+#boardChoiceBox .list-cell {
+    -fx-text-fill: black;
     -fx-background-color: #93BFCF;
 }
 
@@ -25,8 +61,17 @@
 
  }
 
+ /* This is a css config for the class of image Buttons*/
+ .addButton{
+     -fx-background-color: transparent;
+     -fx-background-repeat: no-repeat;
+     -fx-background-position: center;
+      -fx-padding: 0 0 0 60;
+ }
+
 .collectionLabel{
     -fx-font-size: 18pt;
+     -fx-padding: 0 0 0 60;
 }
 
 

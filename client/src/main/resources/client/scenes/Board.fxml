@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="741.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
+<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
    <children>
       <Button id="settingsButton" layoutX="658.0" layoutY="87.0" minWidth="41.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
          <graphic>
@@ -27,39 +27,22 @@
             <Image url="@/client/assets/tailo.png" />
          </image>
       </ImageView>
-      <ComboBox id="boardChoiceBox" layoutX="43.0" layoutY="76.0" prefWidth="150.0" promptText="Board 1" visibleRowCount="3" />
-      <ListView fx:id="todoCollection" layoutX="38.0" layoutY="196.0" prefHeight="250.0" prefWidth="200.0" styleClass="collection">
-      </ListView>
-      <ListView fx:id="doingCollection" layoutX="271.0" layoutY="196.0" prefHeight="250.0" prefWidth="200.0" styleClass="collection" />
-      <ListView fx:id="doneCollection" layoutX="504.0" layoutY="196.0" prefHeight="250.0" prefWidth="200.0" styleClass="collection" />
-      <Label alignment="CENTER" layoutX="105.0" layoutY="146.0" styleClass="collectionLabel" text="To-do" textAlignment="CENTER" />
-      <Label alignment="CENTER" layoutX="338.0" layoutY="146.0" styleClass="collectionLabel" text="Doing" textAlignment="CENTER" />
-      <Label alignment="CENTER" layoutX="574.0" layoutY="146.0" styleClass="collectionLabel" text="Done" textAlignment="CENTER" />
-      <Button layoutX="111.0" layoutY="455.0" mnemonicParsing="false" onAction="#addCard" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
-         <graphic>
-            <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@client/assets/add.png" />
-               </image>
-            </ImageView>
-         </graphic></Button>
-      <Button layoutX="347.0" layoutY="455.0" mnemonicParsing="false" onAction="#addCard" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
-         <graphic>
-            <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@client/assets/add.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <Button layoutX="577.0" layoutY="455.0" mnemonicParsing="false" onAction="#addCard" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
-         <graphic>
-            <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@client/assets/add.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
+       <Button fx:id="addCollectionButton" layoutX="750.0" layoutY="450.0" mnemonicParsing="false" onAction="#addCollection" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
+           <graphic>
+               <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+                   <image>
+                       <Image url="@/client/assets/createCollection.png" />
+                   </image>
+               </ImageView>
+           </graphic>
+       </Button>
+      <ComboBox id="boardChoiceBox" fx:id="boardChoiceBox" layoutX="43.0" layoutY="76.0" prefWidth="150.0" promptText="Choose a board!" visibleRowCount="3" />
+      <ScrollPane id="collectionContainer" fx:id="collectionsContainer" fitToHeight="true" layoutX="48.0" layoutY="134.0" prefHeight="375.0" prefViewportHeight="500.0" prefViewportWidth="300.0" prefWidth="650.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="650.0">
+               <children>
+               </children></AnchorPane>
+        </content>
+      </ScrollPane>
    </children>
 </AnchorPane>
