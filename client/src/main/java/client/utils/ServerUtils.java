@@ -34,6 +34,10 @@ public class ServerUtils {
 
     private static final String SERVER = "http://localhost:8080/";
 
+    /**
+     * Manual logger of all the active quates
+     * @throws IOException no ref
+     */
     public void getQuotesTheHardWay() throws IOException {
         var url = new URL("http://localhost:8080/api/quotes");
         var is = url.openConnection().getInputStream();
@@ -44,6 +48,10 @@ public class ServerUtils {
         }
     }
 
+    /**
+     * Retrieving all quotes from server by making GET req
+     * @return a list of quotes
+     */
     public List<Quote> getQuotes() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/quotes") //
@@ -52,6 +60,11 @@ public class ServerUtils {
                 .get(new GenericType<List<Quote>>() {});
     }
 
+    /**
+     * Adding a new quote to the server DB
+     * @param quote a Quote object
+     * @return returns a Quote
+     */
     public Quote addQuote(Quote quote) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/quotes") //

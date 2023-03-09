@@ -22,7 +22,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Config {
-
+    /**
+     * Bean configuration
+     * @return a new Random object
+     */
     @Bean
     public Random getRandom() {
         return new Random();

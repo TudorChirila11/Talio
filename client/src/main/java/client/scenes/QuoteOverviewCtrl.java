@@ -46,11 +46,27 @@ public class QuoteOverviewCtrl implements Initializable {
     @FXML
     private TableColumn<Quote, String> colQuote;
 
+    /**
+     * Constructor for the QuoteOverview Controller
+     * @param server servUtils ref
+     * @param mainCtrl main Controller ref
+     */
     @Inject
     public QuoteOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
+
+    /**
+     * Initialization method for the Quote overview ctrl
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -59,10 +75,24 @@ public class QuoteOverviewCtrl implements Initializable {
         colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().quote));
     }
 
+    /**
+     * Calls the showAdd Scene
+     */
     public void addQuote() {
         mainCtrl.showAdd();
     }
 
+    /**
+     * Displays the boardView
+     */
+    public void boardView(){
+        mainCtrl.showBoard();
+    }
+
+
+    /**
+     * Refreshes the current state of the overview
+     */
     public void refresh() {
         var quotes = server.getQuotes();
         data = FXCollections.observableList(quotes);

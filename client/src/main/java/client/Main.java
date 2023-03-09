@@ -20,6 +20,9 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+
+import client.scenes.CardInformationCtrl;
+import client.scenes.BoardCtrl;
 import com.google.inject.Injector;
 
 import client.scenes.AddQuoteCtrl;
@@ -33,17 +36,33 @@ public class Main extends Application {
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
 
+    /**
+     * Main Method for Client
+     * @param args System args
+     * @throws URISyntaxException
+     * @throws IOException
+     */
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
     }
 
+    /**
+     * Start method for the application's client
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * @throws IOException
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
 
         var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
-
+        var cardInformation = FXML.load(CardInformationCtrl.class, "client", "scenes", "CardInformation.fxml");
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add);
+        var board = FXML.load(BoardCtrl.class, "client", "scenes", "Board.fxml");
+
+        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation);
     }
 }
