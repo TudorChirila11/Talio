@@ -73,6 +73,8 @@ public class BoardCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         // Initialize with some dummy cards...
         ObservableList<Card> toDoCards = FXCollections.observableArrayList();
@@ -114,7 +116,7 @@ public class BoardCtrl implements Initializable {
     private void refresh() {
         // Create a horizontal box to hold the task lists
         HBox taskListsBox = new HBox(25);
-        taskListsBox.setPrefSize(200 * taskCollections.size(), 250);
+        taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
 
         // Add each task list to the box
         for (Map.Entry<String, ObservableList<Card>> entry : taskCollections.entrySet()) {
@@ -130,7 +132,7 @@ public class BoardCtrl implements Initializable {
             ListView<Card> collection = new ListView<>(list);
             collection.getStyleClass().add("collection");
             collection.setCellFactory(new CardCellFactory());
-            collection.setPrefSize(200, 250);
+            collection.setPrefSize(225, 275);
 
 
             // Set up drag and drop for the individual collections...

@@ -4,10 +4,7 @@ import client.Main;
 import commons.Card;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 
@@ -64,8 +61,8 @@ public class CardCell extends ListCell<Card> {
         }
         else {
             titleLabel.setText(card.getTitle());
+            descriptionLabel.setWrapText(true);
             descriptionLabel.setText(card.getDescription());
-
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         }
     }
