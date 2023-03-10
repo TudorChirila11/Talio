@@ -94,6 +94,16 @@ public class Collection {
     }
 
     /**
+     * adds a card to the collection
+     * @param card the card to be added
+     * @return self
+     */
+    public Collection addCard(Card card) {
+        cards.add(card);
+        return this;
+    }
+
+    /**
      * the equals methode
      * @param obj other object
      * @return boolean true iff same
