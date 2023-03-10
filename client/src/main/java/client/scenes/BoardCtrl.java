@@ -4,7 +4,9 @@ import client.fxml.CardCell;
 import client.fxml.CardCellFactory;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Board;
 import commons.Card;
+import commons.Collection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -37,7 +39,8 @@ public class BoardCtrl implements Initializable {
     // Value = Items to be added to listview
     private Map<String, ObservableList<Card>> taskCollections = new LinkedHashMap<>();
 
-
+    // One board for now.
+    private Board board = new Board();
 
     private final MainCtrl mainCtrl;
 
@@ -77,20 +80,28 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         // Initialize with some dummy cards...
-        ObservableList<Card> toDoCards = FXCollections.observableArrayList();
-        toDoCards.add(new Card("Clean my Keyboard", "Make sure my keyboard is squeaky clean!"));
-        toDoCards.add(new Card("Organize My Desk", "Arrange everything on my desk neatly and efficiently."));
-        toDoCards.add(new Card("Water My Plants", "Give my plants the hydration they need to thrive."));
+        ObservableList<Card> toDoCards;
 
-        ObservableList<Card> doingCards = FXCollections.observableArrayList();
-        doingCards.add(new Card("Clean my Keyboard", "Make sure my keyboard is squeaky clean!"));
-        doingCards.add(new Card("Organize My Desk", "Arrange everything on my desk neatly and efficiently."));
-        doingCards.add(new Card("Water My Plants", "Give my plants the hydration they need to thrive."));
+        Collection todo = new Collection("To-do", board);
+        todo.getCards().add(new Card("Clean my Keyboard", "Make sure my keyboard is squeaky clean!", todo));
+        todo.getCards().add(new Card("Organize My Desk", "Arrange everything on my desk neatly and efficiently.", todo));
+        todo.getCards().add(new Card("Water My Plants", "Give my plants the hydration they need to thrive.", todo));
+        toDoCards = FXCollections.observableList(todo.getCards());
 
-        ObservableList<Card> doneCards = FXCollections.observableArrayList();
-        doneCards.add(new Card("Clean my Keyboard", "Make sure my keyboard is squeaky clean!"));
-        doneCards.add(new Card("Organize My Desk", "Arrange everything on my desk neatly and efficiently."));
-        doneCards.add(new Card("Water My Plants", "Give my plants the hydration they need to thrive."));
+        ObservableList<Card> doingCards;
+        Collection doing = new Collection("Doing", board);
+        doing.getCards().add(new Card("Clean my Keyboard", "Make sure my keyboard is squeaky clean!", doing));
+        doing.getCards().add(new Card("Organize My Desk", "Arrange everything on my desk neatly and efficiently.", doing));
+        doing.getCards().add(new Card("Water My Plants", "Give my plants the hydration they need to thrive.", doing));
+        doingCards = FXCollections.observableList(doing.getCards());
+
+        // Initialize with some dummy cards...
+        ObservableList<Card> doneCards;
+        Collection done = new Collection("Doing", board);
+        done.getCards().add(new Card("Clean my Keyboard", "Make sure my keyboard is squeaky clean!", done));
+        done.getCards().add(new Card("Organize My Desk", "Arrange everything on my desk neatly and efficiently.", done));
+        done.getCards().add(new Card("Water My Plants", "Give my plants the hydration they need to thrive.", done));
+        doneCards = FXCollections.observableList(done.getCards());
 
         // Add to Linked HashMap (Order is remembered -> Potential later rearrangement)
         taskCollections.put("To Do", toDoCards);
@@ -172,25 +183,25 @@ public class BoardCtrl implements Initializable {
                 if (cell.getItem() == null) {return;}
                 Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
-                content.putString(cell.getItem().getTitle() + "-----" +cell.getItem().getDescription());
+                content.putString(cell.getItem().getTitle() + "-----" +cell.getItem().getDescription() +  "-----" +
+                    cell.getItem().getCollection().getName());
                 dragboard.setContent(content);
                 event.consume();
             });
-
             cell.setOnDragOver(event -> {
                 if (event.getGestureSource() != cell && event.getDragboard().hasString()) {
                     event.acceptTransferModes(TransferMode.MOVE);
                 }
                 event.consume();
             });
-
             cell.setOnDragDropped(event -> {
                 Dragboard dragboard = event.getDragboard();
                 boolean success = false;
                 //TODO This can be done better without direct parsing...
                 if (dragboard.hasString()) {
                     String[] card = dragboard.getString().split("-----");
-                    Card newCard = new Card(card[0], card[1]);
+                    // This doesn't really work
+                    Card newCard = new Card(card[0], card[1], new Collection(card[2], board));
                     listView.getItems().add(newCard);
                     success = true;
 
@@ -223,11 +234,14 @@ public class BoardCtrl implements Initializable {
      */
     public void addCollection(){
         // This is like dummy data...
-        ObservableList<Card> toDoCards = FXCollections.observableArrayList();
-        toDoCards.add(new Card("Clean my Keyboard", "Make sure my keyboard is squeaky clean!"));
-        toDoCards.add(new Card("Organize My Desk", "Arrange everything on my desk neatly and efficiently."));
-        toDoCards.add(new Card("Water My Plants", "Give my plants the hydration they need to thrive."));
-        taskCollections.put("Test", toDoCards);
+        ObservableList<Card> random;
+
+        Collection randomC = new Collection("Random", board);
+        randomC.getCards().add(new Card("Clean my Keyboard", "Make sure my keyboard is squeaky clean!", randomC));
+        randomC.getCards().add(new Card("Organize My Desk", "Arrange everything on my desk neatly and efficiently.", randomC));
+        randomC.getCards().add(new Card("Water My Plants", "Give my plants the hydration they need to thrive.", randomC));
+        random = FXCollections.observableList(randomC.getCards());
+        taskCollections.put(randomC.getName(), random);
         refresh();
 
     }

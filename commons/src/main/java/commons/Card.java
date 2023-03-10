@@ -4,56 +4,61 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
+
+import javax.persistence.*;
+
+import javax.persistence.Entity;
+
+import javax.persistence.Id;
 
 @Entity
 public class Card {
 
+    //Nothing to see here, just for testing purposes
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     private String title;
     private String description;
 
+
+    @ManyToOne
+    @JoinColumn(name = "collection_id", referencedColumnName = "name")
+    public Collection collection;
+
     /**
-     * @param title used by the user to see what card is what
-     * @param description the description used to describe the task
-     * constructor of the card class
+     * the constructor of the card class
+     * @param title the name users can see
+     * @param description the description for the card
+     * @param collection the collection it the card is in
      */
-    public Card(String title, String description) {
+    public Card(String title, String description, Collection collection) {
         this.title = title;
         this.description = description;
+        this.collection = collection;
     }
 
     /**
-     * gets the id of the card
-     * @return id
+     * Dummy constructor.
      */
-    public long getId() {
-        return id;
+    public Card() {
+
+    }
+
+
+    /**
+     * get the collection the card is in
+     * @return collection
+     */
+    public Collection getCollection() {
+        return collection;
     }
 
     /**
-     * to change the card id
-     * @param id of the card
-     * @return self
+     * sets the collection of the card
+     * @param collection the task colum it is in
      */
-    public Card setId(long id) {
-        this.id = id;
-        return this;
-    }
-
-    /**
-     * gets the title of the card
-     * @return id
-     */
-    public String getTitle() {
-        return title;
+    public void setCollection(Collection collection) {
+        this.collection = collection;
     }
 
     /**
@@ -64,6 +69,14 @@ public class Card {
     public Card setTitle(String title) {
         this.title = title;
         return this;
+    }
+
+    /**
+     * returns the title of a card
+     * @return String
+     */
+    public String getTitle(){
+        return title;
     }
 
     /**
@@ -93,7 +106,7 @@ public class Card {
     }
 
     /**
-     * Hashcode equality for card
+     * generates the hashcode for Card
      * @return hashcode
      */
     @Override
@@ -102,7 +115,7 @@ public class Card {
     }
 
     /**
-     * Human readable String representation of card
+     * Human-readable String representation of card
      * @return String
      */
     @Override
