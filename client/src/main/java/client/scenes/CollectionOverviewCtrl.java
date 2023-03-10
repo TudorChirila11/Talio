@@ -20,7 +20,9 @@ import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import java.util.ResourceBundle;
 public class CollectionOverviewCtrl implements Initializable {
 
     @FXML
-    private FlowPane container ;
+    private VBox container ;
 
     private List<Label> labels ;
     private final ServerUtils server;
@@ -66,10 +68,8 @@ public class CollectionOverviewCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        labels = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             Label label = new Label("Label "+i);
-            labels.add(label);
             container.getChildren().add(label);
         }
     }
