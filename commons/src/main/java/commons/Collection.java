@@ -78,16 +78,29 @@ public class Collection {
         return cards;
     }
 
+    /**
+     * the equals methode
+     * @param obj other object
+     * @return boolean true iff same
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    /**
+     * generate the hashcode
+     * @return hashcode
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * to string methode
+     * @return string
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
