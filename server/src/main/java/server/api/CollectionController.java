@@ -16,7 +16,6 @@
 package server.api;
 
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +39,10 @@ public class CollectionController {
      */
     public CollectionController(CollectionRepository repo) {
         this.repo = repo;
+
+        // TODO remove this when testing is done
+        this.repo.save(new Collection("test1"));
+        this.repo.save(new Collection("test2"));
     }
 
     /**
@@ -76,7 +79,4 @@ public class CollectionController {
         return ResponseEntity.ok(saved);
     }
 
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 public class Collection {
     @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     public String name;
 
     @ManyToOne
@@ -44,6 +45,20 @@ public class Collection {
         this.name = name;
         this.board = board;
         this.cards = new LinkedList<>();
+    }
+
+    /**
+     * default constructor (needed for the repository)
+     */
+    public Collection() {
+    }
+
+    /**
+     * Constructor with only the id
+     * @param name the id of the collection
+     */
+    public Collection(String name) {
+        this.name = name;
     }
 
     /**
