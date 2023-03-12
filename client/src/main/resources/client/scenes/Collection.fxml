@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
+
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="client.scenes.CollectionOverviewCtrl"
-            prefHeight="500.0" prefWidth="200.0">
+<VBox id="collection" prefHeight="500.0" prefWidth="200.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CollectionOverviewCtrl">
 
-    <children>
-        <Label alignment="CENTER" textAlignment="CENTER" layoutX="100" layoutY="5" text="Collection name" />
-        <FlowPane fx:id="container" orientation="VERTICAL" maxWidth="200" layoutY="50">
+    <HBox alignment="CENTER" spacing="5">
+        <Label id="collection_name" text="Collection name" />
+        <Button styleClass="imageButton" id="delete_button" mnemonicParsing="false" text="X"/>
+    </HBox>
 
+    <ScrollPane id="containerContainer" fitToHeight="true" prefWidth="200" VBox.vgrow="ALWAYS">
+        <VBox id="container" fx:id="container"/>
+    </ScrollPane>
 
-        </FlowPane>
-
-        <Button layoutX="100" layoutY="450" mnemonicParsing="false" text="Add Card" />
-    </children>
-</AnchorPane>
+    <Button styleClass="imageButton" mnemonicParsing="false">
+        <graphic>
+            <ImageView fitHeight="36.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@/client/assets/add.png" />
+                </image>
+            </ImageView>
+        </graphic></Button>
+</VBox>
