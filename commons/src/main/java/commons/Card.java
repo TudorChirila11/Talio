@@ -44,6 +44,9 @@ public class Card {
 
     }
 
+    public Card(String title) {
+        this.title = title;
+    }
 
     /**
      * get the collection the card is in
