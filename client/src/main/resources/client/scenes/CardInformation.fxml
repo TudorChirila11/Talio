@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Bloom?>
@@ -14,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: #6096B4;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardInformationCtrl">
+<AnchorPane prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: #6096B4;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardInformationCtrl">
    <children>
       <Text layoutX="34.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Information">
          <font>
@@ -64,7 +65,6 @@
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Text>
-            <TextField layoutX="265.0" layoutY="44.0" promptText="Add subtask... (TBA)" />
             <Button layoutX="338.0" layoutY="242.0" mnemonicParsing="false" onAction="#goBack" style="-fx-border-color: black; -fx-border-radius: 5px;" text="Close" textFill="RED">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
@@ -75,7 +75,16 @@
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Button>
-            <Button layoutX="427.0" layoutY="44.0" mnemonicParsing="false" text="Add" />
+            <ScrollPane hbarPolicy="NEVER" layoutX="263.0" layoutY="38.0" prefHeight="200.0" prefWidth="202.0">
+              <content>
+                <AnchorPane id="subtaskPane" fx:id="subtaskPane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="218.0">
+                     <children>
+                        <Button layoutX="150.0" layoutY="1.0" mnemonicParsing="false" onAction="#addCard" text="Add" />
+                        <TextField layoutY="2.0" promptText="Add subtask... (TBA)" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </ScrollPane>
          </children>
       </Pane>
       <Button layoutX="488.0" layoutY="51.0" mnemonicParsing="false" onAction="#goBack" text="Back" />
