@@ -3,6 +3,7 @@ package server.api;
 
 import java.util.List;
 
+import commons.Board;
 import commons.Card;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,10 @@ public class CollectionController {
         this.repo = repo;
 
         // TODO remove this when testing is done
-        this.repo.save(new Collection("test1"));
-        this.repo.save(new Collection("test2"));
+        Board b = new Board();
+
+        this.repo.save(new Collection(1l, "test1", b));
+        this.repo.save(new Collection(2l, "test2", b));
     }
 
     /**
@@ -42,7 +45,7 @@ public class CollectionController {
      * @return a response Entity
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Collection> getById(@PathVariable("id") String id) {
+    public ResponseEntity<Collection> getById(@PathVariable("id") long id) {
         if (!repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
@@ -68,7 +71,7 @@ public class CollectionController {
      * @return the Response Entity
      */
     @PostMapping(path = { "/addCardTo/{id}" })
-    public ResponseEntity<Collection> add(@PathVariable("id") String id, @RequestBody Card card) {
+    public ResponseEntity<Collection> add(@PathVariable("id") long id, @RequestBody Card card) {
         System.out.println(card);
         System.out.println("id is equal to = " + id);
 
@@ -92,7 +95,7 @@ public class CollectionController {
      * @return the response entity
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }

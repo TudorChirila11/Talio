@@ -15,15 +15,18 @@ import javax.persistence.Id;
 @Entity
 public class Card {
 
-    //Nothing to see here, just for testing purposes
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long card_id;
     private String title;
-    private String description;
 
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "collection_id", referencedColumnName = "name")
     public Collection collection;
+
+
 
     /**
      * the constructor of the card class
@@ -62,6 +65,15 @@ public class Card {
      */
     public void setCollection(Collection collection) {
         this.collection = collection;
+    }
+
+    public Long getCard_id() {
+        return card_id;
+    }
+
+    public Card setCard_id(Long card_id) {
+        this.card_id = card_id;
+        return this;
     }
 
     /**

@@ -7,8 +7,17 @@ import javax.persistence.Id;
 
 @Entity
 public class Board {
-    //Nothing to see here, just for testing purposes
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
+    public long board_id;
+
+
+    public long getBoard_id() {
+        return board_id;
+    }
+
+    public Board setId(long id) {
+        this.board_id = id;
+        return this;
+    }
 }

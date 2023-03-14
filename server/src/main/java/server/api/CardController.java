@@ -23,9 +23,7 @@ public class CardController {
     public CardController(CardRepository repo) {
         this.repo = repo;
 
-        // TODO remove this when testing is done
-        this.repo.save(new Card("card 1 test"));
-        this.repo.save(new Card("card 2 test"));
+
     }
 
     /**
@@ -43,7 +41,7 @@ public class CardController {
      * @return a response Entity
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Card> getById(@PathVariable("id") String id) {
+    public ResponseEntity<Card> getById(@PathVariable("id") long id) {
         if (!repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
@@ -56,12 +54,25 @@ public class CardController {
      * @return the response entity
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
         repo.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Initalization of a card
+     * @param card a new card obj
+     * @return the Response Entity
+     */
+    @PostMapping(path = { "/addCard" })
+    public ResponseEntity<Card> add(@RequestBody Card card){
+        System.out.println(card);
+        System.out.println("here -> ");
+        Card saved = repo.save(card);
+        return ResponseEntity.ok(saved);
     }
 
 }

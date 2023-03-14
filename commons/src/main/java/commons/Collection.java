@@ -13,8 +13,11 @@ import java.util.List;
 
 @Entity
 public class Collection {
+
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long collection_id;
+
     public String name;
 
     @ManyToOne
@@ -61,6 +64,22 @@ public class Collection {
         this.name = name;
     }
 
+    public Collection(Long collection_id) {
+        this.collection_id = collection_id;
+    }
+
+    public Collection(Long collection_id, String name) {
+        this.collection_id = collection_id;
+        this.name = name;
+    }
+
+    public Collection(Long collection_id, String name, Board board) {
+        this.collection_id = collection_id;
+        this.name = name;
+        this.board = board;
+        this.cards = new LinkedList<>();
+    }
+
     /**
      * Getter for the name of the collection
      * @return String - the name of the collection
@@ -91,6 +110,15 @@ public class Collection {
      */
     public List<Card> getCards() {
         return cards;
+    }
+
+    public Long getCollection_id() {
+        return collection_id;
+    }
+
+    public Collection setCollection_id(Long collection_id) {
+        this.collection_id = collection_id;
+        return this;
     }
 
     /**
