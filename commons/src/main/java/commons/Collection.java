@@ -130,6 +130,7 @@ public class Collection {
      */
     public Collection addCard(Card card) {
         cards.add(card);
+        card.setCollection(this);
         return this;
     }
 

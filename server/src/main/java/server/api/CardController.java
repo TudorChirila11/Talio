@@ -23,6 +23,8 @@ public class CardController {
     public CardController(CardRepository repo) {
         this.repo = repo;
 
+        repo.save(new Card("programing is mostly debugging"));
+
 
     }
 
@@ -35,44 +37,44 @@ public class CardController {
         return repo.findAll();
     }
 
-//    /**
-//     * getById method for a Card with path var
-//     * @param id of Card
-//     * @return a response Entity
-//     */
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Card> getById(@PathVariable("id") long id) {
-//        if (!repo.existsById(id)) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//        return ResponseEntity.ok(repo.findById(id).get());
-//    }
-//
-//    /**
-//     * this will delete the Card
-//     * @param id the id / name of the Card
-//     * @return the response entity
-//     */
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-//        if (!repo.existsById(id)) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        repo.deleteById(id);
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    /**
-//     * Initalization of a card
-//     * @param card a new card obj
-//     * @return the Response Entity
-//     */
-//    @PostMapping(path = { "/addCard" })
-//    public ResponseEntity<Card> add(@RequestBody Card card){
-//        System.out.println(card);
-//        System.out.println("here -> ");
-//        Card saved = repo.save(card);
-//        return ResponseEntity.ok(saved);
-//    }
+    /**
+     * getById method for a Card with path var
+     * @param id of Card
+     * @return a response Entity
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Card> getById(@PathVariable("id") long id) {
+        if (!repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
+     * this will delete the Card
+     * @param id the id / name of the Card
+     * @return the response entity
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+        if (!repo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        repo.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Initalization of a card
+     * @param card a new card obj
+     * @return the Response Entity
+     */
+    @PostMapping(path = { "/addCard" })
+    public ResponseEntity<Card> add(@RequestBody Card card){
+        System.out.println(card);
+        System.out.println("here -> ");
+        Card saved = repo.save(card);
+        return ResponseEntity.ok(saved);
+    }
 
 }
