@@ -66,15 +66,30 @@ public class Collection {
         this.name = name;
     }
 
+    /**
+     * constructor for the collection class with id
+     * @param id the id of the collection used in database
+     */
     public Collection(Long id) {
         this.id = id;
     }
 
+    /**
+     * the constructor of the collection with id and name
+     * @param id the id of the collection
+     * @param name the name of the collection
+     */
     public Collection(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
+    /**
+     * the collection constructor
+     * @param id the id used by database
+     * @param name the name of the collection
+     * @param board the board it is on
+     */
     public Collection(Long id, String name, Board board) {
         this.id = id;
         this.name = name;
@@ -106,6 +121,11 @@ public class Collection {
         return board;
     }
 
+    /**
+     * set the board of this collection
+     * @param board the board used
+     * @return self
+     */
     public Collection setBoard(Board board) {
         this.board = board;
         return this;
@@ -119,6 +139,10 @@ public class Collection {
         return cards;
     }
 
+    /**
+     * get the id
+     * @return id
+     */
     public Long getId() {
         return id;
     }
@@ -130,10 +154,13 @@ public class Collection {
      */
     public Collection addCard(Card card) {
         cards.add(card);
-        card.setCollection(this);
         return this;
     }
 
+    /**
+     * remove a card for a collection
+     * @param card the card to be removed
+     */
     public void removeCard(Card card) {
         cards.remove(card);
         card.setCollection(null);

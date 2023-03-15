@@ -4,7 +4,6 @@ package server.api;
 import java.util.List;
 
 import commons.Card;
-import commons.Collection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,14 +64,22 @@ public class CardController {
     }
 
     /**
+     * deletes all the Cards in the database
+     * @return responseEntity
+     */
+    @DeleteMapping(path = { "", "/" })
+    public ResponseEntity<Void> deleteAll() {
+        repo.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Initalization of a card
      * @param card a new card obj
      * @return the Response Entity
      */
-    @PostMapping(path = { "/addCard" })
+    @PostMapping(path = { "/", ""})
     public ResponseEntity<Card> add(@RequestBody Card card){
-        System.out.println(card);
-        System.out.println("here -> ");
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }

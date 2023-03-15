@@ -10,6 +10,7 @@ import javax.persistence.*;
 
 import javax.persistence.Entity;
 
+
 import javax.persistence.Id;
 
 @Entity
@@ -23,6 +24,7 @@ public class Card {
     private String title;
 
     private String description;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "collection_id")
@@ -48,6 +50,10 @@ public class Card {
 
     }
 
+    /**
+     * the constructor of the card with a title
+     * @param title the title of the card
+     */
     public Card(String title) {
         this.title = title;
     }
@@ -68,6 +74,10 @@ public class Card {
         this.collection = collection;
     }
 
+    /**
+     * get the id
+     * @return id
+     */
     public Long getId() {
         return id;
     }
@@ -100,7 +110,7 @@ public class Card {
 
     /**
      * setter for the description of a card
-     * @param description
+     * @param description the description of the cord
      */
     public void setDescription(String description) {
         this.description = description;
