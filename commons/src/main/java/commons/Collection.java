@@ -8,24 +8,26 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@Table(name = "collections")
 public class Collection {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long collection_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public String name;
+    private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
-    public Board board;
+    private Board board;
 
-    @OneToMany(mappedBy = "collection")
-    public List<Card> cards;
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Card> cards = new ArrayList<>();
+
 
     /**
      * Constructor for Collection
@@ -64,17 +66,17 @@ public class Collection {
         this.name = name;
     }
 
-    public Collection(Long collection_id) {
-        this.collection_id = collection_id;
+    public Collection(Long id) {
+        this.id = id;
     }
 
-    public Collection(Long collection_id, String name) {
-        this.collection_id = collection_id;
+    public Collection(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
-    public Collection(Long collection_id, String name, Board board) {
-        this.collection_id = collection_id;
+    public Collection(Long id, String name, Board board) {
+        this.id = id;
         this.name = name;
         this.board = board;
         this.cards = new LinkedList<>();
@@ -104,6 +106,11 @@ public class Collection {
         return board;
     }
 
+    public Collection setBoard(Board board) {
+        this.board = board;
+        return this;
+    }
+
     /**
      * Getter for the list of cards
      * @return List<Card> - list of all cards present in the
@@ -112,13 +119,8 @@ public class Collection {
         return cards;
     }
 
-    public Long getCollection_id() {
-        return collection_id;
-    }
-
-    public Collection setCollection_id(Long collection_id) {
-        this.collection_id = collection_id;
-        return this;
+    public Long getId() {
+        return id;
     }
 
     /**
@@ -129,6 +131,11 @@ public class Collection {
     public Collection addCard(Card card) {
         cards.add(card);
         return this;
+    }
+
+    public void removeCard(Card card) {
+        cards.remove(card);
+        card.setCollection(null);
     }
 
     /**

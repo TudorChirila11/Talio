@@ -23,11 +23,6 @@ public class CollectionController {
     public CollectionController(CollectionRepository repo) {
         this.repo = repo;
 
-        // TODO remove this when testing is done
-        Board b = new Board();
-
-        this.repo.save(new Collection(1l, "test1", b));
-        this.repo.save(new Collection(2l, "test2", b));
     }
 
     /**

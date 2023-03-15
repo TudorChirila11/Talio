@@ -13,19 +13,20 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
+@Table(name = "cards")
 public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long card_id;
+    private Long id;
+
     private String title;
 
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "collection_id", referencedColumnName = "name")
-    public Collection collection;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "collection_id")
+    private Collection collection;
 
 
     /**
@@ -67,13 +68,8 @@ public class Card {
         this.collection = collection;
     }
 
-    public Long getCard_id() {
-        return card_id;
-    }
-
-    public Card setCard_id(Long card_id) {
-        this.card_id = card_id;
-        return this;
+    public Long getId() {
+        return id;
     }
 
     /**
