@@ -37,6 +37,10 @@ public class MainCtrl {
 
     private Scene board;
 
+    private CollectionOverviewCtrl collectionOverviewCtrl;
+
+    private Scene collection;
+
     /**
      * Initializes the mainCtrl method with all the active controllers
      * @param primaryStage primary stage (active)
@@ -44,9 +48,11 @@ public class MainCtrl {
      * @param add add of quote
      * @param board board scene
      * @param cardInfo cardInfo scene
+     * @param collection collection scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo) {
+            Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
+                           Pair<CollectionOverviewCtrl, Parent> collection) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -59,6 +65,9 @@ public class MainCtrl {
 
         this.boardCtrl = board.getKey();
         this.board = new Scene(board.getValue());
+
+        this.collectionOverviewCtrl = collection.getKey();
+        this.collection = new Scene(collection.getValue());
 
         showBoard();
         primaryStage.show();
@@ -102,5 +111,14 @@ public class MainCtrl {
     public void showBoard(){
         primaryStage.setTitle("Board Overview: Board");
         primaryStage.setScene(board);
+    }
+
+    /**
+     * Displays the collection Scene
+     * and enables the controller
+     */
+    public void showCollection(){
+        primaryStage.setTitle("Collection Overview: Collection");
+        primaryStage.setScene(collection);
     }
 }

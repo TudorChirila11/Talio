@@ -1,0 +1,30 @@
+#collection{
+    -fx-background-color: #6096B4;
+    -fx-spacing: 25;
+    -fx-alignment: CENTER;
+}
+
+#collection_name{
+    -fx-font-size: 16px;
+}
+
+#delete_button{
+    -fx-font-size: 10px;
+    -fx-background-color: #FF0000;
+    -fx-text-fill: white;
+}
+
+#containerContainer > .viewport {
+    -fx-background-color: transparent;
+}
+
+#containerContainer{
+    -fx-border-radius: 30;
+    -fx-background-radius: 30;
+    -fx-background-color: #BDCDD6;
+    -fx-border-color: transparent;
+}
+
+#container{
+    -fx-padding: 10 10 10 10;
+}
