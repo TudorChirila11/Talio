@@ -10,20 +10,26 @@ import javax.persistence.*;
 
 import javax.persistence.Entity;
 
+
 import javax.persistence.Id;
 
 @Entity
+@Table(name = "cards")
 public class Card {
 
-    //Nothing to see here, just for testing purposes
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String title;
+
     private String description;
 
 
-    @ManyToOne
-    @JoinColumn(name = "collection_id", referencedColumnName = "name")
-    public Collection collection;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "collection_id")
+    private Collection collection;
+
 
     /**
      * the constructor of the card class
@@ -44,6 +50,13 @@ public class Card {
 
     }
 
+    /**
+     * the constructor of the card with a title
+     * @param title the title of the card
+     */
+    public Card(String title) {
+        this.title = title;
+    }
 
     /**
      * get the collection the card is in
@@ -59,6 +72,14 @@ public class Card {
      */
     public void setCollection(Collection collection) {
         this.collection = collection;
+    }
+
+    /**
+     * get the id
+     * @return id
+     */
+    public Long getId() {
+        return id;
     }
 
     /**
@@ -89,7 +110,7 @@ public class Card {
 
     /**
      * setter for the description of a card
-     * @param description
+     * @param description the description of the cord
      */
     public void setDescription(String description) {
         this.description = description;

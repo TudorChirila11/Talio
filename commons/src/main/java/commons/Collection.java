@@ -8,21 +8,26 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@Table(name = "collections")
 public class Collection {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    public String name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @ManyToOne
+    private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
-    public Board board;
+    private Board board;
 
-    @OneToMany(mappedBy = "collection")
-    public List<Card> cards;
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Card> cards = new ArrayList<>();
+
 
     /**
      * Constructor for Collection
@@ -62,6 +67,37 @@ public class Collection {
     }
 
     /**
+     * constructor for the collection class with id
+     * @param id the id of the collection used in database
+     */
+    public Collection(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * the constructor of the collection with id and name
+     * @param id the id of the collection
+     * @param name the name of the collection
+     */
+    public Collection(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    /**
+     * the collection constructor
+     * @param id the id used by database
+     * @param name the name of the collection
+     * @param board the board it is on
+     */
+    public Collection(Long id, String name, Board board) {
+        this.id = id;
+        this.name = name;
+        this.board = board;
+        this.cards = new LinkedList<>();
+    }
+
+    /**
      * Getter for the name of the collection
      * @return String - the name of the collection
      */
@@ -86,11 +122,29 @@ public class Collection {
     }
 
     /**
+     * set the board of this collection
+     * @param board the board used
+     * @return self
+     */
+    public Collection setBoard(Board board) {
+        this.board = board;
+        return this;
+    }
+
+    /**
      * Getter for the list of cards
      * @return List<Card> - list of all cards present in the
      */
     public List<Card> getCards() {
         return cards;
+    }
+
+    /**
+     * get the id
+     * @return id
+     */
+    public Long getId() {
+        return id;
     }
 
     /**
@@ -101,6 +155,15 @@ public class Collection {
     public Collection addCard(Card card) {
         cards.add(card);
         return this;
+    }
+
+    /**
+     * remove a card for a collection
+     * @param card the card to be removed
+     */
+    public void removeCard(Card card) {
+        cards.remove(card);
+        card.setCollection(null);
     }
 
     /**
