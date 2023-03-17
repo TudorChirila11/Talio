@@ -112,7 +112,7 @@ public class CollectionController {
 
         // adding the card to the collection
         collection.addCard(card);
-        card.setCollection(collection);
+        card.setCollectionId(collection.getId());
 
         // saving the changes to the database
         repoCard.save(card);
