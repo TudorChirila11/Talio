@@ -176,54 +176,54 @@ public class BoardCtrl implements Initializable {
      * @param listView list view from the scroll view.
      */
     private void setupDragAndDrop(ListView<Card> listView) {
-        // Initializes the cell factory from the custom card cell
-        listView.setCellFactory(param -> {
-            CardCell cell = new CardCell();
-            cell.setOnDragDetected(event -> {
-                if (cell.getItem() == null) {return;}
-                Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.putString(cell.getItem().getTitle() + "-----" +cell.getItem().getDescription() +  "-----" +
-                    cell.getItem().getCollection().getName());
-                dragboard.setContent(content);
-                event.consume();
-            });
-            cell.setOnDragOver(event -> {
-                if (event.getGestureSource() != cell && event.getDragboard().hasString()) {
-                    event.acceptTransferModes(TransferMode.MOVE);
-                }
-                event.consume();
-            });
-            cell.setOnDragDropped(event -> {
-                Dragboard dragboard = event.getDragboard();
-                boolean success = false;
-                //TODO This can be done better without direct parsing...
-                if (dragboard.hasString()) {
-                    String[] card = dragboard.getString().split("-----");
-                    // This doesn't really work
-                    Card newCard = new Card(card[0], card[1], new Collection(card[2], board));
-                    listView.getItems().add(newCard);
-                    success = true;
-
-                    // Find the source ListView by traversing up the scene graph
-                    Node sourceNode = (Node) event.getGestureSource();
-                    while (sourceNode != null && !(sourceNode instanceof ListView)) {
-                        sourceNode = sourceNode.getParent();
-                    }
-
-                    //TODO Fix the warning here...
-                    if (sourceNode instanceof ListView) {
-                        ListView<Card> sourceList = (ListView<Card>) sourceNode;
-                        int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
-                        Card sourceCard = sourceList.getItems().get(sourceIndex);
-                        sourceList.getItems().remove(sourceCard);
-                    }
-                }
-                event.setDropCompleted(success);
-                event.consume();
-            });
-            return cell;
-        });
+//        // Initializes the cell factory from the custom card cell
+//        listView.setCellFactory(param -> {
+//            CardCell cell = new CardCell();
+//            cell.setOnDragDetected(event -> {
+//                if (cell.getItem() == null) {return;}
+//                Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
+//                ClipboardContent content = new ClipboardContent();
+//                content.putString(cell.getItem().getTitle() + "-----" +cell.getItem().getDescription() +  "-----" +
+//                    cell.getItem().getCollection().getName());
+//                dragboard.setContent(content);
+//                event.consume();
+//            });
+//            cell.setOnDragOver(event -> {
+//                if (event.getGestureSource() != cell && event.getDragboard().hasString()) {
+//                    event.acceptTransferModes(TransferMode.MOVE);
+//                }
+//                event.consume();
+//            });
+//            cell.setOnDragDropped(event -> {
+//                Dragboard dragboard = event.getDragboard();
+//                boolean success = false;
+//                //TODO This can be done better without direct parsing...
+//                if (dragboard.hasString()) {
+//                    String[] card = dragboard.getString().split("-----");
+//                    // This doesn't really work
+//                    Card newCard = new Card(card[0], card[1], new Collection(card[2], board));
+//                    listView.getItems().add(newCard);
+//                    success = true;
+//
+//                    // Find the source ListView by traversing up the scene graph
+//                    Node sourceNode = (Node) event.getGestureSource();
+//                    while (sourceNode != null && !(sourceNode instanceof ListView)) {
+//                        sourceNode = sourceNode.getParent();
+//                    }
+//
+//                    //TODO Fix the warning here...
+//                    if (sourceNode instanceof ListView) {
+//                        ListView<Card> sourceList = (ListView<Card>) sourceNode;
+//                        int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
+//                        Card sourceCard = sourceList.getItems().get(sourceIndex);
+//                        sourceList.getItems().remove(sourceCard);
+//                    }
+//                }
+//                event.setDropCompleted(success);
+//                event.consume();
+//            });
+//            return cell;
+//        });
     }
 
 
