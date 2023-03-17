@@ -13,7 +13,7 @@ public class Board {
 
     private String name;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Collection> collections = new ArrayList<>();
 
 
@@ -81,7 +81,7 @@ public class Board {
      */
     public void addCollection(Collection collection) {
         collections.add(collection);
-        collection.setBoardId(this.getId());
+        collection.setBoard(this);
     }
 
     /**
@@ -90,5 +90,6 @@ public class Board {
      */
     public void removeCollection(Collection collection) {
         collections.remove(collection);
+        collection.setBoard(null);
     }
 }
