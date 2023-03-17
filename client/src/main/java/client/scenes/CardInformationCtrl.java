@@ -2,11 +2,16 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Card;
+import commons.Subtask;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 
 import java.util.ArrayList;
 
@@ -18,15 +23,14 @@ public class CardInformationCtrl {
     private ArrayList<TextField> subtasks;
     private ArrayList<Button> subtasksButtons;
 
-    private Scene cardInformation;
     @FXML
     private TextField cardName;
 
     @FXML
     private TextArea cardDescription;
 
-    @FXML
-    private AnchorPane subtaskPane;
+    //@FXML
+   // private ListView<Subtask> subtaskPane;
 
     /**
      * Card Information Ctrl Constructor
@@ -41,20 +45,13 @@ public class CardInformationCtrl {
         subtasksButtons = new ArrayList<>();
         emptyPane = new Pane();
         ///TODO continue work on making subtasks appear automatically
-        TextField tf = new TextField("Add subtask...");
-        Button button = new Button("Add");
-        subtasks.add(tf);
-        subtasksButtons.add(button);
+       /* VBox vbox = new VBox();
+        TextField tf = new TextField("Add elements");
+        Button btn = new Button("Add");
+        vbox.getChildren().addAll(tf, btn);*/
+
     }
 
-    public void addCard()
-    {
-        int n = subtasks.size();
-        subtasks.add(subtasks.get(n-1));
-        subtasksButtons.add(subtasksButtons.get(n-1));
-        subtasksButtons.get(n-1).setText("Rmv");
-        refresh();
-    }
     public void removeCard(int id)
     {
 
@@ -73,8 +70,7 @@ public class CardInformationCtrl {
      */
     public void refresh()
     {
-        System.out.println(subtasks.size());
-        subtaskPane.getChildren().clear();
+        /*subtaskPane.getChildren().clear();
         int baseTextX = 265, baseY = 44, baseButtonX = 427, offsetY = 72-44;
         for(int i = 0 ;i < subtasks.size(); ++i)
         {
@@ -92,7 +88,45 @@ public class CardInformationCtrl {
             subtaskPane.getChildren().add(subtasksButtons.get(i));
             baseY+=offsetY;
         }
+         */
     }
 
-    //TODO Save card to database
+    /**
+     * Method to add Card to referencing Collection and
+     * saving to database.
+     */
+    public void addCard(){
+        try {
+            server.addCard(getCard());
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return;
+        }
+
+        clearFields();
+        mainCtrl.showBoard();
+    }
+
+    /**
+     * Retrieves the values stored in the text field,areas...
+     * @return A card object.
+     */
+    public Card getCard() {
+        // null collection for now
+        return new Card(cardName.getText(), cardDescription.getText(), 67543);
+    }
+
+    /**
+     * Clears text fields and data
+     */
+    public void clearFields(){
+        cardName.clear();
+        cardDescription.clear();
+        subtasks.clear();
+    }
+
 }

@@ -12,9 +12,7 @@
         <Button styleClass="imageButton" id="delete_button" mnemonicParsing="false" text="X"/>
     </HBox>
 
-    <ScrollPane id="containerContainer" fitToHeight="true" prefWidth="200" VBox.vgrow="ALWAYS">
-        <VBox id="container" fx:id="container"/>
-    </ScrollPane>
+    <VBox id="containerContainer" prefWidth="200" VBox.vgrow="ALWAYS" fx:id="container"/>
 
     <Button fx:id="addButton" styleClass="imageButton" mnemonicParsing="false">
         <graphic>

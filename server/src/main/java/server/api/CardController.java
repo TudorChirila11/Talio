@@ -21,10 +21,6 @@ public class CardController {
      */
     public CardController(CardRepository repo) {
         this.repo = repo;
-
-        repo.save(new Card("programing is mostly debugging"));
-
-
     }
 
     /**
