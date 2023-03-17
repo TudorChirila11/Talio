@@ -19,28 +19,38 @@ public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     private String title;
 
     private String description;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "collection_id")
-    private Collection collection;
+    @Column(name = "collection_id")
+    private Long collectionId;
 
 
     /**
      * the constructor of the card class
      * @param title the name users can see
      * @param description the description for the card
-     * @param collection the collection it the card is in
+     * @param collectionId the id of collection
+     */
+    public Card(String title, String description, long collectionId) {
+        this.title = title;
+        this.description = description;
+        this.collectionId = collectionId;
+    }
+
+    /**
+     * the constructor of the card class
+     * @param title the name users can see
+     * @param description the description for the card
+     * @param collection the id of collection
      */
     public Card(String title, String description, Collection collection) {
         this.title = title;
         this.description = description;
-        this.collection = collection;
+        this.collectionId = collection.getId();
     }
 
     /**
@@ -59,19 +69,21 @@ public class Card {
     }
 
     /**
-     * get the collection the card is in
-     * @return collection
+     * get the id of the collection id is in
+     * @return the id of collection
      */
-    public Collection getCollection() {
-        return collection;
+    public Long getCollectionId() {
+        return collectionId;
     }
 
     /**
-     * sets the collection of the card
-     * @param collection the task colum it is in
+     * set the id of the collection
+     * @param collectionId the id
+     * @return the card
      */
-    public void setCollection(Collection collection) {
-        this.collection = collection;
+    public Card setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+        return this;
     }
 
     /**

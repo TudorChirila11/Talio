@@ -25,7 +25,7 @@ public class Collection {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Card> cards = new ArrayList<>();
 
 
@@ -162,8 +162,8 @@ public class Collection {
      * @param card the card to be removed
      */
     public void removeCard(Card card) {
+        assert card != null;
         cards.remove(card);
-        card.setCollection(null);
     }
 
     /**
