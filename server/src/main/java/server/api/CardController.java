@@ -1,6 +1,7 @@
 
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import commons.Card;
@@ -46,6 +47,30 @@ public class CardController {
     }
 
     /**
+     * get by string title method for a Card
+     * @param title of Card
+     * @return a response Entity
+     */
+    @GetMapping("/byTitle/{title}")
+    public ResponseEntity<List<Card>> getByTitle(@PathVariable("title") String title) {
+        List<Card> resCards = new ArrayList<>();
+        List<Card> allCards = repo.findAll();
+
+        // test if cards have the right title add it to return
+        for (Card card : allCards) {
+            if (title.equals(card.getTitle())) {
+                resCards.add(card);
+            }
+        }
+        // check if no cards are found
+        if (resCards.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(resCards);
+        }
+    }
+
+    /**
      * this will delete the Card
      * @param id the id / name of the Card
      * @return the response entity
@@ -79,5 +104,7 @@ public class CardController {
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }
+
+
 
 }

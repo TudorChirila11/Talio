@@ -1,16 +1,10 @@
 package server.api;
 
-
-import java.util.List;
-import java.util.Random;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import commons.Quote;
 import server.database.CardRepository;
 import server.database.CollectionRepository;
-import server.database.QuoteRepository;
 
 @RestController
 @RequestMapping("/api/reset")
