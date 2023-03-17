@@ -21,11 +21,11 @@ public class Collection {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
-    private Board board;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "board_id")
+    private Long boardId;
+
+    @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Card> cards = new ArrayList<>();
 
 
@@ -37,7 +37,7 @@ public class Collection {
      */
     public Collection(String name, Board board, List<Card> cards) {
         this.name = name;
-        this.board = board;
+        this.boardId = board.getId();
         this.cards = cards;
     }
 
@@ -48,7 +48,7 @@ public class Collection {
      */
     public Collection(String name, Board board) {
         this.name = name;
-        this.board = board;
+        this.boardId = board.getId();
         this.cards = new LinkedList<>();
     }
 
@@ -93,7 +93,7 @@ public class Collection {
     public Collection(Long id, String name, Board board) {
         this.id = id;
         this.name = name;
-        this.board = board;
+        this.boardId = board.getId();
         this.cards = new LinkedList<>();
     }
 
@@ -114,20 +114,20 @@ public class Collection {
     }
 
     /**
-     * Getter for the board
-     * @return Board - board in which the collection is located
+     * get the board id
+     * @return board id
      */
-    public Board getBoard() {
-        return board;
+    public Long getBoardId() {
+        return boardId;
     }
 
     /**
-     * set the board of this collection
-     * @param board the board used
+     * set the board id
+     * @param boardId the id of the board
      * @return self
      */
-    public Collection setBoard(Board board) {
-        this.board = board;
+    public Collection setBoardId(Long boardId) {
+        this.boardId = boardId;
         return this;
     }
 
