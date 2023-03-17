@@ -2,9 +2,14 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Card;
+import commons.Person;
+import commons.Quote;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 
 import java.util.ArrayList;
 
@@ -63,5 +68,42 @@ public class CardInformationCtrl {
 
     }
 
-    //TODO Save card to database
+    /**
+     * Method to add Card to referencing Collection and
+     * saving to database.
+     */
+    public void addCard(){
+        try {
+            server.addCard(getCard());
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return;
+        }
+
+        clearFields();
+        mainCtrl.showBoard();
+    }
+
+    /**
+     * Retrieves the values stored in the text field,areas...
+     * @return A card object.
+     */
+    public Card getCard() {
+        // null collection for now
+        return new Card(cardName.getText(), cardDescription.getText(), null);
+    }
+
+    /**
+     * Clears text fields and data
+     */
+    public void clearFields(){
+        cardName.clear();
+        cardDescription.clear();
+        subtasks.clear();
+    }
+
 }
