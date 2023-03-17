@@ -8,23 +8,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import commons.Collection;
+import server.database.CardRepository;
 import server.database.CollectionRepository;
 
 @RestController
 @RequestMapping("/api/collections")
 public class CollectionController {
-    private final CollectionRepository repo;
+    private final CollectionRepository repoCollection;
+    private final CardRepository repoCard;
 
     /**
      * Controller constructor
-     * @param repo repo reference
+     * @param repoCollection repo reference
+     * @param repoCard the repository of the cards
      */
-    public CollectionController(CollectionRepository repo) {
-        this.repo = repo;
+    public CollectionController(CollectionRepository repoCollection, CardRepository repoCard) {
+        this.repoCollection = repoCollection;
+        this.repoCard = repoCard;
 
-        // TODO remove this when testing is done
-        this.repo.save(new Collection("test1"));
-        this.repo.save(new Collection("test2"));
     }
 
     /**
@@ -33,7 +34,7 @@ public class CollectionController {
      */
     @GetMapping(path = { "", "/" })
     public List<Collection> getAll() {
-        return repo.findAll();
+        return repoCollection.findAll();
     }
 
     /**
@@ -42,11 +43,11 @@ public class CollectionController {
      * @return a response Entity
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Collection> getById(@PathVariable("id") String id) {
-        if (!repo.existsById(id)) {
+    public ResponseEntity<Collection> getById(@PathVariable("id") long id) {
+        if (!repoCollection.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(repo.findById(id).get());
+        return ResponseEntity.ok(repoCollection.findById(id).get());
     }
 
     /**
@@ -54,36 +55,11 @@ public class CollectionController {
      * @param collection a new collection obj
          * @return the Response Entity
      */
-    @PostMapping(path = { "/addCollection" })
+    @PostMapping(path = { "/", "" })
     public ResponseEntity<Collection> add(@RequestBody Collection collection) {
 
-        Collection saved = repo.save(collection);
+        Collection saved = repoCollection.save(collection);
         return ResponseEntity.ok(saved);
-    }
-
-    /**
-     * adding a card to a collection
-     * @param id of the collection
-     * @param card the card to be added
-     * @return the Response Entity
-     */
-    @PostMapping(path = { "/addCardTo/{id}" })
-    public ResponseEntity<Collection> add(@PathVariable("id") String id, @RequestBody Card card) {
-        System.out.println(card);
-        System.out.println("id is equal to = " + id);
-
-        if (!repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Collection c = repo.findById(id).orElse(null);
-        if (c == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        c.addCard(card);
-        Collection updatedCollection = repo.save(c);
-        return ResponseEntity.ok(updatedCollection);
     }
 
     /**
@@ -92,12 +68,63 @@ public class CollectionController {
      * @return the response entity
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
-        if (!repo.existsById(id)) {
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+        if (!repoCollection.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        repo.deleteById(id);
+        repoCollection.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * delete all the collections in the database
+     * @return responseEntity
+     */
+    @DeleteMapping(path = { "", "/" })
+    public ResponseEntity<Void> deleteAll() {
+        repoCollection.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * add a card to a collection methode
+     * @param idCard the id of the card
+     * @param idCollection the id of the collection
+     * @return responseEntity
+     */
+    @PostMapping(path = {"/CardAddTo/{id_card}/{id_collection}"})
+    public ResponseEntity<Collection> add(@PathVariable("id_card") long idCard,
+                                          @PathVariable("id_collection") long idCollection) {
+
+        // checking if both card and collection exist
+        if (!repoCollection.existsById(idCollection) || !repoCard.existsById(idCard)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // getting the card and collection
+        Collection collection = repoCollection.findById(idCollection).orElse(null);
+        Card card = repoCard.findById(idCard).orElse(null);
+
+        // not sure why but this check is important (if you know tell me -Teun)
+        if (collection == null || card == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // adding the card to the collection
+        collection.addCard(card);
+        card.setCollectionId(collection.getId());
+
+        // saving the changes to the database
+        repoCard.save(card);
+        Collection updatedCollection = repoCollection.save(collection);
+
+        return ResponseEntity.ok(updatedCollection);
+
+
+
+
+
+
+
+    }
 }

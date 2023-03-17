@@ -10,31 +10,47 @@ import javax.persistence.*;
 
 import javax.persistence.Entity;
 
+
 import javax.persistence.Id;
 
 @Entity
+@Table(name = "cards")
 public class Card {
 
-    //Nothing to see here, just for testing purposes
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
     private String title;
+
     private String description;
 
+    @Column(name = "collection_id")
+    private Long collectionId;
 
-    @ManyToOne
-    @JoinColumn(name = "collection_id", referencedColumnName = "name")
-    public Collection collection;
 
     /**
      * the constructor of the card class
      * @param title the name users can see
      * @param description the description for the card
-     * @param collection the collection it the card is in
+     * @param collectionId the id of collection
+     */
+    public Card(String title, String description, long collectionId) {
+        this.title = title;
+        this.description = description;
+        this.collectionId = collectionId;
+    }
+
+    /**
+     * the constructor of the card class
+     * @param title the name users can see
+     * @param description the description for the card
+     * @param collection the id of collection
      */
     public Card(String title, String description, Collection collection) {
         this.title = title;
         this.description = description;
-        this.collection = collection;
+        this.collectionId = collection.getId();
     }
 
     /**
@@ -44,21 +60,38 @@ public class Card {
 
     }
 
-
     /**
-     * get the collection the card is in
-     * @return collection
+     * the constructor of the card with a title
+     * @param title the title of the card
      */
-    public Collection getCollection() {
-        return collection;
+    public Card(String title) {
+        this.title = title;
     }
 
     /**
-     * sets the collection of the card
-     * @param collection the task colum it is in
+     * get the id of the collection id is in
+     * @return the id of collection
      */
-    public void setCollection(Collection collection) {
-        this.collection = collection;
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    /**
+     * set the id of the collection
+     * @param collectionId the id
+     * @return the card
+     */
+    public Card setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+        return this;
+    }
+
+    /**
+     * get the id
+     * @return id
+     */
+    public Long getId() {
+        return id;
     }
 
     /**
@@ -89,7 +122,7 @@ public class Card {
 
     /**
      * setter for the description of a card
-     * @param description
+     * @param description the description of the cord
      */
     public void setDescription(String description) {
         this.description = description;
