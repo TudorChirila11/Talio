@@ -119,6 +119,5 @@ public class CollectionController {
         Collection updatedCollection = repoCollection.save(collection);
 
         return ResponseEntity.ok(updatedCollection);
-
     }
 }
