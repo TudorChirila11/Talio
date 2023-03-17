@@ -92,7 +92,7 @@ public class CardInformationCtrl {
      */
     public Card getCard() {
         // null collection for now
-        return new Card(cardName.getText(), cardDescription.getText(), null);
+        return new Card(cardName.getText(), cardDescription.getText());
     }
 
     /**

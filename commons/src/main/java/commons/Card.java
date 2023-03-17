@@ -69,6 +69,16 @@ public class Card {
     }
 
     /**
+     * constructor for the card class
+     * @param title the title of the card
+     * @param description the text the gives more info about the task
+     */
+    public Card(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
+    /**
      * get the id of the collection id is in
      * @return the id of collection
      */
