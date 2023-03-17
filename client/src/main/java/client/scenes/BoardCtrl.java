@@ -1,6 +1,5 @@
 package client.scenes;
 
-import client.fxml.CardCell;
 import client.fxml.CardCellFactory;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
@@ -11,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -176,7 +174,7 @@ public class BoardCtrl implements Initializable {
      * @param listView list view from the scroll view.
      */
     private void setupDragAndDrop(ListView<Card> listView) {
-//        // Initializes the cell factory from the custom card cell
+        // Initializes the cell factory from the custom card cell
 //        listView.setCellFactory(param -> {
 //            CardCell cell = new CardCell();
 //            cell.setOnDragDetected(event -> {
