@@ -19,12 +19,8 @@
 }
 
 #containerContainer{
-    -fx-border-radius: 30;
-    -fx-background-radius: 30;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
     -fx-background-color: #BDCDD6;
     -fx-border-color: transparent;
-}
-
-#container{
-    -fx-padding: 10 10 10 10;
 }
