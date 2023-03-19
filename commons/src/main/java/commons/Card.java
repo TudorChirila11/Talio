@@ -19,7 +19,7 @@ public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String title;
 
@@ -35,7 +35,7 @@ public class Card {
      * @param description the description for the card
      * @param collectionId the id of collection
      */
-    public Card(String title, String description, long collectionId) {
+    public Card(String title, String description, Long collectionId) {
         this.title = title;
         this.description = description;
         this.collectionId = collectionId;
@@ -66,6 +66,16 @@ public class Card {
      */
     public Card(String title) {
         this.title = title;
+    }
+
+    /**
+     * constructor for the card class
+     * @param title the title of the card
+     * @param description the text the gives more info about the task
+     */
+    public Card(String title, String description) {
+        this.title = title;
+        this.description = description;
     }
 
     /**
