@@ -101,6 +101,7 @@ public class MainCtrl {
     {
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
+        cardInformationCtrl.refresh();
     }
 
     /**

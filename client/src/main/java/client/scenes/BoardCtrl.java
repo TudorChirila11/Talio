@@ -282,5 +282,4 @@ public class BoardCtrl implements Initializable {
             }
         });
     }
-
 }
