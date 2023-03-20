@@ -13,6 +13,12 @@ public class Subtask {
 
     private String name;
 
+    /**
+     * class constructor - creates a new Subtask object
+     * @param id - this Subtask's id
+     * @param cardId - the id of the card this subtask belongs to
+     * @param name - this Subtask's name
+     */
     public Subtask(Long id, Long cardId, String name) {
         this.id = id;
         this.cardId = cardId;
