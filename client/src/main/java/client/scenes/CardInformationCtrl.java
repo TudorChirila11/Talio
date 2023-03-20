@@ -45,10 +45,6 @@ public class CardInformationCtrl {
         subtasksButtons = new ArrayList<>();
         emptyPane = new Pane();
         ///TODO continue work on making subtasks appear automatically
-       /* VBox vbox = new VBox();
-        TextField tf = new TextField("Add elements");
-        Button btn = new Button("Add");
-        vbox.getChildren().addAll(tf, btn);*/
 
     }
 
@@ -116,8 +112,7 @@ public class CardInformationCtrl {
      * @return A card object.
      */
     public Card getCard() {
-        // null collection for now
-        return new Card(cardName.getText(), cardDescription.getText(), 67543);
+        return new Card(cardName.getText(), cardDescription.getText());
     }
 
     /**

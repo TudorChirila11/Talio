@@ -21,10 +21,11 @@ public class Collection {
 
     private String name;
 
+
     @Column(name = "board_id")
     private Long boardId;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Card> cards = new ArrayList<>();
 
 
@@ -121,7 +122,7 @@ public class Collection {
     }
 
     /**
-     * set the board id of the collection
+     * set the board id
      * @param boardId the id of the board
      * @return self
      */
