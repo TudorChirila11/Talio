@@ -3,34 +3,41 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Card;
+import commons.Collection;
 import commons.Subtask;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Modality;
+import org.checkerframework.checker.units.qual.C;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
-public class CardInformationCtrl {
+public class CardInformationCtrl implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
     private Pane emptyPane;
-    private ArrayList<TextField> subtasks;
-    private ArrayList<Button> subtasksButtons;
+    private ArrayList<HBox> subtasks;
 
     @FXML
     private TextField cardName;
 
     @FXML
     private TextArea cardDescription;
+    @FXML
+    private ScrollPane scrollPane;
 
-    //@FXML
-   // private ListView<Subtask> subtaskPane;
+    @FXML
+    private MenuButton collectionMenu;
+
 
     /**
      * Card Information Ctrl Constructor
@@ -41,17 +48,101 @@ public class CardInformationCtrl {
     public CardInformationCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+
+    }
+
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         subtasks = new ArrayList<>();
-        subtasksButtons = new ArrayList<>();
+        ///TODO see TODO for refresh()
         emptyPane = new Pane();
-        ///TODO continue work on making subtasks appear automatically
-
+        subtasks.add(buildAddSubtask());
+        setupCollectionMenu();
+        refresh();
+        ///dummy part
     }
 
-    public void removeCard(int id)
+    /**
+     * sets up the MenuButton for choosing a Collection for the current Card
+     */
+
+    private void setupCollectionMenu()
     {
+        Collection todo = new Collection("To-Do");
+        Collection doing = new Collection("Doing");
+        Collection done = new Collection("Done");
+        ///
+        MenuItem mi1 = new MenuItem(todo.getName());
+        MenuItem mi2 = new MenuItem(doing.getName());
+        MenuItem mi3 = new MenuItem(done.getName());
 
+        mi1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                collectionMenu.setText(mi1.getText());
+            }
+        });
+
+        mi2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                collectionMenu.setText(mi2.getText());
+            }
+        });
+
+        mi3.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                collectionMenu.setText(mi3.getText());
+            }
+        });
+        collectionMenu.getItems().addAll(mi1, mi2, mi3);
     }
+
+    /**
+     * creates the 'Add subtask' option
+     * @return a Hbox containing the 'Add subtask' option
+     */
+    private HBox buildAddSubtask()
+    {
+        TextField tf = new TextField();
+        tf.setPromptText("Add subtask...");
+        tf.setText("");
+        Button btn = new Button("Add");
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(tf.getText().equals(""))
+                    tf.setPromptText("I can't be empty!");
+                else {
+                    HBox hb = new HBox();
+                    TextField tf2 = new TextField(tf.getText());
+                    tf2.setEditable(false);
+                    Button btn2 = new Button("Rmv");
+                    hb.getChildren().addAll(tf2, btn2);
+
+                    HBox last = subtasks.get(subtasks.size() -1);
+                    subtasks.set(subtasks.size()-1, hb);
+                    subtasks.add(last);
+                    btn2.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            hb.getChildren().clear();
+                            refresh();
+                        }
+                    });
+                    tf.setPromptText("Add subtask...");
+                    tf.setText("");
+                }
+                refresh();
+            }
+        });
+        HBox hbox = new HBox();
+        hbox.getChildren().addAll(tf, btn);
+        return hbox;
+    }
+
     /**
      * Method to return to the board
      */
@@ -66,25 +157,14 @@ public class CardInformationCtrl {
      */
     public void refresh()
     {
-        /*subtaskPane.getChildren().clear();
-        int baseTextX = 265, baseY = 44, baseButtonX = 427, offsetY = 72-44;
-        for(int i = 0 ;i < subtasks.size(); ++i)
-        {
-            subtasks.get(i).setLayoutX(baseTextX);
-            subtasks.get(i).setLayoutY(baseY);
-            subtasks.get(i).setMaxWidth(149.6);
-            subtasks.get(i).setMinWidth(149.6);
-            subtasks.get(i).setMinHeight(25.6);
-            subtasks.get(i).setMaxHeight(25.6);
+        ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
+        ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
 
-            subtasksButtons.get(i).setLayoutX(baseButtonX);
-            subtasksButtons.get(i).setLayoutY(baseY);
+        VBox vbox = new VBox();
+        vbox.setFillWidth(true);
+        vbox.getChildren().addAll(subtasks);
+        scrollPane.setContent(vbox);
 
-            subtaskPane.getChildren().add(subtasks.get(i));
-            subtaskPane.getChildren().add(subtasksButtons.get(i));
-            baseY+=offsetY;
-        }
-         */
     }
 
     /**
@@ -92,6 +172,12 @@ public class CardInformationCtrl {
      * saving to database.
      */
     public void addCard(){
+        if(cardName.getText().equals(""))
+        {
+            cardName.setPromptText("I can't be empty!");
+            return;
+        }
+
         try {
             server.addCard(getCard());
         } catch (WebApplicationException e) {
@@ -102,7 +188,6 @@ public class CardInformationCtrl {
             alert.showAndWait();
             return;
         }
-
         clearFields();
         mainCtrl.showBoard();
     }
@@ -112,6 +197,7 @@ public class CardInformationCtrl {
      * @return A card object.
      */
     public Card getCard() {
+        // null collection for now
         return new Card(cardName.getText(), cardDescription.getText());
     }
 
@@ -122,6 +208,7 @@ public class CardInformationCtrl {
         cardName.clear();
         cardDescription.clear();
         subtasks.clear();
+        subtasks.add(buildAddSubtask());
     }
 
 }
