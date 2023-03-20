@@ -4,17 +4,14 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Card;
 import commons.Collection;
-import commons.Subtask;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
-import org.checkerframework.checker.units.qual.C;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,6 +49,16 @@ public class CardInformationCtrl implements Initializable {
     }
 
 
+    /**
+     * Initializes this controller
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         subtasks = new ArrayList<>();
