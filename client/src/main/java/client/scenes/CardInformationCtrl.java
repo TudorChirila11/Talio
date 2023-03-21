@@ -63,10 +63,6 @@ public class CardInformationCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         subtasks = new ArrayList<>();
-        ///TODO see TODO for refresh()
-        emptyPane = new Pane();
-        subtasks.add(buildAddSubtask());
-        setupCollectionMenu();
         refresh();
         ///dummy part
     }
@@ -77,6 +73,9 @@ public class CardInformationCtrl implements Initializable {
 
     private void setupCollectionMenu()
     {
+
+    //    System.out.println(server.getCollections());
+        collectionMenu.getItems().clear();
         for(Collection c: server.getCollections()){
             MenuItem i = new MenuItem(c.getName());
             i.setOnAction(new EventHandler<ActionEvent>() {
@@ -150,11 +149,12 @@ public class CardInformationCtrl implements Initializable {
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
         ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
 
+
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtasks);
         scrollPane.setContent(vbox);
-
+        setupCollectionMenu();
     }
 
     /**

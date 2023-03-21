@@ -103,7 +103,7 @@ public class BoardCtrl implements Initializable {
     /**
      * Sets the state of board
      */
-    private void refresh() {
+    public void refresh() {
         List<Collection> taskCollections = server.getCollections();
 
         // Create a horizontal box to hold the task lists
