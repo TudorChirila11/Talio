@@ -121,4 +121,10 @@ public class MainCtrl {
         primaryStage.setTitle("Collection Overview: Collection");
         primaryStage.setScene(collection);
     }
+
+    public void editCard(String text) {
+        primaryStage.setTitle("Edit card");
+        primaryStage.setScene(cardInformation);
+
+    }
 }

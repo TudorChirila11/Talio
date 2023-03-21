@@ -1,6 +1,8 @@
 package client.fxml;
 
 import client.Main;
+import client.scenes.MainCtrl;
+import com.google.inject.Inject;
 import commons.Card;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,14 +21,25 @@ public class CardCell extends ListCell<Card> {
     @FXML
     private Button removeButton;
 
+    @FXML
+    private Button editButton;
+
+
+    @Inject
+    MainCtrl mainCtrl;
+
+
     /**
      * Constructor for the Custom Task Cell of type Card
      */
+    @Inject
     public CardCell() {
         loadFXML();
 
         removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
-
+        editButton.setOnAction(event ->{
+            mainCtrl.editCard(titleLabel.getText()); ////TODO maybe CardId instead of label name in the future
+        });
     }
 
     /**
