@@ -56,7 +56,7 @@ public class CollectionController {
      * @param id of Collection
      * @return a response Entity
      */
-    @GetMapping("/collections/cardsOf/{id}")
+    @GetMapping("/{id}/cards")
     public ResponseEntity<List<Card>> getCardsByCollectionId(@PathVariable long id) {
         // collection could not be found.
         Optional<Collection> collectionOpt = repoCollection.findById(id);
