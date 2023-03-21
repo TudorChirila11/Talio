@@ -24,4 +24,11 @@ public class Subtask {
         this.cardId = cardId;
         this.name = name;
     }
+
+    /**
+     * Default constructor
+     */
+    public Subtask() {
+
+    }
 }

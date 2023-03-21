@@ -34,6 +34,8 @@ public class CardInformationCtrl implements Initializable {
     @FXML
     private MenuButton collectionMenu;
 
+    private Collection collectionCurrent;
+
 
     /**
      * Card Information Ctrl Constructor
@@ -75,35 +77,17 @@ public class CardInformationCtrl implements Initializable {
 
     private void setupCollectionMenu()
     {
-        Collection todo = new Collection("To-Do");
-        Collection doing = new Collection("Doing");
-        Collection done = new Collection("Done");
-        ///
-        MenuItem mi1 = new MenuItem(todo.getName());
-        MenuItem mi2 = new MenuItem(doing.getName());
-        MenuItem mi3 = new MenuItem(done.getName());
-
-        mi1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                collectionMenu.setText(mi1.getText());
-            }
-        });
-
-        mi2.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                collectionMenu.setText(mi2.getText());
-            }
-        });
-
-        mi3.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                collectionMenu.setText(mi3.getText());
-            }
-        });
-        collectionMenu.getItems().addAll(mi1, mi2, mi3);
+        for(Collection c: server.getCollections()){
+            MenuItem i = new MenuItem(c.getName());
+            i.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    collectionMenu.setText(i.getText());
+                    collectionCurrent = c;
+                }
+            });
+            collectionMenu.getItems().add(i);
+        }
     }
 
     /**
@@ -183,9 +167,9 @@ public class CardInformationCtrl implements Initializable {
             cardName.setPromptText("I can't be empty!");
             return;
         }
-
         try {
             server.addCard(getCard());
+
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -204,7 +188,7 @@ public class CardInformationCtrl implements Initializable {
      */
     public Card getCard() {
         // null collection for now
-        return new Card(cardName.getText(), cardDescription.getText());
+        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent);
     }
 
     /**

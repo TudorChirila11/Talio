@@ -26,8 +26,6 @@ import java.util.List;
 import commons.Board;
 import commons.Card;
 import commons.Collection;
-import javafx.scene.control.Alert;
-import javafx.stage.Modality;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -41,6 +39,7 @@ public class ServerUtils {
 
     /**
      * Manual logger of all the active quates
+     *
      * @throws IOException no ref
      */
     public void getQuotesTheHardWay() throws IOException {
@@ -55,6 +54,7 @@ public class ServerUtils {
 
     /**
      * Retrieving all quotes from server by making GET req
+     *
      * @return a list of quotes
      */
     public List<Quote> getQuotes() {
@@ -62,11 +62,13 @@ public class ServerUtils {
                 .target(SERVER).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Quote>>() {});
+                .get(new GenericType<List<Quote>>() {
+                });
     }
 
     /**
      * Adding a new quote to the server DB
+     *
      * @param quote a Quote object
      * @return returns a Quote
      */
@@ -81,6 +83,7 @@ public class ServerUtils {
 
     /**
      * Adding a new Card to the server DB
+     *
      * @param card a Card object
      * @return returns a Card
      */
@@ -94,13 +97,14 @@ public class ServerUtils {
 
     /**
      * Adds a card to collection
-     * @param card card
+     *
+     * @param card       card
      * @param collection collection
      * @return a collection.
      */
-    public Collection addCardCollection(Card card, Collection collection){
+    public Collection addCardCollection(Card card, Collection collection) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections/CardAddTo/" + card.getId() + "/" +card.getCollectionId()) //
+                .target(SERVER).path("api/collections/CardAddTo/" + card.getId() + "/" + card.getCollectionId()) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
@@ -108,18 +112,22 @@ public class ServerUtils {
 
     /**
      * Retrieves all Cards
+     *
+     * @param collection to use to filter cards by
      * @return List of cards
      */
-    public List<Card> getCards() {
+    public List<Card> getCardsForCollection(Collection collection) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards") //
+                .target(SERVER).path("api/cards/" + collection.getId() + "/ofCollection") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Card>>() {});
+                .get(new GenericType<List<Card>>() {
+                });
     }
 
     /**
      * Adding a new quote to the server DB
+     *
      * @param collection a Quote object
      * @return returns a Quote
      */
@@ -133,6 +141,7 @@ public class ServerUtils {
 
     /**
      * Retrieves all Collections
+     *
      * @return List of collections
      */
     public List<Collection> getCollections() {
@@ -140,7 +149,8 @@ public class ServerUtils {
                 .target(SERVER).path("api/collections") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Collection>>() {});
+                .get(new GenericType<List<Collection>>() {
+                });
     }
 
     /**
@@ -168,10 +178,11 @@ public class ServerUtils {
 
     /**
      * Adds a board to the Server DB
+     *
      * @param board type
      * @return board the board added
      */
-    public Board addBoard(Board board){
+    public Board addBoard(Board board) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/boards") //
                 .request(APPLICATION_JSON) //
@@ -181,14 +192,24 @@ public class ServerUtils {
 
     /**
      * Retrieves the only board
+     *
      * @return a board
      */
-    public Board getBoard(){
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/boards") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Board>>() {}).get(0);
+    public Board getBoard() {
+        List<Board> boards = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("api/boards")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Board>>() {
+                });
+        if (boards.isEmpty()) {
+            // create a new board and add it to the database
+            Board newBoard = new Board("Main Board");
+            addBoard(newBoard);
+            return newBoard;
+        }
 
+        return boards.get(0);
     }
 }

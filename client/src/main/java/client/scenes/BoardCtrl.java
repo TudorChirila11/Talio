@@ -72,9 +72,9 @@ public class BoardCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        if(server.getBoard() == null){
-            server.addBoard(new Board("Main Board"));
-        }
+
+        server.getBoard();
+
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
@@ -114,8 +114,7 @@ public class BoardCtrl implements Initializable {
         for (Collection current: taskCollections) {
 
             String collectionName = current.getName();
-            ObservableList<Card> list = FXCollections.observableList(current.getCards());
-
+            ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
             // Create a label for the collection name
             Label collectionLabel = new Label(collectionName);
             collectionLabel.getStyleClass().add("collectionLabel");
@@ -222,9 +221,7 @@ public class BoardCtrl implements Initializable {
         if (result.isPresent()) {
             String newName = result.get();
             if (!newName.isEmpty()) {
-                // This is like dummy data...
                 Collection randomC = new Collection(newName, server.getBoard());
-                System.out.println(server.getBoard().getId());
                 server.getBoard().addCollection(randomC);
                 try {
                     server.addCollection(randomC);

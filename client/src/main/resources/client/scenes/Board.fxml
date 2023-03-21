@@ -4,45 +4,46 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
-   <children>
-      <Button id="settingsButton" layoutX="658.0" layoutY="87.0" minWidth="41.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
-         <graphic>
-            <ImageView fitHeight="65.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@/client/assets/settings.png" />
-               </image>
-            </ImageView>
-         </graphic></Button>
-      <Button id="lockButton" layoutX="604.0" layoutY="87.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
-         <graphic>
-            <ImageView fitHeight="36.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@/client/assets/lock.png" />
-               </image>
-            </ImageView>
-         </graphic></Button>
-      <ImageView id="tailoLogo" fitHeight="85.0" fitWidth="142.0" layoutX="303.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/client/assets/tailo.png" />
-         </image>
-      </ImageView>
-       <Button fx:id="addCollectionButton" layoutX="750.0" layoutY="450.0" mnemonicParsing="false" onAction="#addCollection" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
-           <graphic>
-               <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-                   <image>
-                       <Image url="@/client/assets/createCollection.png" />
-                   </image>
-               </ImageView>
-           </graphic>
-       </Button>
-      <ComboBox id="boardChoiceBox" fx:id="boardChoiceBox" layoutX="43.0" layoutY="76.0" prefWidth="150.0" promptText="Choose a board!" visibleRowCount="3" />
-      <ScrollPane id="collectionContainer"  fx:id="collectionsContainer" fitToHeight="true" layoutX="48.0" layoutY="134.0" prefHeight="375.0" prefViewportHeight="500.0" prefViewportWidth="300.0" prefWidth="675.0">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="650.0">
-               <children>
-               </children></AnchorPane>
-        </content>
-      </ScrollPane>
-   </children>
+<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
+    <children>
+        <Button id="settingsButton" layoutX="658.0" layoutY="87.0" minWidth="41.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
+            <graphic>
+                <ImageView fitHeight="65.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/client/assets/settings.png" />
+                    </image>
+                </ImageView>
+            </graphic></Button>
+        <Button id="lockButton" layoutX="604.0" layoutY="87.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
+            <graphic>
+                <ImageView fitHeight="36.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/client/assets/lock.png" />
+                    </image>
+                </ImageView>
+            </graphic></Button>
+        <ImageView id="tailoLogo" fitHeight="85.0" fitWidth="142.0" layoutX="303.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@/client/assets/tailo.png" />
+            </image>
+        </ImageView>
+        <Button fx:id="addCollectionButton" layoutX="750.0" layoutY="450.0" mnemonicParsing="false" onAction="#addCollection" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
+            <graphic>
+                <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/client/assets/createCollection.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <ComboBox id="boardChoiceBox" fx:id="boardChoiceBox" layoutX="43.0" layoutY="76.0" prefWidth="150.0" promptText="Choose a board!" visibleRowCount="3" />
+        <ScrollPane id="collectionContainer" fx:id="collectionsContainer" fitToHeight="true" layoutX="48.0" layoutY="134.0" prefHeight="375.0" prefViewportHeight="500.0" prefViewportWidth="300.0" prefWidth="675.0">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="650.0">
+                    <children>
+                    </children></AnchorPane>
+            </content>
+        </ScrollPane>
+        <Button fx:id="resetBoard" layoutX="14.0" layoutY="473.0" mnemonicParsing="false" text="Reset" onAction="#resetBoard"/>
+    </children>
 </AnchorPane>
