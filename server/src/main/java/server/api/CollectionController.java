@@ -2,6 +2,7 @@
 package server.api;
 
 import java.util.List;
+import java.util.Optional;
 
 import commons.Card;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,26 @@ public class CollectionController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repoCollection.findById(id).get());
+    }
+
+    /**
+     * get the cards of a collection
+     * @param id of Collection
+     * @return a response Entity
+     */
+    @GetMapping("/{id}/cards")
+    public ResponseEntity<List<Card>> getCardsByCollectionId(@PathVariable long id) {
+        // collection could not be found.
+        Optional<Collection> collectionOpt = repoCollection.findById(id);
+
+        // test if empty give bad response
+        if (collectionOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // return the cards
+        List<Card> cards = collectionOpt.get().getCards();
+        return ResponseEntity.ok(cards);
     }
 
     /**

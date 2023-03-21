@@ -8,7 +8,6 @@ import commons.Card;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import commons.Card;
 import server.database.CardRepository;
 
 @RestController
@@ -68,6 +67,28 @@ public class CardController {
         } else {
             return ResponseEntity.ok(resCards);
         }
+    }
+
+
+    /**
+     * get the cards by the id of collectioni
+     * @param id the id of the collection
+     * @return the cards
+     */
+    @GetMapping("/{id}/ofCollection")
+    public ResponseEntity<List<Card>> getCardsByIdOfCollection(@PathVariable long id) {
+        List<Card> allCards = repo.findAll();
+        List<Card> res = new ArrayList<>();
+
+        for (Card c : allCards) {
+            if (c.getCollectionId() == id) {
+                res.add(c);
+            }
+        }
+
+        return ResponseEntity.ok(res);
+
+
     }
 
     /**
