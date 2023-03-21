@@ -3,14 +3,11 @@ package server.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import commons.Card;
-import commons.Collection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import commons.Card;
 import server.database.CardRepository;
 
 @RestController
