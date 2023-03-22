@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.scenes.WelcomePageCtrl"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <Text  text="Enter IP address here:" />
+
+    <HBox>
+
+        <TextField fx:id="userIP"/>
+
+        <Button fx:id="enterButton" text="Enter"/>
+
+    </HBox>
+
+
+    <Text text="(if nothing is entered, localhost will be used by default)"/>
+
+    <Text fx:id="errorConnection"/>
+
+</VBox>
