@@ -111,7 +111,7 @@ public class ServerUtils {
      */
     public Response deleteCard(long id) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards/" + id) //
+                .target(server).path("api/cards/" + id) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .delete();
@@ -125,13 +125,13 @@ public class ServerUtils {
      */
     public Response deleteCollection(long id) {
         ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections/" + id) //
+                .target(server).path("api/collections/" + id) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .delete();
 
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards/" + id + "/ofCollection") //
+                .target(server).path("api/cards/" + id + "/ofCollection") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .delete();
@@ -148,7 +148,7 @@ public class ServerUtils {
      */
     public Collection addCardCollection(Card card, Collection collection) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections/CardAddTo/" + card.getId() + "/" + card.getCollectionId()) //
+                .target(server).path("api/collections/CardAddTo/" + card.getId() + "/" + card.getCollectionId()) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
@@ -162,7 +162,7 @@ public class ServerUtils {
      */
     public List<Card> getCardsForCollection(Collection collection) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards/" + collection.getId() + "/ofCollection") //
+                .target(server).path("api/cards/" + collection.getId() + "/ofCollection") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Card>>() {
@@ -177,7 +177,7 @@ public class ServerUtils {
      */
     public Collection addCollection(Collection collection) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections") //
+                .target(server).path("api/collections") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
@@ -190,7 +190,7 @@ public class ServerUtils {
      */
     public List<Collection> getCollections() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections") //
+                .target(server).path("api/collections") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Collection>>() {
@@ -202,19 +202,19 @@ public class ServerUtils {
      */
     public void resetState() {
         ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections") //
+                .target(server).path("api/collections") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON)
                 .delete();
 
         ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/boards") //
+                .target(server).path("api/boards") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON)
                 .delete();
 
         ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards") //
+                .target(server).path("api/cards") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON)
                 .delete();
@@ -228,7 +228,7 @@ public class ServerUtils {
      */
     public Board addBoard(Board board) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/boards") //
+                .target(server).path("api/boards") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(board, APPLICATION_JSON), Board.class);
@@ -241,7 +241,7 @@ public class ServerUtils {
      */
     public Board getBoard() {
         List<Board> boards = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER)
+                .target(server)
                 .path("api/boards")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
