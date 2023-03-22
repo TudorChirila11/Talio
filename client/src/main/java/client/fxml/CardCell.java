@@ -26,18 +26,17 @@ public class CardCell extends ListCell<Card> {
 
 
     @Inject
-    MainCtrl mainCtrl;
+    MainCtrl mainCtrl; ///TODO doesn't work, change to spring needed
 
 
     /**
      * Constructor for the Custom Task Cell of type Card
      */
-    @Inject
     public CardCell() {
         loadFXML();
-
         removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
         editButton.setOnAction(event ->{
+            System.out.println("Button pressed");
             mainCtrl.editCard(titleLabel.getText()); ////TODO maybe CardId instead of label name in the future
         });
     }
