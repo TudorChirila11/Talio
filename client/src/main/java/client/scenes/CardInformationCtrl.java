@@ -11,17 +11,30 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class CardInformationCtrl implements Initializable {
+
+
+
+
+    enum State{
+        EDIT, CREATE
+    }
+
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
-    private Pane emptyPane;
     private ArrayList<HBox> subtasks;
+
+    private State state;
+
+    private Card card;
 
     @FXML
     private TextField cardName;
@@ -34,6 +47,17 @@ public class CardInformationCtrl implements Initializable {
     @FXML
     private MenuButton collectionMenu;
 
+    @FXML
+    private Text title;
+
+    /**
+     * sets the CardInformationCtrl's state field
+     * @param value the new State value of this class's state field
+     */
+    public void setState(State value)
+    {
+        this.state = value;
+    }
 
     /**
      * Card Information Ctrl Constructor
@@ -61,14 +85,20 @@ public class CardInformationCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         subtasks = new ArrayList<>();
-        ///TODO see TODO for refresh()
-        emptyPane = new Pane();
         subtasks.add(buildAddSubtask());
         setupCollectionMenu();
         refresh();
         ///dummy part
     }
 
+    /**
+     * receive a card object from external sources, to populate this scene's fields with its data
+     * @param card - a card object
+     */
+    public void setCard(Card card)
+    {
+        this.card = card;
+    }
     /**
      * sets up the MenuButton for choosing a Collection for the current Card
      */
@@ -164,8 +194,12 @@ public class CardInformationCtrl implements Initializable {
     public void refresh()
     {
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
-        ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
-
+        if(state == State.EDIT)
+            title.setText("Edit card");
+        else
+            title.setText("Add card");
+        cardName.setText(card.getTitle());
+        cardDescription.setText(card.getDescription());
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtasks);
@@ -183,9 +217,11 @@ public class CardInformationCtrl implements Initializable {
             cardName.setPromptText("I can't be empty!");
             return;
         }
+        card.setTitle(cardName.getText());
+        card.setDescription(cardDescription.getText());
 
         try {
-            server.addCard(getCard());
+            server.addCard(card);
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -194,18 +230,10 @@ public class CardInformationCtrl implements Initializable {
             alert.showAndWait();
             return;
         }
-        clearFields();
+        clearFields(); ///security measure
         mainCtrl.showBoard();
     }
 
-    /**
-     * Retrieves the values stored in the text field,areas...
-     * @return A card object.
-     */
-    public Card getCard() {
-        // null collection for now
-        return new Card(cardName.getText(), cardDescription.getText());
-    }
 
     /**
      * Clears text fields and data
@@ -217,4 +245,15 @@ public class CardInformationCtrl implements Initializable {
         subtasks.add(buildAddSubtask());
     }
 
+    /**
+     * gets a card from the database and assigns it to this scene's specific card
+     * @return the specific found card
+     */
+    public Card getCardByName(String name) {
+        ArrayList<Card> response = (ArrayList<Card>) server.getCardByName(name);
+        if(response.size() != 1)
+            throw new Error("Something very strange happened. I found " + response.size() +" cards with the name "+ name);
+        this.card = response.get(0);
+        return response.get(0);
+    }
 }

@@ -87,4 +87,19 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(card, APPLICATION_JSON), Card.class);
     }
+
+    /**
+     * gets a List of all the cards with this name
+     * @param name - card name
+     * @return - a card List
+     */
+    public List<Card> getCardByName(String name)
+    {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/cards/byTitle/"+name)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<>(){});
+
+    }
 }

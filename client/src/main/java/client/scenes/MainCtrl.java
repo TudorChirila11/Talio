@@ -15,10 +15,12 @@
  */
 package client.scenes;
 
+import commons.Card;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
 
 public class MainCtrl {
 
@@ -101,6 +103,8 @@ public class MainCtrl {
     {
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
+        cardInformationCtrl.setState(CardInformationCtrl.State.CREATE);
+        cardInformationCtrl.setCard(new Card()); ///maybe better implementation exists
         cardInformationCtrl.refresh();
     }
 
@@ -122,9 +126,11 @@ public class MainCtrl {
         primaryStage.setScene(collection);
     }
 
-    public void editCard(String text) {
+    public void editCard(String cardName) {
         primaryStage.setTitle("Edit card");
         primaryStage.setScene(cardInformation);
-
+        cardInformationCtrl.setCard(cardInformationCtrl.getCardByName(cardName));
+        cardInformationCtrl.setState(CardInformationCtrl.State.EDIT);
+        cardInformationCtrl.refresh();
     }
 }
