@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="client.scenes.WelcomePageCtrl"
-            prefHeight="400.0" prefWidth="600.0">
+      prefHeight="512.0" prefWidth="800.0"
+      id="main_ip_box"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="client.scenes.WelcomePageCtrl"
+      stylesheets="@/client/stylesheets/Global.css" >
 
     <Text  text="Enter IP address here:" />
 
-    <HBox>
+    <HBox alignment="CENTER" spacing="15">
 
         <TextField fx:id="userIP"/>
 
