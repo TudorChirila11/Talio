@@ -12,6 +12,7 @@ import java.io.IOException;
 
 public class CardCell extends ListCell<Card> {
 
+    private final MainCtrl mainCtrl;
     @FXML
     private Label titleLabel;
 
@@ -25,14 +26,14 @@ public class CardCell extends ListCell<Card> {
     private Button editButton;
 
 
-    @Inject
-    MainCtrl mainCtrl; ///TODO doesn't work, change to spring needed
 
 
     /**
      * Constructor for the Custom Task Cell of type Card
      */
-    public CardCell() {
+    public CardCell(MainCtrl mainCtrl) {
+        super();
+        this.mainCtrl = mainCtrl;
         loadFXML();
         removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
         editButton.setOnAction(event ->{

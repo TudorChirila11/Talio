@@ -140,7 +140,7 @@ public class BoardCtrl implements Initializable {
             // Create a list view for the current (list of cards)
             ListView<Card> collection = new ListView<>(list);
             collection.getStyleClass().add("collection");
-            collection.setCellFactory(new CardCellFactory());
+            collection.setCellFactory(new CardCellFactory(mainCtrl));
             collection.setPrefSize(225, 275);
 
 
