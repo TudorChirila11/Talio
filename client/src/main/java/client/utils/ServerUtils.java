@@ -33,7 +33,14 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    private static String server = "http://localhost:8080/";
+
+    /**
+     * @param ip the ip that the user will be connecting to
+     */
+    public static void changeIP(String ip) {
+        server = "http://" + ip + ":8080/";
+    }
 
     /**
      * Manual logger of all the active quates
@@ -55,7 +62,7 @@ public class ServerUtils {
      */
     public List<Quote> getQuotes() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/quotes") //
+                .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Quote>>() {});
@@ -68,7 +75,7 @@ public class ServerUtils {
      */
     public Quote addQuote(Quote quote) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/quotes") //
+                .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
@@ -82,7 +89,7 @@ public class ServerUtils {
      */
     public Card addCard(Card card) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards") //
+                .target(server).path("api/cards") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(card, APPLICATION_JSON), Card.class);
