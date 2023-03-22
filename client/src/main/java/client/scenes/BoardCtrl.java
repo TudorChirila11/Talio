@@ -72,7 +72,6 @@ public class BoardCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         server.getBoard();
 
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -105,7 +104,6 @@ public class BoardCtrl implements Initializable {
      */
     public void refresh() {
         List<Collection> taskCollections = server.getCollections();
-
         // Create a horizontal box to hold the task lists
         HBox taskListsBox = new HBox(25);
         taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
@@ -123,9 +121,8 @@ public class BoardCtrl implements Initializable {
             // Create a list view for the current (list of cards)
             ListView<Card> collection = new ListView<>(list);
             collection.getStyleClass().add("collection");
-            collection.setCellFactory(new CardCellFactory());
+            collection.setCellFactory(new CardCellFactory(server));
             collection.setPrefSize(225, 275);
-
 
             // Set up drag and drop for the individual collections...
             setupDragAndDrop(collection);
@@ -145,7 +142,7 @@ public class BoardCtrl implements Initializable {
             taskListsBox.getChildren().add(collectionVBox);
 
             // Adding the relevant collectionLabel controls
-            addTaskListControls(collectionLabel, collectionName, taskListsBox);
+            addTaskListControls(collectionLabel, collectionName, current.getId());
         }
 
         // Finally updating all the values in the pane with the current HBox
@@ -158,7 +155,7 @@ public class BoardCtrl implements Initializable {
      */
     private void setupDragAndDrop(ListView<Card> listView) {
         listView.setCellFactory(param -> {
-            CardCell cell = new CardCell();
+            CardCell cell = new CardCell(server);
             cell.setOnDragDetected(event -> {
                 if (cell.getItem() == null) {return;}
                 Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
@@ -244,17 +241,15 @@ public class BoardCtrl implements Initializable {
      * Controller for Label interactions.
      * @param label the label of the collection
      * @param listName collection / list of cards name
-     * @param taskListsBox the parent HBOxs
+     * @param id the collection id
      */
-    private void addTaskListControls(Label label, String listName, HBox taskListsBox) {
+    private void addTaskListControls(Label label, String listName, long id) {
         // Creates a button that has a delete function respective to the source collection
-        // Maybe combine this with above method...
         Button delete = new Button("X");
         delete.setStyle("-fx-font-size: 10px; -fx-background-color: #FF0000; -fx-text-fill: white;");
         delete.setOnAction(event -> {
-//            collectionController.delete();
-            // Parent ref passed
-            taskListsBox.getChildren().remove(label.getParent());
+            server.deleteCollection(id);
+            refresh();
         });
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);
@@ -271,7 +266,7 @@ public class BoardCtrl implements Initializable {
                 if (result.isPresent()) {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
-//                        taskCollections.put(newName, taskCollections.remove(listName));
+                        // TODO update based on Teun's new API
                         label.setText(newName);
                     }
                 }

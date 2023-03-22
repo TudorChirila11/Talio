@@ -26,6 +26,7 @@ import java.util.List;
 import commons.Board;
 import commons.Card;
 import commons.Collection;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -94,6 +95,42 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(card, APPLICATION_JSON), Card.class);
     }
+
+    /**
+     * deletes a card
+     *
+     * @param id the id of a card
+     * @return a response
+     */
+    public Response deleteCard(long id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/cards/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+    }
+
+    /**
+     * deletes a collection and all associated cards
+     *
+     * @param id the id of a collection
+     * @return a response
+     */
+    public Response deleteCollection(long id) {
+        ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/collections/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/cards/" + id + "/ofCollection") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+
+    }
+
 
     /**
      * Adds a card to collection
