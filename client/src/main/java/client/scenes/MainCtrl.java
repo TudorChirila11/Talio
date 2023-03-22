@@ -41,6 +41,10 @@ public class MainCtrl {
 
     private Scene collection;
 
+    private WelcomePageCtrl welcomePageCtrl;
+
+    private Scene welcomePage;
+
     /**
      * Initializes the mainCtrl method with all the active controllers
      * @param primaryStage primary stage (active)
@@ -49,10 +53,11 @@ public class MainCtrl {
      * @param board board scene
      * @param cardInfo cardInfo scene
      * @param collection collection scene
+     * @param welcomePage welcomePage scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
-                           Pair<CollectionOverviewCtrl, Parent> collection) {
+                           Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -69,7 +74,10 @@ public class MainCtrl {
         this.collectionOverviewCtrl = collection.getKey();
         this.collection = new Scene(collection.getValue());
 
-        showBoard();
+        this.welcomePageCtrl = welcomePage.getKey();
+        this.welcomePage = new Scene(welcomePage.getValue());
+
+        showWelcomePage();
         primaryStage.show();
     }
 
@@ -121,5 +129,14 @@ public class MainCtrl {
     public void showCollection(){
         primaryStage.setTitle("Collection Overview: Collection");
         primaryStage.setScene(collection);
+    }
+
+    /**
+     * Displays the collection Scene
+     * and enables the controller
+     */
+    public void showWelcomePage(){
+        primaryStage.setTitle("Welcome page Overview: Welcome page");
+        primaryStage.setScene(welcomePage);
     }
 }
