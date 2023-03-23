@@ -1,14 +1,18 @@
 package client.fxml;
 
 import client.Main;
+import client.utils.ServerUtils;
 import commons.Card;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 
 import java.io.IOException;
 
-public class CardCell extends ListCell<Card> {
+public class CardCell extends ListCell<Card>  {
+    private final ServerUtils server;
 
     @FXML
     private Label titleLabel;
@@ -19,13 +23,23 @@ public class CardCell extends ListCell<Card> {
     @FXML
     private Button removeButton;
 
+    private Long id;
+
     /**
      * Constructor for the Custom Task Cell of type Card
+     * @param server reference for server
      */
-    public CardCell() {
+    public CardCell(ServerUtils server) {
+        this.server = server;
         loadFXML();
+        removeButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                server.deleteCard(id);
+                getListView().getItems().remove(getItem());
+            }
+        });
 
-        removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
 
     }
 
@@ -61,9 +75,12 @@ public class CardCell extends ListCell<Card> {
         }
         else {
             titleLabel.setText(card.getTitle());
+            id = card.getId();
             descriptionLabel.setWrapText(true);
             descriptionLabel.setText(card.getDescription());
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         }
     }
+
+
 }
