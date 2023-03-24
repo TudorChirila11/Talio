@@ -104,17 +104,17 @@ public class ServerUtils {
     }
 
     /**
-     * gets a List of all the cards with this name
-     * @param name - card name
-     * @return - a card List
+     * gets a Card with this ID
+     * @param id - card name
+     * @return - a card object
      */
-    public List<Card> getCardByName(String name)
+    public Card getCardById(Long id)
     {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("api/cards/byTitle/"+name)
+                .target(server).path("api/cards/"+id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>(){});
+                .get(Card.class);
 
     }
     /**
@@ -269,5 +269,13 @@ public class ServerUtils {
         }
 
         return boards.get(0);
+    }
+
+    public Collection getCollectionById(Long collectionId) {
+        List<Collection> collections = getCollections();
+        for(Collection c : collections)
+            if(c.getId() == collectionId)
+                return c;
+        return null;
     }
 }

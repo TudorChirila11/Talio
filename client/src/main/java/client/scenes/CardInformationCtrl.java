@@ -16,12 +16,17 @@ import javafx.stage.Modality;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CardInformationCtrl implements Initializable {
 
 
-
+    public Card getCardById(Long cardId) {
+        System.out.println(cardId);
+        Card card = server.getCardById(cardId);
+        return card; ///null check?
+    }
 
     enum State{
         EDIT, CREATE
@@ -89,7 +94,7 @@ public class CardInformationCtrl implements Initializable {
         subtasks.add(buildAddSubtask());
         setupCollectionMenu();
         card = new Card();
-
+        collectionCurrent = null;
         refresh();
         ///dummy part
     }
@@ -101,6 +106,7 @@ public class CardInformationCtrl implements Initializable {
     public void setCard(Card card)
     {
         this.card = card;
+        this.collectionCurrent = server.getCollectionById(card.getCollectionId());
     }
     /**
      * sets up the MenuButton for choosing a Collection for the current Card
@@ -182,10 +188,14 @@ public class CardInformationCtrl implements Initializable {
     public void refresh()
     {
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
+        System.out.println(state + " " + card.getTitle());
         if(state == State.EDIT)
             title.setText("Edit card");
         else
             title.setText("Add card");
+        if(collectionCurrent == null)
+            collectionMenu.setText("Select...");
+        else collectionMenu.setText(collectionCurrent.getName());
         cardName.setText(card.getTitle());
         cardDescription.setText(card.getDescription());
         VBox vbox = new VBox();
@@ -202,11 +212,17 @@ public class CardInformationCtrl implements Initializable {
     public void addCard(){
         if(cardName.getText().equals(""))
         {
-            cardName.setPromptText("I can't be empty!");
+            showError("Card name cannot be empty!");
+            return;
+        }
+        if(collectionCurrent == null)
+        {
+            showError("You need to select a collection for this card!");
             return;
         }
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
+        card.setCollectionId(collectionCurrent.getId());
 
         try {
             server.addCard(card);
@@ -252,12 +268,19 @@ public class CardInformationCtrl implements Initializable {
     /**
      * gets a card from the database and assigns it to this scene's specific card
      * @return the specific found card
-     */
+
     public Card getCardByName(String name) {
         ArrayList<Card> response = (ArrayList<Card>) server.getCardByName(name);
         if(response.size() != 1)
             throw new Error("Something very strange happened. I found " + response.size() +" cards with the name "+ name);
         this.card = response.get(0);
         return response.get(0);
+    }*/
+
+    private void showError(String text)
+    {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setContentText(text);
+        a.show();
     }
 }

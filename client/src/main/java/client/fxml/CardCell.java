@@ -52,7 +52,7 @@ public class CardCell extends ListCell<Card>  {
         });
         editButton.setOnAction(event -> {
             System.out.println("Button pressed");
-            mainCtrl.editCard(titleLabel.getText()); ////TODO maybe CardId instead of label name in the future
+            mainCtrl.editCard(id); ////TODO maybe CardId instead of label name in the future
         });
     }
 

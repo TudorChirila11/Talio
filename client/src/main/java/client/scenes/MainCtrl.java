@@ -134,11 +134,10 @@ public class MainCtrl {
         primaryStage.setTitle("Collection Overview: Collection");
         primaryStage.setScene(collection);
     }
-    public void editCard(String cardName) {
+    public void editCard(Long cardId) {
         primaryStage.setTitle("Edit card");
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.setCard(new Card()); ///should be removed once db works
-        //cardInformationCtrl.setCard(cardInformationCtrl.getCardByName(cardName));
+        cardInformationCtrl.setCard(cardInformationCtrl.getCardById(cardId));
         cardInformationCtrl.setState(CardInformationCtrl.State.EDIT);
         cardInformationCtrl.refresh();
     }
