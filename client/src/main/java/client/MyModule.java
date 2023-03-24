@@ -31,9 +31,9 @@ public class MyModule implements Module {
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(AddQuoteCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(CardInformationCtrl.class).in(Scopes.SINGLETON);
         binder.bind(CollectionOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(BoardCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(CardInformationCtrl.class).in(Scopes.SINGLETON);
-       // binder.bind(CollectionOverviewCtrl.class).in(Scopes.SINGLETON); //TODO modify if needed
     }
 }

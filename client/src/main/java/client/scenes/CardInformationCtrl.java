@@ -58,6 +58,7 @@ public class CardInformationCtrl implements Initializable {
     {
         this.state = value;
     }
+    private Collection collectionCurrent;
 
     /**
      * Card Information Ctrl Constructor
@@ -88,6 +89,7 @@ public class CardInformationCtrl implements Initializable {
         subtasks.add(buildAddSubtask());
         setupCollectionMenu();
         card = new Card();
+
         refresh();
         ///dummy part
     }
@@ -106,35 +108,20 @@ public class CardInformationCtrl implements Initializable {
 
     private void setupCollectionMenu()
     {
-        Collection todo = new Collection("To-Do");
-        Collection doing = new Collection("Doing");
-        Collection done = new Collection("Done");
-        ///
-        MenuItem mi1 = new MenuItem(todo.getName());
-        MenuItem mi2 = new MenuItem(doing.getName());
-        MenuItem mi3 = new MenuItem(done.getName());
 
-        mi1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                collectionMenu.setText(mi1.getText());
-            }
-        });
-
-        mi2.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                collectionMenu.setText(mi2.getText());
-            }
-        });
-
-        mi3.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                collectionMenu.setText(mi3.getText());
-            }
-        });
-        collectionMenu.getItems().addAll(mi1, mi2, mi3);
+    //    System.out.println(server.getCollections());
+        collectionMenu.getItems().clear();
+        for(Collection c: server.getCollections()){
+            MenuItem i = new MenuItem(c.getName());
+            i.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    collectionMenu.setText(i.getText());
+                    collectionCurrent = c;
+                }
+            });
+            collectionMenu.getItems().add(i);
+        }
     }
 
     /**
@@ -205,7 +192,7 @@ public class CardInformationCtrl implements Initializable {
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtasks);
         scrollPane.setContent(vbox);
-
+        setupCollectionMenu();
     }
 
     /**
@@ -235,6 +222,22 @@ public class CardInformationCtrl implements Initializable {
         mainCtrl.showBoard();
     }
 
+    /**
+     * Retrieves the values stored in the text field,areas...
+     * @return A card object.
+     */
+    public Card getCard() {
+        // null collection for now
+        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent);
+    }
+
+    /**
+     * To delete a card
+     * @param id of card
+     */
+    public void deleteCard(long id){
+        server.deleteCard(id);
+    }
 
     /**
      * Clears text fields and data

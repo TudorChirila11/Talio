@@ -89,7 +89,7 @@ public class CollectionOverviewCtrl implements Initializable {
         // Create a list view for the current (list of cards)
         ListView<Card> collection = new ListView<>(doneCards);
         collection.getStyleClass().add("collection");
-        collection.setCellFactory(new CardCellFactory(mainCtrl));
+        collection.setCellFactory(new CardCellFactory(mainCtrl, server));
 
         container.getChildren().add(collection);
 

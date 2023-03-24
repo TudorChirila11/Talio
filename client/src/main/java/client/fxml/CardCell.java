@@ -2,15 +2,20 @@ package client.fxml;
 
 import client.Main;
 import client.scenes.MainCtrl;
-import com.google.inject.Inject;
+
+import client.utils.ServerUtils;
 import commons.Card;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 
 import java.io.IOException;
 
-public class CardCell extends ListCell<Card> {
+public class CardCell extends ListCell<Card>  {
+
+    private final ServerUtils server;
 
     private final MainCtrl mainCtrl;
     @FXML
@@ -26,17 +31,26 @@ public class CardCell extends ListCell<Card> {
     private Button editButton;
 
 
+    private Long id;
 
 
     /**
      * Constructor for the Custom Task Cell of type Card
+     * @param server reference for server
      */
-    public CardCell(MainCtrl mainCtrl) {
+    public CardCell(MainCtrl mainCtrl, ServerUtils server) {
         super();
         this.mainCtrl = mainCtrl;
+        this.server = server;
         loadFXML();
-        removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
-        editButton.setOnAction(event ->{
+        removeButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                server.deleteCard(id);
+                getListView().getItems().remove(getItem());
+            }
+        });
+        editButton.setOnAction(event -> {
             System.out.println("Button pressed");
             mainCtrl.editCard(titleLabel.getText()); ////TODO maybe CardId instead of label name in the future
         });
@@ -74,9 +88,12 @@ public class CardCell extends ListCell<Card> {
         }
         else {
             titleLabel.setText(card.getTitle());
+            id = card.getId();
             descriptionLabel.setWrapText(true);
             descriptionLabel.setText(card.getDescription());
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         }
     }
+
+
 }

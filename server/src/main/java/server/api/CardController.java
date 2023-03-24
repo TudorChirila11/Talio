@@ -81,7 +81,7 @@ public class CardController {
         List<Card> res = new ArrayList<>();
 
         for (Card c : allCards) {
-            if (c.getCollectionId() == id) {
+            if (c.getCollectionId() != null && c.getCollectionId() == id) {
                 res.add(c);
             }
         }

@@ -16,7 +16,7 @@
                   <Label fx:id="descriptionLabel" style="-fx-font-size: 6pt; -fx-padding: 2 0 2 5" />
                 <HBox alignment="TOP_RIGHT">
                <children>
-                        <Button fx:id="removeButton" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
+                        <Button fx:id="removeButton" id="removeButton" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
                             <graphic>
                                 <ImageView fitHeight="30.0" fitWidth="20.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                                     <image>
