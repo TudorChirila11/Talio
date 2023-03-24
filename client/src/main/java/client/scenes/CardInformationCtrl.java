@@ -87,6 +87,7 @@ public class CardInformationCtrl implements Initializable {
         subtasks = new ArrayList<>();
         subtasks.add(buildAddSubtask());
         setupCollectionMenu();
+        card = new Card();
         refresh();
         ///dummy part
     }

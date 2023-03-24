@@ -129,7 +129,8 @@ public class MainCtrl {
     public void editCard(String cardName) {
         primaryStage.setTitle("Edit card");
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.setCard(cardInformationCtrl.getCardByName(cardName));
+        cardInformationCtrl.setCard(new Card()); ///should be removed once db works
+        //cardInformationCtrl.setCard(cardInformationCtrl.getCardByName(cardName));
         cardInformationCtrl.setState(CardInformationCtrl.State.EDIT);
         cardInformationCtrl.refresh();
     }
