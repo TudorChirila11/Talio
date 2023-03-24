@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.scenes.BoardOverviewCtrl"
+            prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" id="boardOverviewPane">
+    <children>
+        <Label id="headingBoard" layoutX="400.0"> Hello </Label>
+        <ScrollPane id="boardContainer" fx:id="boardContainer" fitToHeight="true" layoutX="48.0" layoutY="100.0" prefHeight="375.0" prefViewportHeight="500.0" prefViewportWidth="300.0" prefWidth="650.0">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="650.0">
+                    <children>
+                    </children></AnchorPane>
+            </content>
+        </ScrollPane>
+
+        <Button fx:id="addButton" layoutX="740.0" layoutY="460.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
+            <graphic>
+                <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/client/assets/add.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+    </children>
+
+</AnchorPane>

@@ -37,6 +37,10 @@ public class MainCtrl {
 
     private Scene board;
 
+    private BoardOverviewCtrl boardOverviewCtrl;
+
+    private Scene boardOverview;
+
     private CollectionOverviewCtrl collectionOverviewCtrl;
 
     private Scene collection;
@@ -54,10 +58,12 @@ public class MainCtrl {
      * @param cardInfo cardInfo scene
      * @param collection collection scene
      * @param welcomePage welcomePage scene
+     * @param boardOverview boardOverview scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
-                           Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage) {
+                           Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
+                           Pair<BoardOverviewCtrl, Parent> boardOverview) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -77,6 +83,9 @@ public class MainCtrl {
         this.welcomePageCtrl = welcomePage.getKey();
         this.welcomePage = new Scene(welcomePage.getValue());
 
+        this.boardOverviewCtrl = boardOverview.getKey();
+        this.boardOverview = new Scene(boardOverview.getValue());
+
         showWelcomePage();
         primaryStage.show();
     }
@@ -89,6 +98,16 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Overview");
         primaryStage.setScene(overview);
         overviewCtrl.refresh();
+    }
+
+    /**
+     * Displays the overview Scene
+     * and enables the controller
+     */
+    public void showBoardOverview() {
+        primaryStage.setTitle("Boards: Overview");
+        primaryStage.setScene(boardOverview);
+        boardOverviewCtrl.refresh();
     }
 
     /**

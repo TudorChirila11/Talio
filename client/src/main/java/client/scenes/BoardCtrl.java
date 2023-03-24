@@ -10,6 +10,8 @@ import commons.Collection;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -25,22 +27,20 @@ import java.net.URL;
 import java.util.*;
 
 public class BoardCtrl implements Initializable {
-    private final ServerUtils server;
 
+
+    private final ServerUtils server;
+    private Board currentBoard;
     @FXML
     private Button addCollectionButton;
-
     @FXML
     private ScrollPane collectionsContainer;
 
     @FXML
-    private ComboBox<String> boardChoiceBox;
-
-
+    private MenuButton boardMenu;
 
     private final MainCtrl mainCtrl;
 
-    //TODO fix checkstyle code refactoing, make a bit more readable...
 
     /**
      * Board Ctrl constructor
@@ -78,14 +78,6 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
         refresh();
-
-        // Dummy values for the combo box.
-        ObservableList<String> boards = FXCollections.observableArrayList();
-        boards.add("Board 1");
-        boards.add("Board 2");
-        boards.add("Board 3");
-        boards.add("Board 4");
-        boardChoiceBox.setItems(boards);
     }
 
     /**
@@ -98,39 +90,52 @@ public class BoardCtrl implements Initializable {
         refresh();
     }
 
+    /**
+     * Goes back to boardOverview
+     */
+    public void boardOverview(){
+        mainCtrl.showBoardOverview();
+    }
 
     /**
      * Sets the state of board
      */
     public void refresh() {
-        List<Collection> taskCollections = server.getCollections();
-        // Create a horizontal box to hold the task lists
+        boardMenu.getItems().clear();
+        for(Board b: server.getBoards()){
+            MenuItem i = new MenuItem(b.getName());
+            i.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    boardMenu.setText(i.getText());
+                    currentBoard = b;
+                    refresh();
+                }
+            });
+            boardMenu.getItems().add(i);
+        }
+        if(currentBoard == null) currentBoard = server.getBoard();
+        List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
+
         HBox taskListsBox = new HBox(25);
         taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
-
         // Add each task list to the box
         for (Collection current: taskCollections) {
-
-            String collectionName = current.getName();
             ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
             // Create a label for the collection name
-            Label collectionLabel = new Label(collectionName);
+            Label collectionLabel = new Label(current.getName());
             collectionLabel.getStyleClass().add("collectionLabel");
-
 
             // Create a list view for the current (list of cards)
             ListView<Card> collection = new ListView<>(list);
             collection.getStyleClass().add("collection");
             collection.setCellFactory(new CardCellFactory(server));
             collection.setPrefSize(225, 275);
-
-            // Set up drag and drop for the individual collections...
             setupDragAndDrop(collection);
 
             // Create the button that allows a user to add to a collection
             Button addButton = new Button();
             addButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/client/assets/add.png"))));
-            // Custom css
             addButton.getStyleClass().add("addButton");
             addButton.setOnAction(event -> addCard());
 
@@ -140,11 +145,8 @@ public class BoardCtrl implements Initializable {
 
             // Adding this to Hbox which contains each collection object + controls.
             taskListsBox.getChildren().add(collectionVBox);
-
-            // Adding the relevant collectionLabel controls
-            addTaskListControls(collectionLabel, collectionName, current.getId());
+            addTaskListControls(collectionLabel, current.getName(), current.getId());
         }
-
         // Finally updating all the values in the pane with the current HBox
         collectionsContainer.setContent(taskListsBox);
     }
@@ -218,11 +220,11 @@ public class BoardCtrl implements Initializable {
         if (result.isPresent()) {
             String newName = result.get();
             if (!newName.isEmpty()) {
-                Collection randomC = new Collection(newName, server.getBoard());
-                server.getBoard().addCollection(randomC);
+                Collection randomC = new Collection(newName, currentBoard);
+                currentBoard.addCollection(randomC);
                 try {
                     server.addCollection(randomC);
-                    server.addBoard(server.getBoard());
+                    server.addBoard(currentBoard);
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
                     e.getCause();

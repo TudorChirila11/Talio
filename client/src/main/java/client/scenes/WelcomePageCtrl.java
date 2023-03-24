@@ -58,11 +58,11 @@ public class WelcomePageCtrl implements Initializable {
         System.out.println("\"" + ip + "\"");
         if (Objects.equals(ip, "")) {
             ServerUtils.changeIP("localhost");
-            mainCtrl.showBoard();
+            mainCtrl.showBoardOverview();
         } else {
             if (pingHost(ip, 8080, 1000)) {
                 ServerUtils.changeIP(ip);
-                mainCtrl.showBoard();
+                mainCtrl.showBoardOverview();
             } else {
                 errorConnection.setText("The entered IP address is invalid");
             }

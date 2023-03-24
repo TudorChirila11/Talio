@@ -60,7 +60,8 @@ public class Main extends Application {
         var board = FXML.load(BoardCtrl.class, "client", "scenes", "Board.fxml");
         var collection = FXML.load(CollectionOverviewCtrl.class, "client", "scenes", "Collection.fxml");
         var welcomePage = FXML.load(WelcomePageCtrl.class, "client", "scenes", "WelcomePage.fxml");
+        var boardOverview = FXML.load(BoardOverviewCtrl.class, "client", "scenes", "BoardOverview.fxml");
 
-        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection, welcomePage);
+        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection, welcomePage, boardOverview);
     }
 }

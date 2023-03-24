@@ -74,8 +74,8 @@ public class CardInformationCtrl implements Initializable {
     private void setupCollectionMenu()
     {
 
-    //    System.out.println(server.getCollections());
         collectionMenu.getItems().clear();
+        //TODO make this a request based on board
         for(Collection c: server.getCollections()){
             MenuItem i = new MenuItem(c.getName());
             i.setOnAction(new EventHandler<ActionEvent>() {

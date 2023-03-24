@@ -198,6 +198,20 @@ public class ServerUtils {
     }
 
     /**
+     * Gets all the collections from a board.
+     * @param board
+     * @return a list of collections.
+     */
+    public List<Collection> getCollectionsFromBoard(Board board){
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/collections/" + board.getId() + "/ofBoard") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Collection>>() {
+                });
+    }
+
+    /**
      * Retrieves all Collections
      */
     public void resetState() {
@@ -255,5 +269,20 @@ public class ServerUtils {
         }
 
         return boards.get(0);
+    }
+
+    /**
+     * Retrieves the only board
+     *
+     * @return a board
+     */
+    public List<Board> getBoards() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server)
+                .path("api/boards")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Board>>() {
+                });
     }
 }

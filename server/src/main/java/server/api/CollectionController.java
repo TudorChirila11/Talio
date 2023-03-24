@@ -1,6 +1,7 @@
 
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,6 +96,27 @@ public class CollectionController {
         }
         repoCollection.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * get the collections by the id of board
+     * @param id the id of the board
+     * @return the collections
+     */
+    @GetMapping("/{id}/ofBoard")
+    public ResponseEntity<List<Collection>> getCardsByIdOfCollection(@PathVariable long id) {
+        List<Collection> allCards = repoCollection.findAll();
+        List<Collection> res = new ArrayList<>();
+
+        for (Collection c : allCards) {
+            if (c.getId() != null && c.getBoardId() == id) {
+                res.add(c);
+            }
+        }
+
+        return ResponseEntity.ok(res);
+
+
     }
 
     /**
