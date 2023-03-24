@@ -16,17 +16,12 @@ import javafx.stage.Modality;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CardInformationCtrl implements Initializable {
 
 
-    public Card getCardById(Long cardId) {
-        System.out.println(cardId);
-        Card card = server.getCardById(cardId);
-        return card; ///null check?
-    }
+
 
     enum State{
         EDIT, CREATE
@@ -187,8 +182,7 @@ public class CardInformationCtrl implements Initializable {
      */
     public void refresh()
     {
-        ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
-        System.out.println(state + " " + card.getTitle());
+       // System.out.println(state + " " + card.getTitle());
         if(state == State.EDIT)
             title.setText("Edit card");
         else
@@ -265,22 +259,22 @@ public class CardInformationCtrl implements Initializable {
         subtasks.add(buildAddSubtask());
     }
 
-    /**
-     * gets a card from the database and assigns it to this scene's specific card
-     * @return the specific found card
-
-    public Card getCardByName(String name) {
-        ArrayList<Card> response = (ArrayList<Card>) server.getCardByName(name);
-        if(response.size() != 1)
-            throw new Error("Something very strange happened. I found " + response.size() +" cards with the name "+ name);
-        this.card = response.get(0);
-        return response.get(0);
-    }*/
 
     private void showError(String text)
     {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setContentText(text);
         a.show();
+    }
+
+    /**
+     * returns a card with specified id
+     * @param cardId - the id of the card we want to search
+     * @return - a card object
+     */
+    public Card getCardById(Long cardId) {
+        //System.out.println(cardId);
+        Card card = server.getCardById(cardId);
+        return card; ///null check?
     }
 }
