@@ -1,6 +1,7 @@
 
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +71,48 @@ public class CollectionController {
         List<Card> cards = collectionOpt.get().getCards();
         return ResponseEntity.ok(cards);
     }
+
+    /**
+     * the put API for the collection object
+     * @param id the id of the collection to update
+     * @param newCollection the data the object should have
+     * @return the responseEntity
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Collection> updateCollection(@PathVariable("id") long id, @RequestBody Collection newCollection) {
+
+        // test if we have the collection in the database
+        if (!repoCollection.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // find the collection in the database
+        Collection collectionInDatabase = repoCollection.findById(id).get();
+
+        // set the property's
+        collectionInDatabase.setName(newCollection.getName());
+        collectionInDatabase.setBoardId(newCollection.getBoardId());
+
+        // remove the cards
+        collectionInDatabase.getCards().clear();
+
+        // loop over the new cards
+        for (Card newCard : newCollection.getCards()) {
+            // set the right collection id
+            if (newCard.getCollectionId() == null || !newCard.getCollectionId().equals(id)) {
+                newCard.setCollectionId(id);
+            }
+
+            Card tempCard = repoCard.save(newCard);
+            collectionInDatabase.addCard(tempCard);
+        }
+
+        // store the collection
+        Collection theSavedCollection = repoCollection.save(collectionInDatabase);
+
+        return ResponseEntity.ok(theSavedCollection);
+    }
+
 
     /**
      * Initalization of a collection
