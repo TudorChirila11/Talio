@@ -54,6 +54,20 @@ public class Card {
     }
 
     /**
+     * the constructor of the card class
+     * @param id the id of the card
+     * @param title the name users can see
+     * @param description the description for the card
+     * @param collectionId the id of collection
+     */
+    public Card(Long id, String title, String description, Long collectionId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.collectionId = collectionId;
+    }
+
+    /**
      * Dummy constructor.
      */
     public Card() {
