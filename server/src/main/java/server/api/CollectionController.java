@@ -95,21 +95,36 @@ public class CollectionController {
         // remove the cards
         collectionInDatabase.getCards().clear();
 
-        // loop over the new cards
-        for (Card newCard : newCollection.getCards()) {
-            // set the right collection id
-            if (newCard.getCollectionId() == null || !newCard.getCollectionId().equals(id)) {
-                newCard.setCollectionId(id);
-            }
-
-            Card tempCard = repoCard.save(newCard);
-            collectionInDatabase.addCard(tempCard);
-        }
+        storeTheCards(id, newCollection, collectionInDatabase);
 
         // store the collection
         Collection theSavedCollection = repoCollection.save(collectionInDatabase);
 
         return ResponseEntity.ok(theSavedCollection);
+    }
+
+    /**
+     * this methode checks and stores the cards in the cardrepo
+     * @param collectionId the id of the collection the cards belong to
+     * @param newCollection the new collection
+     * @param collectionInDatabase the old collection
+     */
+    private void storeTheCards(long collectionId, Collection newCollection, Collection collectionInDatabase) {
+        // loop over the new cards
+        for (Card newCard : newCollection.getCards()) {
+            // set the right collection collectionId
+            if (newCard.getCollectionId() == null || !newCard.getCollectionId().equals(collectionId)) {
+                newCard.setCollectionId(collectionId);
+            }
+
+            // do we need to store the card in the card repo first
+            Card tempCard = newCard;
+            if (newCard.getId() == null || !repoCard.existsById(newCard.getId())) {
+                tempCard = repoCard.save(newCard);
+            }
+
+            collectionInDatabase.addCard(tempCard);
+        }
     }
 
 
