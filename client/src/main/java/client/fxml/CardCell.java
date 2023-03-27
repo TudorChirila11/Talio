@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
@@ -22,6 +23,9 @@ public class CardCell extends ListCell<Card>  {
 
     @FXML
     private Button removeButton;
+
+    @FXML
+    private VBox VBox;
 
     private Long id;
 
@@ -42,12 +46,14 @@ public class CardCell extends ListCell<Card>  {
 
 
         removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
-        this.setOnMouseEntered(event -> {
-            this.setStyle("-fx-border-color: yellow;");
+        this.VBox.setOnMouseEntered(event -> {
+            this.VBox.setStyle("-fx-border-color: yellow;-fx-border-radius: 10; -fx-background-radius: 10; " +
+                    "-fx-pref-height: 50; -fx-background-color: #93BFCF");
         });
 
-        this.setOnMouseExited(event -> {
-            this.setStyle("-fx-border-opacity: 0;");
+        this.VBox.setOnMouseExited(event -> {
+            this.VBox.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; " +
+                    "-fx-pref-height: 50; -fx-background-color: #93BFCF ");
         });
     }
 
