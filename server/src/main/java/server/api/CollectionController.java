@@ -105,6 +105,50 @@ public class CollectionController {
 
     }
 
+
+
+//    /{collectionId}/{cardId}/{position}
+
+    /**
+     * the insert method set a card in a specific position
+     * @param collectionId the id of the collection to add to
+     * @param cardId the id of the card to be inserted
+     * @param index the index it should be in the end state
+     * @return the Response Entity
+     */
+    @PostMapping("/{collectionId}/{cardId}/{index}")
+    public ResponseEntity<Collection> insert
+    (@PathVariable Long collectionId, @PathVariable Long cardId, @PathVariable int index ) {
+        Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
+        Optional<Card> cardOpt = repoCard.findById(cardId);
+
+        // the collection or card is not found
+        if (collectionOpt.isEmpty() || cardOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Collection collection = collectionOpt.get();
+        List<Card> cards = collection.getCards();
+        Card theCard = cardOpt.get();
+
+        // removing the old position from the database
+        if (theCard.getCollectionId() != null) {
+            Collection oldCollection = repoCollection.findById(theCard.getCollectionId()).orElse(null);
+            if (oldCollection != null) {
+                oldCollection.getCards().remove(theCard);
+                theCard.setCollectionId(null);
+            }
+        }
+
+        // insert the card in the right spot
+        cards.add(index, theCard);
+        theCard.setCollectionId(collectionId);
+
+        // save the new info
+        Collection updatedCollection = repoCollection.save(collection);
+        return ResponseEntity.ok(updatedCollection);
+    }
+
     /**
      * Initalization of a collection
      * @param collection a new collection obj
