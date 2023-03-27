@@ -192,6 +192,14 @@ public class CardInformationCtrl implements Initializable {
     }
 
     /**
+     * To delete a card
+     * @param id of card
+     */
+    public void deleteCard(long id){
+        server.deleteCard(id);
+    }
+
+    /**
      * Clears text fields and data
      */
     public void clearFields(){

@@ -59,7 +59,8 @@ public class Main extends Application {
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         var board = FXML.load(BoardCtrl.class, "client", "scenes", "Board.fxml");
         var collection = FXML.load(CollectionOverviewCtrl.class, "client", "scenes", "Collection.fxml");
+        var welcomePage = FXML.load(WelcomePageCtrl.class, "client", "scenes", "WelcomePage.fxml");
 
-        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection);
+        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection, welcomePage);
     }
 }

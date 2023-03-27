@@ -26,6 +26,7 @@ import java.util.List;
 import commons.Board;
 import commons.Card;
 import commons.Collection;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -35,7 +36,14 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    private static String server = "http://localhost:8080/";
+
+    /**
+     * @param ip the ip that the user will be connecting to
+     */
+    public static void changeIP(String ip) {
+        server = "http://" + ip + ":8080/";
+    }
 
     /**
      * Manual logger of all the active quates
@@ -59,7 +67,7 @@ public class ServerUtils {
      */
     public List<Quote> getQuotes() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/quotes") //
+                .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Quote>>() {
@@ -74,7 +82,7 @@ public class ServerUtils {
      */
     public Quote addQuote(Quote quote) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/quotes") //
+                .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
@@ -89,11 +97,47 @@ public class ServerUtils {
      */
     public Card addCard(Card card) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards") //
+                .target(server).path("api/cards") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(card, APPLICATION_JSON), Card.class);
     }
+
+    /**
+     * deletes a card
+     *
+     * @param id the id of a card
+     * @return a response
+     */
+    public Response deleteCard(long id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/cards/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+    }
+
+    /**
+     * deletes a collection and all associated cards
+     *
+     * @param id the id of a collection
+     * @return a response
+     */
+    public Response deleteCollection(long id) {
+        ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/collections/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/cards/" + id + "/ofCollection") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+
+    }
+
 
     /**
      * Adds a card to collection
@@ -104,7 +148,7 @@ public class ServerUtils {
      */
     public Collection addCardCollection(Card card, Collection collection) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections/CardAddTo/" + card.getId() + "/" + card.getCollectionId()) //
+                .target(server).path("api/collections/CardAddTo/" + card.getId() + "/" + card.getCollectionId()) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
@@ -118,7 +162,7 @@ public class ServerUtils {
      */
     public List<Card> getCardsForCollection(Collection collection) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards/" + collection.getId() + "/ofCollection") //
+                .target(server).path("api/cards/" + collection.getId() + "/ofCollection") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Card>>() {
@@ -133,7 +177,7 @@ public class ServerUtils {
      */
     public Collection addCollection(Collection collection) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections") //
+                .target(server).path("api/collections") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
@@ -146,7 +190,7 @@ public class ServerUtils {
      */
     public List<Collection> getCollections() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections") //
+                .target(server).path("api/collections") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Collection>>() {
@@ -158,19 +202,19 @@ public class ServerUtils {
      */
     public void resetState() {
         ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/collections") //
+                .target(server).path("api/collections") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON)
                 .delete();
 
         ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/boards") //
+                .target(server).path("api/boards") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON)
                 .delete();
 
         ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/cards") //
+                .target(server).path("api/cards") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON)
                 .delete();
@@ -184,7 +228,7 @@ public class ServerUtils {
      */
     public Board addBoard(Board board) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/boards") //
+                .target(server).path("api/boards") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(board, APPLICATION_JSON), Board.class);
@@ -197,7 +241,7 @@ public class ServerUtils {
      */
     public Board getBoard() {
         List<Board> boards = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER)
+                .target(server)
                 .path("api/boards")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)

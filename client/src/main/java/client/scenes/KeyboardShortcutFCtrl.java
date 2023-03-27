@@ -21,6 +21,16 @@ public class KeyboardShortcutFCtrl implements Initializable {
     @FXML
     private Button backButton;
 
+    /**
+     *
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         addShortcut("Keyboard Shortcuts", 20);
@@ -41,12 +51,21 @@ public class KeyboardShortcutFCtrl implements Initializable {
         addShortcut("Del/ Backspace - Delete highlighted task", 14);
     }
 
+    /**
+     * Helper method for initialize()
+     * @param text - the text which describes the given shortcut
+     * @param fontSize - the font size used
+     */
     private void addShortcut(String text, int fontSize) {
         Text shortcutText = new Text(text);
         shortcutText.setFont(new javafx.scene.text.Font(fontSize));
         shortcutsVBox.getChildren().add(shortcutText);
     }
 
+    /**
+     * Helper method for initialize()
+     * Adds an empty line
+     */
     private void addEmptyLine() {
         addShortcut("", 1);
     }
