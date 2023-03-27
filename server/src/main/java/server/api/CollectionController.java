@@ -71,6 +71,40 @@ public class CollectionController {
         return ResponseEntity.ok(cards);
     }
 
+//    api/collection/{collectionId}/deleteCard/{position}'
+
+    /**
+     * this API deletes the card at a specific position in a collection.
+     * @param collectionId the id of the collection to change
+     * @param index the index of the card to remove
+     * @return Response Entity
+     */
+    @DeleteMapping("{collectionId}/deleteCard/{index}")
+    public ResponseEntity<Collection> deleteCardAtPosition
+    (@PathVariable long collectionId, @PathVariable int index) {
+
+        Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
+
+        // the collection is not found
+        if (collectionOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Collection collection = collectionOpt.get();
+        List<Card> cards = collection.getCards();
+
+        // making sure that the position is filled
+        assert cards.size() > 0;
+        assert (index >= 0 && index < cards.size());
+
+        cards.remove(index);
+
+        // store new list
+        Collection updatedCollection = repoCollection.save(collection);
+        return ResponseEntity.ok(updatedCollection);
+
+    }
+
     /**
      * Initalization of a collection
      * @param collection a new collection obj
