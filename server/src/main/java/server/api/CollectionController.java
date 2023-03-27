@@ -130,6 +130,12 @@ public class CollectionController {
         if (collection == null || card == null) {
             return ResponseEntity.notFound().build();
         }
+        // removing the card from the old collection
+        if(card.getCollectionId() !=null ) {
+            Collection oldCollection = repoCollection.getById(card.getCollectionId());
+            oldCollection.removeCard(card);
+            repoCollection.save(oldCollection);
+        }
 
         // adding the card to the collection
         collection.addCard(card);

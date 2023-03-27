@@ -38,6 +38,8 @@ public class BoardCtrl implements Initializable {
     @FXML
     private ComboBox<String> boardChoiceBox;
 
+    HashMap<ListView<Card>, Collection> mapper;
+
 
 
     private final MainCtrl mainCtrl;
@@ -109,7 +111,7 @@ public class BoardCtrl implements Initializable {
         // Create a horizontal box to hold the task lists
         HBox taskListsBox = new HBox(25);
         taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
-
+        mapper = new HashMap<ListView<Card>, Collection>();
         // Add each task list to the box
         for (Collection current: taskCollections) {
 
@@ -120,11 +122,15 @@ public class BoardCtrl implements Initializable {
             collectionLabel.getStyleClass().add("collectionLabel");
 
 
+
             // Create a list view for the current (list of cards)
             ListView<Card> collection = new ListView<>(list);
             collection.getStyleClass().add("collection");
             collection.setCellFactory(new CardCellFactory(server));
             collection.setPrefSize(225, 275);
+
+            //maps this listview to its associate Collection
+            mapper.put(collection, current);
 
             // Set up drag and drop for the individual collections...
             setupDragAndDrop(collection);
@@ -182,13 +188,26 @@ public class BoardCtrl implements Initializable {
                 while (sourceNode != null && !(sourceNode instanceof ListView)) {
                     sourceNode = sourceNode.getParent();
                 }
-
                 //TODO Fix the warning here...
-                if (sourceNode instanceof ListView) {
+                if (sourceNode != null) {
                     ListView<Card> sourceList = (ListView<Card>) sourceNode;
                     int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
                     Card sourceCard = sourceList.getItems().get(sourceIndex);
                     sourceList.getItems().remove(sourceCard);
+
+                    /*
+                    ///modifying the database as well
+                    server.deleteCard(card.getId());
+                    ///gets this card's new collection
+                    Collection newCollection = mapper.get(listView);
+                    ///TODO stores the new order of the cards inside this collection
+                    ///TODO create api for deleting card from a collection
+                    ///TODO delete doesn't work
+                    //ObservableList<Card> cardList = listView.getItems();
+                    card.setCollectionId(newCollection.getId());
+                    server.addCard(card);
+                    ///TODO maybe find a way to keep the Id intact; the current code assigns a new id to the same card
+                    */
                 }
             }
             event.setDropCompleted(success);
@@ -197,7 +216,6 @@ public class BoardCtrl implements Initializable {
         listView.setCellFactory(param -> {
             CardCell cell = new CardCell(server);
             cell.setOnDragDetected(event -> {
-                System.out.println(cell.getItem().getTitle());
                 if (cell.getItem() == null) {return;}
                 Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
@@ -207,7 +225,7 @@ public class BoardCtrl implements Initializable {
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-                dragboard.setContent(content);                      
+                dragboard.setContent(content);
                 event.consume();
             });
 
