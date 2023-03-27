@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Board;
-import commons.Collection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
