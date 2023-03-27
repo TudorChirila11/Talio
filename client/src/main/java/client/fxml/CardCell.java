@@ -25,7 +25,7 @@ public class CardCell extends ListCell<Card>  {
     private Button removeButton;
 
     @FXML
-    private VBox VBox;
+    private VBox vBox;
 
     private Long id;
 
@@ -46,13 +46,13 @@ public class CardCell extends ListCell<Card>  {
 
 
         removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
-        this.VBox.setOnMouseEntered(event -> {
-            this.VBox.setStyle("-fx-border-color: yellow;-fx-border-radius: 10; -fx-background-radius: 10; " +
+        this.vBox.setOnMouseEntered(event -> {
+            this.vBox.setStyle("-fx-border-color: yellow;-fx-border-radius: 10; -fx-background-radius: 10; " +
                     "-fx-pref-height: 50; -fx-background-color: #93BFCF");
         });
 
-        this.VBox.setOnMouseExited(event -> {
-            this.VBox.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; " +
+        this.vBox.setOnMouseExited(event -> {
+            this.vBox.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; " +
                     "-fx-pref-height: 50; -fx-background-color: #93BFCF ");
         });
     }

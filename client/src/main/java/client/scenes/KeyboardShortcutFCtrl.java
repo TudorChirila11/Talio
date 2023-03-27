@@ -21,6 +21,7 @@ public class KeyboardShortcutFCtrl implements Initializable {
     @FXML
     private Button backButton;
 
+
     /**
      *
      * @param location
@@ -49,6 +50,7 @@ public class KeyboardShortcutFCtrl implements Initializable {
         addShortcut("E - Edit the highlighted task's title", 14);
         addEmptyLine();
         addShortcut("Del/ Backspace - Delete highlighted task", 14);
+
     }
 
     /**
