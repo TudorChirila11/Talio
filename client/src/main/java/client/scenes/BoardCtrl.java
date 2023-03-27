@@ -4,7 +4,6 @@ import client.fxml.CardCell;
 import client.fxml.CardCellFactory;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Board;
 import commons.Card;
 import commons.Collection;
 import jakarta.ws.rs.WebApplicationException;
