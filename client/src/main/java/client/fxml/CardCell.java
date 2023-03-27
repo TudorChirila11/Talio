@@ -26,7 +26,13 @@ public class CardCell extends ListCell<Card> {
         loadFXML();
 
         removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
+        this.setOnMouseEntered(event -> {
+            this.setStyle("-fx-border-color: yellow;");
+        });
 
+        this.setOnMouseExited(event -> {
+            this.setStyle("-fx-border-opacity: 0;");
+        });
     }
 
     /**
@@ -43,6 +49,7 @@ public class CardCell extends ListCell<Card> {
             throw new RuntimeException(e);
         }
     }
+
 
     /**
      * Overriding the defined update Item for Custom Card Cell

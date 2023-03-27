@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root prefHeight="100.0" prefWidth="175.0" type="javafx.scene.control.ListCell" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root stylesheets="@/client/stylesheets/card/Card.css"  prefHeight="100.0" prefWidth="175.0" type="javafx.scene.control.ListCell" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
     <graphic>
         <VBox style="-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; -fx-pref-height: 50; -fx-background-color: #93BFCF ">
             <children>

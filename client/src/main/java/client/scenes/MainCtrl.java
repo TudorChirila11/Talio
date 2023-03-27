@@ -122,4 +122,24 @@ public class MainCtrl {
         primaryStage.setTitle("Collection Overview: Collection");
         primaryStage.setScene(collection);
     }
+
+    public Scene getBoard() {
+        return board;
+    }
+
+    public Scene getOverview() {
+        return overview;
+    }
+
+    public Scene getAdd() {
+        return add;
+    }
+
+    public Scene getCardInformation() {
+        return cardInformation;
+    }
+
+    public Scene getCollection() {
+        return collection;
+    }
 }

@@ -1,0 +1,4 @@
+
+.cardCell > *:hover{
+    -fx-border-color: yellow;
+}
