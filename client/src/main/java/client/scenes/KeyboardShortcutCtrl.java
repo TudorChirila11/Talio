@@ -36,19 +36,15 @@ public class KeyboardShortcutCtrl extends Thread {
             activeKeys.remove(event.getCode().toString());
         });
         if (removeActiveKey(KeyCode.SLASH.toString())) {
-            //TODO make transition to keyboard shortcuts menu
+            this.mainCtrl.showKeyboardShortcutPage();
         }
-        if (removeActiveKey(KeyCode.UP.toString())) {
-            //TODO make method for moving highlight up
+        if (removeActiveKey(KeyCode.UP.toString())) { //TODO make method for moving highlight up
         }
-        if (removeActiveKey(KeyCode.DOWN.toString())) {
-            //TODO make method for moving highlight down
+        if (removeActiveKey(KeyCode.DOWN.toString())) { //TODO make method for moving highlight down
         }
-        if (removeActiveKey(KeyCode.LEFT.toString())) {
-            //TODO make method for moving highlight left
+        if (removeActiveKey(KeyCode.LEFT.toString())) { //TODO make method for moving highlight left
         }
-        if (removeActiveKey(KeyCode.RIGHT.toString())) {
-            //TODO make method for moving highlight right
+        if (removeActiveKey(KeyCode.RIGHT.toString())) { //TODO make method for moving highlight right
         }
         if (removeActiveKey(KeyCode.UP.toString()) && removeActiveKey(KeyCode.SHIFT.toString())) {
             //TODO make method for moving highlighted task/card up
@@ -62,11 +58,13 @@ public class KeyboardShortcutCtrl extends Thread {
         if (removeActiveKey(KeyCode.DELETE.toString()) || removeActiveKey(KeyCode.BACK_SPACE.toString())) {
             //TODO make method to delete highlighted task
         }
-        if (removeActiveKey(KeyCode.ENTER.toString())) {
-            //TODO make a screen where I can see the card's details
+        if (removeActiveKey(KeyCode.ENTER.toString()) &&
+                mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getBoard())) {
+            this.mainCtrl.showCardInformation();
         }
-        if (removeActiveKey(KeyCode.ESCAPE.toString())) {
-            //TODO close the highlighted card's details
+        if (removeActiveKey(KeyCode.ESCAPE.toString()) &&
+                mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getCardInformation())) {
+            this.mainCtrl.showBoard();
         }
         if (removeActiveKey(KeyCode.T.toString())) {
             //TODO open popup for adding tags
