@@ -3,11 +3,13 @@ package client.fxml;
 import client.Main;
 import client.utils.ServerUtils;
 import commons.Card;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 
 import java.io.IOException;
 
@@ -35,7 +37,16 @@ public class CardCell extends ListCell<Card>  {
         removeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                server.deleteCard(id);
+                try {
+                    server.send("/app/cardsDelete", id);
+
+                } catch (WebApplicationException e) {
+
+                    var alert = new Alert(Alert.AlertType.ERROR);
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                }
                 getListView().getItems().remove(getItem());
             }
         });

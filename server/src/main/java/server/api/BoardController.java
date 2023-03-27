@@ -1,7 +1,10 @@
 package server.api;
 
 import commons.Board;
+import commons.Collection;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 
@@ -20,6 +23,30 @@ public class BoardController {
      */
     public BoardController(BoardRepository repo) {
         this.repo = repo;
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param b the collection that the server has received and will send to all the clients on the network
+     * @return a collection
+     */
+    @MessageMapping("/boards") // /app/collections
+    @SendTo("/topic/update")
+    public Board addCollection(Board b){
+        add(b);
+        return b;
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param o a null object that is used to signify that all the collections need to be deleted
+     * @return a collection
+     */
+    @MessageMapping("/allBoardsDelete") // /app/collectionsDelete
+    @SendTo("/topic/update")
+    public Object deleteAll(Object o){
+        deleteAll();
+        return o;
     }
 
     /**
