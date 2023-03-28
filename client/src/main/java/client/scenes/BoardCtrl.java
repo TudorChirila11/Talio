@@ -158,17 +158,11 @@ public class BoardCtrl implements Initializable {
     }
 
     /**
-     * Sets up the drag and Drop for all listviews stored
-     * @param listView list view from the scroll view.
+     * tells this listview what to do in case a card is dropped onto it
+     * @param listView - current ListView
      */
-    private void setupDragAndDrop(ListView<Card> listView) {
-        ObjectMapper om = new ObjectMapper();
-        listView.setOnDragOver(event -> {
-            if (event.getGestureSource() instanceof CardCell && event.getDragboard().hasString()) {
-                event.acceptTransferModes(TransferMode.MOVE);
-            }
-            event.consume();
-        });
+    private void setDropped(ListView<Card> listView, ObjectMapper om)
+    {
         listView.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
@@ -200,41 +194,34 @@ public class BoardCtrl implements Initializable {
                     int oldIndex = sourceIndex;
                     int currentIndex = getIndex(listView, event.getY());
                     server.changeCardIndex(oldCollection, oldIndex, newCollection, currentIndex);
-                    /*System.out.println(event.getX() + " " + event.getY());
-                    System.out.println("oldCollection " + oldCollection.getName() + " newCollection "+newCollection.getName());
-                    System.out.println("oldIndex " + oldIndex +" newIndex " + currentIndex);
-                    System.out.println("trying to delete");
-                    server.deleteCardFromIndex(oldCollection, oldIndex);
-                    server.getCard(card.getId());
-                    System.out.println(oldCollection.getCards());
-                    System.out.println("worked, trying to change collection id");
-                    card.setCollectionId(newCollection.getId());
-                    server.getCard(card.getId());
-                    System.out.println("worked, trying to update card");
-                    server.updateCard(card.getId(), card);
-                    server.getCard(card.getId());
-                    System.out.println("worked, trying to get card from memory");
-                    //card = (Card) server.getCard(card.getId()); //failsafe
-                    System.out.println("card is " + card.getTitle() +card.getId());
-                    server.addCardToIndex(newCollection, card, currentIndex);
-                    server.getCard(card.getId());
-                    System.out.println(newCollection.getCards());
-                    System.out.println("done");
-                    refresh();*/
                 }
             }
             event.setDropCompleted(success);
             event.consume();
         });
+    }
+
+    /**
+     * Sets up the drag and Drop for all listviews stored
+     * @param listView list view from the scroll view.
+     */
+    private void setupDragAndDrop(ListView<Card> listView) {
+        ObjectMapper om = new ObjectMapper();
+        listView.setOnDragOver(event -> {
+            if (event.getGestureSource() instanceof CardCell && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+            event.consume();
+        });
+        setDropped(listView, om);
         listView.setCellFactory(param -> {
             CardCell cell = new CardCell(server);
             cell.setOnDragDetected(event -> {
                 if (cell.getItem() == null) {return;}
                 Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
-                ObjectMapper OM = new ObjectMapper();
                 try {
-                    content.putString(OM.writeValueAsString(cell.getItem()));
+                    content.putString(om.writeValueAsString(cell.getItem()));
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
