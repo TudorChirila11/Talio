@@ -138,6 +138,27 @@ public class ServerUtils {
 
     }
 
+    /**
+     * deletes a collection and all associated cards
+     *
+     * @param id the id of a collection
+     * @return a response
+     */
+    public Response deleteBoard(long id) {
+        ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/boards/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/collections/" + id + "/ofBoard") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+
+    }
+
 
     /**
      * Adds a card to collection

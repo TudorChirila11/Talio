@@ -239,7 +239,7 @@ public class CollectionController {
      * @return the collections
      */
     @GetMapping("/{id}/ofBoard")
-    public ResponseEntity<List<Collection>> getCardsByIdOfCollection(@PathVariable long id) {
+    public ResponseEntity<List<Collection>> getCollectionsByBoardID(@PathVariable long id) {
         List<Collection> allCards = repoCollection.findAll();
         List<Collection> res = new ArrayList<>();
 

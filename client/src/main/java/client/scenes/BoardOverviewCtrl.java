@@ -81,20 +81,32 @@ public class BoardOverviewCtrl implements Initializable {
 
 
         for(Board b: allBoards){
-            HBox boardContent = new HBox(200);
+            HBox boardContent = new HBox(25);
 
             Label boardLabel = new Label(b.getName());
-            boardLabel.setPrefSize(100,25);
+            boardLabel.getStyleClass().add("collectionLabel");
+            boardLabel.setPrefSize(400,25);
             Button join = new Button("Join Board");
+            join.setPrefSize(100,25);
+            join.getStyleClass().add("defaultButton");
             join.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     //TODO make this take the board id and set this as current board
-                    mainCtrl.showBoard();
+                    mainCtrl.showBoard(b);
+                }
+            });
+            Button delete = new Button("X");
+            delete.getStyleClass().add("deleteButton");
+            delete.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    server.deleteBoard(b.getId());
+                    refresh();
                 }
             });
 
-            boardContent.getChildren().addAll(boardLabel, join);
+            boardContent.getChildren().addAll(boardLabel, join, delete);
             boardsBox.getChildren().add(boardContent);
         }
 

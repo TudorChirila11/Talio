@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="client.scenes.BoardOverviewCtrl"
-            prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" id="boardOverviewPane">
+<AnchorPane id="boardOverviewPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardOverviewCtrl">
     <children>
-        <Label id="headingBoard" layoutX="400.0"> Hello </Label>
+        <Label id="headingBoard" layoutX="241.0" layoutY="14.0" textAlignment="CENTER"> Board Overview </Label>
         <ScrollPane id="boardContainer" fx:id="boardContainer" fitToHeight="true" layoutX="48.0" layoutY="100.0" prefHeight="375.0" prefViewportHeight="500.0" prefViewportWidth="300.0" prefWidth="650.0">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="650.0">

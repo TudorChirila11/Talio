@@ -58,7 +58,7 @@ public class BoardCtrl implements Initializable {
      * Adding a card from the + button
      */
     public void addCard(){
-        mainCtrl.showCardInformation();
+        mainCtrl.showCardInformation(currentBoard);
     }
 
     /**
@@ -77,7 +77,7 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
-        refresh();
+        refresh(currentBoard);
     }
 
     /**
@@ -87,7 +87,7 @@ public class BoardCtrl implements Initializable {
         server.resetState();
         Board board = new Board("Board 1");
         server.addBoard(board);
-        refresh();
+        refresh(currentBoard);
     }
 
     /**
@@ -99,8 +99,10 @@ public class BoardCtrl implements Initializable {
 
     /**
      * Sets the state of board
-     */
-    public void refresh() {
+     * @param board current board
+     * */
+    public void refresh(Board board) {
+        currentBoard = board;
         boardMenu.getItems().clear();
         for(Board b: server.getBoards()){
             MenuItem i = new MenuItem(b.getName());
@@ -109,7 +111,7 @@ public class BoardCtrl implements Initializable {
                 public void handle(ActionEvent event) {
                     boardMenu.setText(i.getText());
                     currentBoard = b;
-                    refresh();
+                    refresh(currentBoard);
                 }
             });
             boardMenu.getItems().add(i);
@@ -125,7 +127,6 @@ public class BoardCtrl implements Initializable {
             // Create a label for the collection name
             Label collectionLabel = new Label(current.getName());
             collectionLabel.getStyleClass().add("collectionLabel");
-
             // Create a list view for the current (list of cards)
             ListView<Card> collection = new ListView<>(list);
             collection.getStyleClass().add("collection");
@@ -235,7 +236,7 @@ public class BoardCtrl implements Initializable {
                 }
             }
         }
-        refresh();
+        refresh(currentBoard);
     }
 
     /**
@@ -250,7 +251,7 @@ public class BoardCtrl implements Initializable {
         delete.setStyle("-fx-font-size: 10px; -fx-background-color: #FF0000; -fx-text-fill: white;");
         delete.setOnAction(event -> {
             server.deleteCollection(id);
-            refresh();
+            refresh(currentBoard);
         });
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);

@@ -6,6 +6,7 @@ import commons.Card;
 import commons.Collection;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
+import commons.Board;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,6 +23,8 @@ public class CardInformationCtrl implements Initializable {
 
     private Pane emptyPane;
     private ArrayList<HBox> subtasks;
+
+    private Board currentBoard;
 
     @FXML
     private TextField cardName;
@@ -63,7 +66,7 @@ public class CardInformationCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         subtasks = new ArrayList<>();
-        refresh();
+        refresh(currentBoard);
         ///dummy part
     }
 
@@ -75,8 +78,9 @@ public class CardInformationCtrl implements Initializable {
     {
 
         collectionMenu.getItems().clear();
-        //TODO make this a request based on board
-        for(Collection c: server.getCollections()){
+
+        if(currentBoard == null) currentBoard = server.getBoard();
+        for(Collection c: server.getCollectionsFromBoard(currentBoard)){
             MenuItem i = new MenuItem(c.getName());
             i.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -118,13 +122,13 @@ public class CardInformationCtrl implements Initializable {
                         @Override
                         public void handle(ActionEvent event) {
                             hb.getChildren().clear();
-                            refresh();
+                            refresh(currentBoard);
                         }
                     });
                     tf.setPromptText("Add subtask...");
                     tf.setText("");
                 }
-                refresh();
+                refresh(currentBoard);
             }
         });
         HBox hbox = new HBox();
@@ -137,19 +141,20 @@ public class CardInformationCtrl implements Initializable {
      */
     public void goBack()
     {
-        mainCtrl.showBoard();
+        mainCtrl.showBoard(currentBoard);
     }
 
 
     /**
      * Refresh method
+     * @param board the current board.
      */
-    public void refresh()
+    public void refresh(Board board)
     {
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
         ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
 
-
+        currentBoard = board;
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtasks);
@@ -179,7 +184,7 @@ public class CardInformationCtrl implements Initializable {
             return;
         }
         clearFields();
-        mainCtrl.showBoard();
+        mainCtrl.showBoard(currentBoard);
     }
 
     /**

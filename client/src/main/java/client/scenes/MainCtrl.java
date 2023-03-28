@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import commons.Board;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -123,22 +124,24 @@ public class MainCtrl {
     /**
      * Displays the cardInformation Scene
      * and enables the controller
+     * @param currentBoard the current Board
      */
-    public void showCardInformation()
+    public void showCardInformation(Board currentBoard)
     {
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.refresh();
+        cardInformationCtrl.refresh(currentBoard);
     }
 
     /**
      * Displays the board Scene
      * and enables the controller
+     * @param currentBoard the current Board
      */
-    public void showBoard(){
+    public void showBoard(Board currentBoard){
         primaryStage.setTitle("Board Overview: Board");
         primaryStage.setScene(board);
-        boardCtrl.refresh();
+        boardCtrl.refresh(currentBoard);
     }
 
     /**
