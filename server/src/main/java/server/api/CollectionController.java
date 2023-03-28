@@ -114,12 +114,12 @@ public class CollectionController {
      * @param index - old index
      * @param newCollection - new Collection
      * @param newIndex - new index
-     * @return
+     * @return new collection
      */
     @GetMapping("{collectionId}/{index}/{newCollection}/{newIndex}")
     public ResponseEntity<Collection> switchCardPosition
-            (@PathVariable long collectionId, @PathVariable int index, @PathVariable long newCollection, @PathVariable int newIndex) {
-
+            (@PathVariable long collectionId, @PathVariable int index,
+             @PathVariable long newCollection, @PathVariable int newIndex) {
         Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
         Optional<Collection> collectionOpt2 = repoCollection.findById(newCollection);
         System.out.println("collection found?");
