@@ -79,11 +79,8 @@ public class BoardOverviewCtrl implements Initializable {
         // Vbox to contain all boards.
         VBox boardsBox = new VBox(25);
         boardsBox.setPrefSize(600,225 * allBoards.size());
-
-
         for(Board b: allBoards){
             HBox boardContent = new HBox(25);
-
             Label boardLabel = new Label(b.getName());
             boardLabel.getStyleClass().add("collectionLabel");
             boardLabel.setPrefSize(400,25);
@@ -94,7 +91,6 @@ public class BoardOverviewCtrl implements Initializable {
                     interact.setHeaderText("Rename Board");
                     interact.setContentText("Enter new name:");
                     Optional<String> result = interact.showAndWait();
-                    // Check for valid input
                     if (result.isPresent()) {
                         String newName = result.get();
                         if (!newName.isEmpty()) {
@@ -123,11 +119,9 @@ public class BoardOverviewCtrl implements Initializable {
                     refresh();
                 }
             });
-
             boardContent.getChildren().addAll(boardLabel, join, delete);
             boardsBox.getChildren().add(boardContent);
         }
-
         boardContainer.setContent(boardsBox);
     }
 

@@ -118,7 +118,6 @@ public class BoardCtrl implements Initializable {
         }
         if(currentBoard == null) currentBoard = server.getBoard();
         List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
-
         HBox taskListsBox = new HBox(25);
         taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
         // Add each task list to the box
@@ -136,7 +135,6 @@ public class BoardCtrl implements Initializable {
 
             // Create the button that allows a user to add to a collection
             Button addButton = new Button();
-
             addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
 
             addButton.getStyleClass().add("addButton");

@@ -60,11 +60,11 @@ public class KeyboardShortcutCtrl extends Thread {
         }
         if (removeActiveKey(KeyCode.ENTER.toString()) &&
                 mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getBoard())) {
-            this.mainCtrl.showCardInformation();
+            //this.mainCtrl.showCardInformation();
         }
         if (removeActiveKey(KeyCode.ESCAPE.toString()) &&
                 mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getCardInformation())) {
-            this.mainCtrl.showBoard();
+            //this.mainCtrl.showBoard();
         }
         if (removeActiveKey(KeyCode.T.toString())) {
             //TODO open popup for adding tags
