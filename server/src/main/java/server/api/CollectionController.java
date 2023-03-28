@@ -79,23 +79,26 @@ public class CollectionController {
      * @param index the index of the card to remove
      * @return Response Entity
      */
-    @DeleteMapping("{collectionId}/deleteCard/{index}")
+    @DeleteMapping("{collectionId}/deleteCard/{index}/")
     public ResponseEntity<Collection> deleteCardAtPosition
     (@PathVariable long collectionId, @PathVariable int index) {
 
         Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
 
+        System.out.println("collection found?");
         // the collection is not found
         if (collectionOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
+        System.out.println("yes, remove");
         Collection collection = collectionOpt.get();
         List<Card> cards = collection.getCards();
 
         // making sure that the position is filled
         assert cards.size() > 0;
         assert (index >= 0 && index < cards.size());
+
+        Card c = cards.get(index);
 
         cards.remove(index);
 
@@ -105,7 +108,49 @@ public class CollectionController {
 
     }
 
+    /**
+     * remove card from collection 'collectionId', index 'index', and add it to 'newCollection', index 'newIndex'
+     * @param collectionId - old collection
+     * @param index - old index
+     * @param newCollection - new Collection
+     * @param newIndex - new index
+     * @return
+     */
+    @GetMapping("{collectionId}/{index}/{newCollection}/{newIndex}")
+    public ResponseEntity<Collection> switchCardPosition
+            (@PathVariable long collectionId, @PathVariable int index, @PathVariable long newCollection, @PathVariable int newIndex) {
 
+        Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
+        Optional<Collection> collectionOpt2 = repoCollection.findById(newCollection);
+        System.out.println("collection found?");
+        // the collection is not found
+        if (collectionOpt.isEmpty() || collectionOpt2.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        System.out.println("yes, remove");
+        Collection collection = collectionOpt.get();
+        List<Card> cardsOld = collection.getCards();
+
+        Collection collection2 = collectionOpt2.get();
+        List<Card> cardsNew = collection2.getCards();
+
+        // making sure that the position is filled
+        assert cardsOld.size() > 0;
+        assert cardsNew.size() > 0;
+        assert (index >= 0 && index < cardsOld.size());
+        assert (newIndex >= 0 && newIndex < cardsNew.size());
+
+        Card c = cardsOld.get(index);
+        cardsOld.remove(index);
+        c.setCollectionId(newCollection);
+        cardsNew.add(newIndex, c);
+        // store new list
+        Collection updatedCollection1 = repoCollection.save(collection);
+        Collection updatedCollection2 = repoCollection.save(collection2);
+        Card updatedCard = repoCard.save(c);
+        return ResponseEntity.ok(updatedCollection2);
+
+    }
 
 //    /{collectionId}/{cardId}/{position}
 

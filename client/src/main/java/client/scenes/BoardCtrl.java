@@ -195,19 +195,32 @@ public class BoardCtrl implements Initializable {
                     Card sourceCard = sourceList.getItems().get(sourceIndex);
                     sourceList.getItems().remove(sourceCard);
 
-                    /*
-                    ///modifying the database as well
-                    server.deleteCard(card.getId());
-                    ///gets this card's new collection
+                    Collection oldCollection = mapper.get(sourceList);
                     Collection newCollection = mapper.get(listView);
-                    ///TODO stores the new order of the cards inside this collection
-                    ///TODO create api for deleting card from a collection
-                    ///TODO delete doesn't work
-                    //ObservableList<Card> cardList = listView.getItems();
+                    int oldIndex = sourceIndex;
+                    int currentIndex = getIndex(listView, event.getY());
+                    server.changeCardIndex(oldCollection, oldIndex, newCollection, currentIndex);
+                    /*System.out.println(event.getX() + " " + event.getY());
+                    System.out.println("oldCollection " + oldCollection.getName() + " newCollection "+newCollection.getName());
+                    System.out.println("oldIndex " + oldIndex +" newIndex " + currentIndex);
+                    System.out.println("trying to delete");
+                    server.deleteCardFromIndex(oldCollection, oldIndex);
+                    server.getCard(card.getId());
+                    System.out.println(oldCollection.getCards());
+                    System.out.println("worked, trying to change collection id");
                     card.setCollectionId(newCollection.getId());
-                    server.addCard(card);
-                    ///TODO maybe find a way to keep the Id intact; the current code assigns a new id to the same card
-                    */
+                    server.getCard(card.getId());
+                    System.out.println("worked, trying to update card");
+                    server.updateCard(card.getId(), card);
+                    server.getCard(card.getId());
+                    System.out.println("worked, trying to get card from memory");
+                    //card = (Card) server.getCard(card.getId()); //failsafe
+                    System.out.println("card is " + card.getTitle() +card.getId());
+                    server.addCardToIndex(newCollection, card, currentIndex);
+                    server.getCard(card.getId());
+                    System.out.println(newCollection.getCards());
+                    System.out.println("done");
+                    refresh();*/
                 }
             }
             event.setDropCompleted(success);
@@ -305,4 +318,19 @@ public class BoardCtrl implements Initializable {
         });
     }
 
+    /**
+     * returns this card's future index inside listview lv
+     * @param lv - current listview
+     * @param y - y position
+     * @return this card's new index
+     */
+    public int getIndex(ListView<Card> lv, double y)
+    {
+        int sz = lv.getItems().size();
+        int pos = 0;
+        double cardSize = 100, error = 0;
+        pos = (int) Math.min(y/(cardSize + error), sz-1);
+        System.out.println(y + " position " + pos);
+        return pos;
+    }
 }

@@ -83,20 +83,22 @@ public class CardController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Card> updateCard(@PathVariable("id") long id, @RequestBody Card updatedCard) {
-        // check if we have the card in the database
+        System.out.println(" check if we have the card in the database" + id);
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
-        // get the card as it is in the database
+        System.out.println("get the card as it is in the database");
         Card cardInDatabase = repo.findById(id).get();
 
         // update the property's
+        System.out.println("update the props");
         cardInDatabase.setDescription(updatedCard.getDescription());
         cardInDatabase.setTitle(updatedCard.getTitle());
         cardInDatabase.setCollectionId(updatedCard.getCollectionId());
 
         // save the card
+        System.out.println("save the card");
         Card theSavedCard = repo.save(cardInDatabase);
         return ResponseEntity.ok(theSavedCard);
     }
