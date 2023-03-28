@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
@@ -86,6 +87,23 @@ public class BoardOverviewCtrl implements Initializable {
             Label boardLabel = new Label(b.getName());
             boardLabel.getStyleClass().add("collectionLabel");
             boardLabel.setPrefSize(400,25);
+            boardLabel.setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                    // Rename collection
+                    TextInputDialog interact = new TextInputDialog(b.getName());
+                    interact.setHeaderText("Rename Board");
+                    interact.setContentText("Enter new name:");
+                    Optional<String> result = interact.showAndWait();
+                    // Check for valid input
+                    if (result.isPresent()) {
+                        String newName = result.get();
+                        if (!newName.isEmpty()) {
+                            // TODO update based on Teun's new API
+                            boardLabel.setText(newName);
+                        }
+                    }
+                }
+            });
             Button join = new Button("Join Board");
             join.setPrefSize(100,25);
             join.getStyleClass().add("defaultButton");
