@@ -71,6 +71,141 @@ public class CollectionController {
         return ResponseEntity.ok(cards);
     }
 
+//    api/collection/{collectionId}/deleteCard/{position}'
+
+    /**
+     * this API deletes the card at a specific position in a collection.
+     * @param collectionId the id of the collection to change
+     * @param index the index of the card to remove
+     * @return Response Entity
+     */
+    @DeleteMapping("{collectionId}/deleteCard/{index}")
+    public ResponseEntity<Collection> deleteCardAtPosition
+    (@PathVariable long collectionId, @PathVariable int index) {
+
+        Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
+
+        // the collection is not found
+        if (collectionOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Collection collection = collectionOpt.get();
+        List<Card> cards = collection.getCards();
+
+        // making sure that the position is filled
+        assert cards.size() > 0;
+        assert (index >= 0 && index < cards.size());
+
+        cards.remove(index);
+
+        // store new list
+        Collection updatedCollection = repoCollection.save(collection);
+        return ResponseEntity.ok(updatedCollection);
+
+    }
+
+
+
+//    /{collectionId}/{cardId}/{position}
+
+    /**
+     * the insert method set a card in a specific position
+     * @param collectionId the id of the collection to add to
+     * @param cardId the id of the card to be inserted
+     * @param index the index it should be in the end state
+     * @return the Response Entity
+     */
+    @PostMapping("/{collectionId}/{cardId}/{index}")
+    public ResponseEntity<Collection> insert
+    (@PathVariable Long collectionId, @PathVariable Long cardId, @PathVariable int index ) {
+        Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
+        Optional<Card> cardOpt = repoCard.findById(cardId);
+
+        // the collection or card is not found
+        if (collectionOpt.isEmpty() || cardOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Collection collection = collectionOpt.get();
+        List<Card> cards = collection.getCards();
+        Card theCard = cardOpt.get();
+
+        // removing the old position from the database
+        if (theCard.getCollectionId() != null) {
+            Collection oldCollection = repoCollection.findById(theCard.getCollectionId()).orElse(null);
+            if (oldCollection != null) {
+                oldCollection.getCards().remove(theCard);
+                theCard.setCollectionId(null);
+            }
+        }
+
+        // insert the card in the right spot
+        cards.add(index, theCard);
+        theCard.setCollectionId(collectionId);
+
+        // save the new info
+        Collection updatedCollection = repoCollection.save(collection);
+        return ResponseEntity.ok(updatedCollection);
+    }
+
+    /**
+     * the put API for the collection object
+     * @param id the id of the collection to update
+     * @param newCollection the data the object should have
+     * @return the responseEntity
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Collection> updateCollection(@PathVariable("id") long id, @RequestBody Collection newCollection) {
+
+        // test if we have the collection in the database
+        if (!repoCollection.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // find the collection in the database
+        Collection collectionInDatabase = repoCollection.findById(id).get();
+
+        // set the property's
+        collectionInDatabase.setName(newCollection.getName());
+        collectionInDatabase.setBoardId(newCollection.getBoardId());
+
+        // remove the cards
+        collectionInDatabase.getCards().clear();
+
+        storeTheCards(id, newCollection, collectionInDatabase);
+
+        // store the collection
+        Collection theSavedCollection = repoCollection.save(collectionInDatabase);
+
+        return ResponseEntity.ok(theSavedCollection);
+    }
+
+    /**
+     * this methode checks and stores the cards in the cardrepo
+     * @param collectionId the id of the collection the cards belong to
+     * @param newCollection the new collection
+     * @param collectionInDatabase the old collection
+     */
+    private void storeTheCards(long collectionId, Collection newCollection, Collection collectionInDatabase) {
+        // loop over the new cards
+        for (Card newCard : newCollection.getCards()) {
+            // set the right collection collectionId
+            if (newCard.getCollectionId() == null || !newCard.getCollectionId().equals(collectionId)) {
+                newCard.setCollectionId(collectionId);
+            }
+
+            // do we need to store the card in the card repo first
+            Card tempCard = newCard;
+            if (newCard.getId() == null || !repoCard.existsById(newCard.getId())) {
+                tempCard = repoCard.save(newCard);
+            }
+
+            collectionInDatabase.addCard(tempCard);
+        }
+    }
+
+
     /**
      * Initalization of a collection
      * @param collection a new collection obj
