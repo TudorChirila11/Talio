@@ -67,7 +67,6 @@ public class CardInformationCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         subtasks = new ArrayList<>();
         refresh(currentBoard);
-        ///dummy part
     }
 
     /**
@@ -173,7 +172,7 @@ public class CardInformationCtrl implements Initializable {
             return;
         }
         try {
-            server.addCard(getCard());
+            server.send("/app/cards", getCard());
 
         } catch (WebApplicationException e) {
 

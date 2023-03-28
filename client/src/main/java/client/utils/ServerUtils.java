@@ -20,8 +20,11 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 import commons.Board;
 import commons.Card;
@@ -33,6 +36,13 @@ import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 public class ServerUtils {
 
@@ -41,7 +51,7 @@ public class ServerUtils {
     /**
      * @param ip the ip that the user will be connecting to
      */
-    public static void changeIP(String ip) {
+    public void changeIP(String ip) {
         server = "http://" + ip + ":8080/";
     }
 
@@ -305,5 +315,65 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Board>>() {
                 });
+    }
+
+    private StompSession session = connect("ws://localhost:8080/websocket");
+
+    /**
+     * This method changes the session to the appropriate url when the user connects to a server
+     * @param ip the url of the server to which the stomp client will connect to
+     */
+    public void createStompSession(String ip) {
+        session = connect("ws://" + ip + ":8080/websocket");
+    }
+
+
+    /**
+     * This method creates a stomp client that connects to the server
+     * @param url the url that directs the clients to the server
+     * @return a stomp client server instance that lets the user communicate with the server.
+     */
+    private StompSession connect(String url) {
+        var client = new StandardWebSocketClient();
+        var stomp = new WebSocketStompClient(client);
+        stomp.setMessageConverter(new MappingJackson2MessageConverter());
+        try {
+            return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        throw new IllegalStateException();
+    }
+
+    /**
+     * This method sends everything that the stomp client receives to the consumer (client)
+     * @param dest where did the information come from
+     * @param type what kind of information is received
+     * @param consumer the client that is using the stomp client to receive and send data from and to the server
+     * @param <T> the arbitrary type that lets this method receive any type of data and send it to the client.
+     */
+    public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer) {
+        session.subscribe(dest, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return type;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                consumer.accept((T) payload);
+            }
+        });
+    }
+
+    /**
+     * This method is used to send data to the server using the stomp client
+     * @param dest where to send the data to
+     * @param o what to send
+     */
+    public void send(String dest, Object o) {
+        session.send(dest, o);
     }
 }

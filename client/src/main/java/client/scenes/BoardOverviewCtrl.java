@@ -19,6 +19,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
@@ -68,7 +69,8 @@ public class BoardOverviewCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        refresh();
+
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh()));
     }
 
     /**
@@ -103,8 +105,14 @@ public class BoardOverviewCtrl implements Initializable {
             Button delete = new Button("X");
             delete.getStyleClass().add("deleteButton");
             delete.setOnAction(event -> {
-                server.deleteBoard(b.getId());
-                refresh();
+                try {
+                    server.send("/app/boardsDelete", b);
+                } catch (WebApplicationException e) {
+                    var alert = new Alert(Alert.AlertType.ERROR);
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                }
             });
 
 
@@ -132,8 +140,9 @@ public class BoardOverviewCtrl implements Initializable {
                 if (result.isPresent()) {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
-                        // TODO update based on Teun's new API
-                        boardLabel.setText(newName);
+                        board.setName(newName);
+                        server.send("/app/boards", board);
+
                     }
                 }
             }
@@ -155,10 +164,10 @@ public class BoardOverviewCtrl implements Initializable {
             if (!newName.isEmpty()) {
                 Board boardN = new Board(newName);
                 try {
-                    server.addBoard(boardN);
+                    server.send("/app/boards", boardN);
+
                 } catch (WebApplicationException e) {
-                    e.printStackTrace();
-                    e.getCause();
+
                     var alert = new Alert(Alert.AlertType.ERROR);
                     alert.initModality(Modality.APPLICATION_MODAL);
                     alert.setContentText(e.getMessage());

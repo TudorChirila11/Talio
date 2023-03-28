@@ -17,8 +17,8 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/api");
-        config.setApplicationDestinationPrefixes("/broadcast");
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     /**
@@ -27,7 +27,6 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/receive");
-        registry.addEndpoint("/receive").withSockJS();
+        registry.addEndpoint("/websocket");
     }
 }

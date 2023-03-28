@@ -8,6 +8,7 @@ import commons.Board;
 import commons.Card;
 import commons.Collection;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -76,16 +77,36 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
         refresh(currentBoard);
+
+
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
     }
 
     /**
      * Resets all stuff on the board.
      */
     public void resetBoard(){
-        server.resetState();
-        Board board = new Board("Board 1");
-        server.addBoard(board);
-        refresh(currentBoard);
+        try {
+            server.send("/app/collectionsDeleteAll", new Collection());
+
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+        try {
+            server.send("/app/cardsDeleteAll", new Card());
+
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+        System.out.println("We did it, we deleted everything!");
     }
 
     /**
@@ -112,12 +133,13 @@ public class BoardCtrl implements Initializable {
             });
             boardMenu.getItems().add(i);
         }
-
         if(currentBoard == null) currentBoard = server.getBoard();
+        System.out.println("I just got refreshed!");
         List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
+
         HBox taskListsBox = new HBox(25);
         taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
-        // Add each task list to the box
+
         for (Collection current: taskCollections) {
             ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
             // Create a label for the collection name
@@ -133,7 +155,6 @@ public class BoardCtrl implements Initializable {
             // Create the button that allows a user to add to a collection
             Button addButton = new Button();
             addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
-
             addButton.getStyleClass().add("addButton");
             addButton.setOnAction(event -> addCard());
 
@@ -143,7 +164,8 @@ public class BoardCtrl implements Initializable {
 
             // Adding this to Hbox which contains each collection object + controls.
             taskListsBox.getChildren().add(collectionVBox);
-            addTaskListControls(collectionLabel, current.getName(), current.getId());
+            addTaskListControls(collectionLabel, current.getName(), current);
+
         }
         collectionsContainer.setContent(taskListsBox);
     }
@@ -218,9 +240,9 @@ public class BoardCtrl implements Initializable {
             String newName = result.get();
             if (!newName.isEmpty()) {
                 Collection randomC = new Collection(newName, currentBoard);
-                currentBoard.addCollection(randomC);
                 try {
-                    server.addCollection(randomC);
+                    server.send("/app/collections", randomC);
+
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
                     e.getCause();
@@ -228,31 +250,37 @@ public class BoardCtrl implements Initializable {
                     alert.initModality(Modality.APPLICATION_MODAL);
                     alert.setContentText(e.getMessage());
                     alert.showAndWait();
-                    return;
                 }
             }
         }
-        refresh(currentBoard);
     }
 
     /**
      * Controller for Label interactions.
      * @param label the label of the collection
      * @param listName collection / list of cards name
-     * @param id the collection id
+     * @param collection the collection
      */
-    private void addTaskListControls(Label label, String listName, long id) {
+    private void addTaskListControls(Label label, String listName, Collection collection) {
         // Creates a button that has a delete function respective to the source collection
         Button delete = new Button("X");
         delete.setStyle("-fx-font-size: 10px; -fx-background-color: #FF0000; -fx-text-fill: white;");
         delete.setOnAction(event -> {
-            server.deleteCollection(id);
-            refresh(currentBoard);
+
+            try {
+                server.send("/app/collectionsDelete", collection);
+
+            } catch (WebApplicationException e) {
+
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            }
         });
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);
 
-        // TODO Change this to the correct method from another team member.
         label.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 // Rename collection
@@ -264,8 +292,9 @@ public class BoardCtrl implements Initializable {
                 if (result.isPresent()) {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
-                        // TODO update based on Teun's new API
-                        label.setText(newName);
+                        collection.setName(newName);
+                        // collection ref is valid no need to catch
+                        server.send("/app/collections", collection);
                     }
                 }
             }
