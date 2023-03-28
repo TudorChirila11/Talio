@@ -66,7 +66,7 @@ public class CollectionOverviewCtrl implements Initializable {
     }
 
     /**
-     * Initialization method fo the labels within the collection
+     * Initialization method for the labels within the collection
      * @param location
      * The location used to resolve relative paths for the root object, or
      * {@code null} if the location is not known.
