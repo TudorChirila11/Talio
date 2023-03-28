@@ -55,7 +55,6 @@ public class WelcomePageCtrl implements Initializable {
      * @param ip the ip that the user has entered
      */
     public void changeIP(String ip){
-        System.out.println("\"" + ip + "\"");
         if (Objects.equals(ip, "")) {
             ServerUtils.changeIP("localhost");
             mainCtrl.showBoardOverview();

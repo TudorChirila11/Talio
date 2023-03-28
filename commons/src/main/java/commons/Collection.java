@@ -167,6 +167,14 @@ public class Collection {
     }
 
     /**
+     * set ALL the cards of the collection (existing card get removed!)
+     * @param cards the cards
+     */
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
+    }
+
+    /**
      * the equals methode
      * @param obj other object
      * @return boolean true iff same
@@ -193,4 +201,6 @@ public class Collection {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
+
+
 }

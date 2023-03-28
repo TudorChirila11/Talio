@@ -69,6 +69,32 @@ public class CardController {
         }
     }
 
+    /**
+     * the put API for the card object
+     * @param id the id of the card
+     * @param updatedCard the new data it should have
+     * @return the responseEntity
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Card> updateCard(@PathVariable("id") long id, @RequestBody Card updatedCard) {
+        // check if we have the card in the database
+        if (!repo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // get the card as it is in the database
+        Card cardInDatabase = repo.findById(id).get();
+
+        // update the property's
+        cardInDatabase.setDescription(updatedCard.getDescription());
+        cardInDatabase.setTitle(updatedCard.getTitle());
+        cardInDatabase.setCollectionId(updatedCard.getCollectionId());
+
+        // save the card
+        Card theSavedCard = repo.save(cardInDatabase);
+        return ResponseEntity.ok(theSavedCard);
+    }
+
 
     /**
      * get the cards by the id of collectioni
