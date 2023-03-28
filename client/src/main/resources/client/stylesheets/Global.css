@@ -16,6 +16,7 @@
     -fx-padding: 10 10 10 10;
     -fx-border-radius: 15;
     -fx-border-color: #000000;
+    -fx-border-insets: -.25;
     -fx-background-color: #D9D9D9;
 }
 

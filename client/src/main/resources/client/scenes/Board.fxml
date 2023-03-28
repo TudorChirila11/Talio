@@ -4,9 +4,9 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
+<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
     <children>
-        <Button id="backButton" layoutX="20.0" layoutY="20.0" minWidth="41.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton" onAction="#boardOverview">
+        <Button id="backButton" layoutX="20.0" layoutY="20.0" minWidth="41.0" mnemonicParsing="false" onAction="#boardOverview" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
             <graphic>
                 <ImageView fitHeight="65.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
                     <image>
@@ -30,7 +30,7 @@
                     </image>
                 </ImageView>
             </graphic></Button>
-        <ImageView id="tailoLogo" fitHeight="85.0" fitWidth="142.0" layoutX="303.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView id="tailoLogo" fitHeight="85.0" fitWidth="142.0" layoutX="333.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@/client/assets/tailo.png" />
             </image>
@@ -44,7 +44,7 @@
                 </ImageView>
             </graphic>
         </Button>
-        <MenuButton fx:id="boardMenu" layoutX="43.0" layoutY="76.0" mnemonicParsing="false" text="Choose a board" />
+        <MenuButton fx:id="boardMenu" layoutX="56.0" layoutY="97.0" mnemonicParsing="false" text="Choose a board" />
         <ScrollPane id="collectionContainer" fx:id="collectionsContainer" fitToHeight="true" layoutX="48.0" layoutY="134.0" prefHeight="375.0" prefViewportHeight="500.0" prefViewportWidth="300.0" prefWidth="675.0">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="650.0">
@@ -52,6 +52,6 @@
                     </children></AnchorPane>
             </content>
         </ScrollPane>
-        <Button fx:id="resetBoard" layoutX="14.0" layoutY="473.0" mnemonicParsing="false" text="Reset" onAction="#resetBoard"/>
+        <Button fx:id="resetBoard" layoutX="14.0" layoutY="473.0" mnemonicParsing="false" onAction="#resetBoard" text="Reset" />
     </children>
 </AnchorPane>

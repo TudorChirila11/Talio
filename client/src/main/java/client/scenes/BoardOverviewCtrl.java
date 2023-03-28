@@ -19,10 +19,10 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -31,6 +31,7 @@ import javafx.stage.Modality;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -54,7 +55,6 @@ public class BoardOverviewCtrl implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
-
 
     /**
      * Initialization method fo the labels within the collection
@@ -82,47 +82,62 @@ public class BoardOverviewCtrl implements Initializable {
         for(Board b: allBoards){
             HBox boardContent = new HBox(25);
             Label boardLabel = new Label(b.getName());
-            boardLabel.getStyleClass().add("collectionLabel");
-            boardLabel.setPrefSize(400,25);
-            boardLabel.setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                    // Rename collection
-                    TextInputDialog interact = new TextInputDialog(b.getName());
-                    interact.setHeaderText("Rename Board");
-                    interact.setContentText("Enter new name:");
-                    Optional<String> result = interact.showAndWait();
-                    if (result.isPresent()) {
-                        String newName = result.get();
-                        if (!newName.isEmpty()) {
-                            // TODO update based on Teun's new API
-                            boardLabel.setText(newName);
-                        }
-                    }
-                }
-            });
-            Button join = new Button("Join Board");
+            renameBoard(boardLabel, b);
+
+            Button copyKey = new Button();
+            copyKey.setPrefSize(30,40);
+            copyKey.getStyleClass().add("imageButton");
+            copyKey.setOnAction(event -> showWelcomePage());
+            ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
+            imageView.setPreserveRatio(true);
+            imageView.setPickOnBounds(true);
+            imageView.setFitHeight(40);
+            imageView.setFitWidth(30);
+            copyKey.setGraphic(imageView);
+
+            Button join = new Button("Open Board");
             join.setPrefSize(100,25);
             join.getStyleClass().add("defaultButton");
-            join.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    //TODO make this take the board id and set this as current board
-                    mainCtrl.showBoard(b);
-                }
-            });
+            join.setOnAction(event -> mainCtrl.showBoard(b));
+
             Button delete = new Button("X");
             delete.getStyleClass().add("deleteButton");
-            delete.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    server.deleteBoard(b.getId());
-                    refresh();
-                }
+            delete.setOnAction(event -> {
+                server.deleteBoard(b.getId());
+                refresh();
             });
-            boardContent.getChildren().addAll(boardLabel, join, delete);
+
+
+            boardContent.getChildren().addAll(boardLabel, copyKey, join, delete);
             boardsBox.getChildren().add(boardContent);
         }
         boardContainer.setContent(boardsBox);
+    }
+
+    /**
+     * Creates method for renaming board label
+     * @param boardLabel board's label
+     * @param board the board
+     */
+    private void renameBoard(Label boardLabel, Board board) {
+        boardLabel.getStyleClass().add("collectionLabel");
+        boardLabel.setPrefSize(350,25);
+        boardLabel.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                // Rename collection
+                TextInputDialog interact = new TextInputDialog(board.getName());
+                interact.setHeaderText("Rename Board");
+                interact.setContentText("Enter new name:");
+                Optional<String> result = interact.showAndWait();
+                if (result.isPresent()) {
+                    String newName = result.get();
+                    if (!newName.isEmpty()) {
+                        // TODO update based on Teun's new API
+                        boardLabel.setText(newName);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -153,5 +168,12 @@ public class BoardOverviewCtrl implements Initializable {
             }
         }
         refresh();
+    }
+
+    /**
+     * Switch back to welcome page
+     */
+    public void showWelcomePage(){
+        mainCtrl.showWelcomePage();
     }
 }

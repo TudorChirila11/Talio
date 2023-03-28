@@ -10,8 +10,6 @@ import commons.Collection;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -102,20 +100,19 @@ public class BoardCtrl implements Initializable {
      * @param board current board
      * */
     public void refresh(Board board) {
+        if(board != null) boardMenu.setText(board.getName());
         currentBoard = board;
         boardMenu.getItems().clear();
         for(Board b: server.getBoards()){
             MenuItem i = new MenuItem(b.getName());
-            i.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    boardMenu.setText(i.getText());
-                    currentBoard = b;
-                    refresh(currentBoard);
-                }
+            i.setOnAction(event -> {
+                boardMenu.setText(i.getText());
+                currentBoard = b;
+                refresh(currentBoard);
             });
             boardMenu.getItems().add(i);
         }
+
         if(currentBoard == null) currentBoard = server.getBoard();
         List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
         HBox taskListsBox = new HBox(25);
@@ -148,7 +145,6 @@ public class BoardCtrl implements Initializable {
             taskListsBox.getChildren().add(collectionVBox);
             addTaskListControls(collectionLabel, current.getName(), current.getId());
         }
-        // Finally updating all the values in the pane with the current HBox
         collectionsContainer.setContent(taskListsBox);
     }
 
@@ -186,7 +182,7 @@ public class BoardCtrl implements Initializable {
 
                     // Find the source ListView by traversing up the scene graph
                     Node sourceNode = (Node) event.getGestureSource();
-                    while (sourceNode != null && !(sourceNode instanceof ListView)) {
+                    while (sourceNode != null && !(sourceNode instanceof ListView<?>)) {
                         sourceNode = sourceNode.getParent();
                     }
 
