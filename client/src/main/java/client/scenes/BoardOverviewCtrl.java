@@ -84,6 +84,7 @@ public class BoardOverviewCtrl implements Initializable {
             HBox boardContent = new HBox(200);
 
             Label boardLabel = new Label(b.getName());
+            boardLabel.setPrefSize(100,25);
             Button join = new Button("Join Board");
             join.setOnAction(new EventHandler<ActionEvent>() {
                 @Override

@@ -224,7 +224,6 @@ public class BoardCtrl implements Initializable {
                 currentBoard.addCollection(randomC);
                 try {
                     server.addCollection(randomC);
-                    server.addBoard(currentBoard);
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
                     e.getCause();
