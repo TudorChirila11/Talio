@@ -188,7 +188,7 @@ public class CardInformationCtrl implements Initializable {
      */
     public Card getCard() {
         // null collection for now
-        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent);
+        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()));
     }
 
     /**

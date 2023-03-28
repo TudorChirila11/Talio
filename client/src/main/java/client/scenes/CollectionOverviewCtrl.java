@@ -79,10 +79,10 @@ public class CollectionOverviewCtrl implements Initializable {
 
         Collection testCollection = new Collection("Test text", new Board());
         testCollection.getCards().add(new Card("Test title", "test description test description" +
-                " test description", testCollection));
+                " test description", testCollection, 0L));
         testCollection.getCards().add(new Card("Test title1", "test description test description" +
-                " test description test description test description beep boop", testCollection));
-        testCollection.getCards().add(new Card("Test title2", "test hahahahaah", testCollection));
+                " test description test description test description beep boop", testCollection, 1L));
+        testCollection.getCards().add(new Card("Test title2", "test hahahahaah", testCollection, 2L));
 
         ObservableList<Card> doneCards = FXCollections.observableList(testCollection.getCards());
 
