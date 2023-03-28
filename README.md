@@ -14,6 +14,8 @@ Add your own name (do not add the names for others!) to the section below.
 | ![](https://secure.gravatar.com/avatar/03df265b4d72976dae0672c815e8fbaa?s=50&d=identicon)      | Tudor Chirilă       | t.chirila@student.tudelft.nl      |
 | <img src="https://sagarspace.com/assets/varian.png" alt="test" width="150"/> | Sagar Chethan Kumar | S.ChethanKumar@student.tudelft.nl |
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cow_%28Fleckvieh_breed%29_Oeschinensee_Slaunger_2009-07-07.jpg/1280px-Cow_%28Fleckvieh_breed%29_Oeschinensee_Slaunger_2009-07-07.jpg" alt="test" width="150"/> | Teun W. den Boer | T.W.denboer@student.tudelft.nl |
+| <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fsoundcloudcom%2Fchristopher-purvis-1262%2Fdragon-ball-legends-ost-mui&psig=AOvVaw0TWXmlEtI8HyZdzIfxT8Pu&ust=1680094604175000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCJjd4qnW_v0CFQAAAAAdAAAAABAE" alt="test" width="150"/>                                                                         | Alexandru Petriceanu | a.d.petriceanu@student.tudelft.nl |
+
 
 <!-- Instructions (remove once assignment has been completed -->
 <!-- - Add (only!) your own name to the table above (use Markdown formatting) -->
