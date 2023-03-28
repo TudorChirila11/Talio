@@ -149,7 +149,7 @@ public class BoardCtrl implements Initializable {
 
             // Create the button that allows a user to add to a collection
             Button addButton = new Button();
-            addButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/client/assets/add.png"))));
+            addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
             // Custom css
             addButton.getStyleClass().add("addButton");
             addButton.setOnAction(event -> addCard());
@@ -208,7 +208,7 @@ public class BoardCtrl implements Initializable {
                     }
 
                     //TODO Fix the warning here...
-                    if (sourceNode instanceof ListView) {
+                    if (sourceNode != null) {
                         ListView<Card> sourceList = (ListView<Card>) sourceNode;
                         int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
                         Card sourceCard = sourceList.getItems().get(sourceIndex);

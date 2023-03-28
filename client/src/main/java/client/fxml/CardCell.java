@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
@@ -24,6 +25,9 @@ public class CardCell extends ListCell<Card>  {
 
     @FXML
     private Button removeButton;
+
+    @FXML
+    private VBox vBox;
 
     private Long id;
 
@@ -52,6 +56,16 @@ public class CardCell extends ListCell<Card>  {
         });
 
 
+        removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
+        this.vBox.setOnMouseEntered(event -> {
+            this.vBox.setStyle("-fx-border-color: yellow;-fx-border-radius: 10; -fx-background-radius: 10; " +
+                    "-fx-pref-height: 50; -fx-background-color: #93BFCF");
+        });
+
+        this.vBox.setOnMouseExited(event -> {
+            this.vBox.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; " +
+                    "-fx-pref-height: 50; -fx-background-color: #93BFCF ");
+        });
     }
 
     /**
@@ -68,6 +82,7 @@ public class CardCell extends ListCell<Card>  {
             throw new RuntimeException(e);
         }
     }
+
 
     /**
      * Overriding the defined update Item for Custom Card Cell
