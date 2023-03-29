@@ -55,7 +55,7 @@ public class CardCell extends ListCell<Card>  {
             }
         });
 
-
+        /*
         removeButton.setOnAction(event -> getListView().getItems().remove(getItem()));
         this.vBox.setOnMouseEntered(event -> {
             this.vBox.setStyle("-fx-border-color: yellow;-fx-border-radius: 10; -fx-background-radius: 10; " +
@@ -66,6 +66,7 @@ public class CardCell extends ListCell<Card>  {
             this.vBox.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; " +
                     "-fx-pref-height: 50; -fx-background-color: #93BFCF ");
         });
+         */
     }
 
     /**

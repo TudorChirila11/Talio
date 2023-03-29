@@ -114,7 +114,6 @@ public class BoardCtrl implements Initializable {
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
-        System.out.println("We did it, we deleted everything!");
     }
 
 
@@ -122,7 +121,6 @@ public class BoardCtrl implements Initializable {
      * Sets the state of board
      */
     public void refresh() {
-        System.out.println("I just got refreshed!");
         List<Collection> taskCollections = server.getCollections();
         // Create a horizontal box to hold the task lists
         HBox taskListsBox = new HBox(25);
