@@ -361,7 +361,7 @@ public class BoardCtrl implements Initializable {
             return 0;
         int pos = 0;
         double cardSize = 100, error = 0;
-        pos = (int) Math.min(y/(cardSize + error), sz-1);
+        pos = (int) Math.min(y/(cardSize + error), sz);
         System.out.println(y + " position " + pos);
         return pos;
     }
