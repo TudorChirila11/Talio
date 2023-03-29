@@ -47,13 +47,25 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 public class ServerUtils {
 
     private static String server = "http://localhost:8080/";
+    private String ip = "localhost";
 
     /**
      * @param ip the ip that the user will be connecting to
      */
     public void changeIP(String ip) {
+
         server = "http://" + ip + ":8080/";
+        this.ip = ip;
     }
+
+    /**
+     * Returns the current ip the client is connected too.
+     * @return the ip
+     */
+    public String getIp(){
+        return ip;
+    }
+
 
     /**
      * Manual logger of all the active quates
@@ -97,6 +109,8 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
     }
+
+
 
 
     /**
@@ -298,8 +312,21 @@ public class ServerUtils {
             addBoard(newBoard);
             return newBoard;
         }
-
         return boards.get(0);
+    }
+
+
+    /**
+     * Gets a board by id
+     * @param id id of the board
+     * @return returns the board object
+     */
+    public Board getBoardById(long id){
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/boards/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(Board.class);
     }
 
     /**
@@ -324,6 +351,7 @@ public class ServerUtils {
      * @param ip the url of the server to which the stomp client will connect to
      */
     public void createStompSession(String ip) {
+        this.ip = ip;
         session = connect("ws://" + ip + ":8080/websocket");
     }
 

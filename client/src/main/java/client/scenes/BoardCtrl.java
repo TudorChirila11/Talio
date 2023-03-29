@@ -35,9 +35,6 @@ public class BoardCtrl implements Initializable {
     @FXML
     private ScrollPane collectionsContainer;
 
-    @FXML
-    private MenuButton boardMenu;
-
     private final MainCtrl mainCtrl;
 
 
@@ -121,18 +118,7 @@ public class BoardCtrl implements Initializable {
      * @param board current board
      * */
     public void refresh(Board board) {
-        if(board != null) boardMenu.setText(board.getName());
         currentBoard = board;
-        boardMenu.getItems().clear();
-        for(Board b: server.getBoards()){
-            MenuItem i = new MenuItem(b.getName());
-            i.setOnAction(event -> {
-                boardMenu.setText(i.getText());
-                currentBoard = b;
-                refresh(currentBoard);
-            });
-            boardMenu.getItems().add(i);
-        }
         if(currentBoard == null) currentBoard = server.getBoard();
         System.out.println("I just got refreshed!");
         List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);

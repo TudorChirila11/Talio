@@ -44,7 +44,6 @@
                 </ImageView>
             </graphic>
         </Button>
-        <MenuButton fx:id="boardMenu" layoutX="56.0" layoutY="97.0" mnemonicParsing="false" text="Choose a board" />
         <ScrollPane id="collectionContainer" fx:id="collectionsContainer" fitToHeight="true" layoutX="48.0" layoutY="134.0" prefHeight="375.0" prefViewportHeight="500.0" prefViewportWidth="300.0" prefWidth="675.0">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="650.0">
