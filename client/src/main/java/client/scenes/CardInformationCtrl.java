@@ -167,7 +167,7 @@ public class CardInformationCtrl implements Initializable {
             return;
         }
         try {
-            server.addCard(getCard());
+            server.send("/app/cards", getCard());
 
         } catch (WebApplicationException e) {
 

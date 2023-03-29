@@ -8,6 +8,8 @@ import commons.Card;
 import commons.Collection;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import server.database.CardRepository;
@@ -28,6 +30,42 @@ public class CardController {
     public CardController(CardRepository repo, CollectionRepository collectionRepository) {
         this.repo = repo;
         this.collectionRepository = collectionRepository;
+    }
+
+    /**
+     * This method receives and distributes cards between clients
+     * @param c the card that the server has received and will send to all the clients on the network
+     * @return a card
+     */
+    @MessageMapping("/cards") // /app/cards
+    @SendTo("/topic/update")
+    public Card addCard(Card c){
+        add(c);
+        return c;
+    }
+
+    /**
+     * This method receives and distributes cards between clients
+     * @param id the card's id that the server has received and will send to all the clients on the network
+     * @return a card
+     */
+    @MessageMapping("/cardsDelete") // /app/cards
+    @SendTo("/topic/update")
+    public Long deleteCard(Long id){
+        delete(id);
+        return id;
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param s a string that is needed for the method to work
+     * @return a collection
+     */
+    @MessageMapping("/cardsDeleteAll") // /app/collectionsDelete
+    @SendTo("/topic/update")
+    public Card deleteAllCards(Card s){
+        deleteAll();
+        return s;
     }
 
     /**

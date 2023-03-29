@@ -56,11 +56,13 @@ public class WelcomePageCtrl implements Initializable {
      */
     public void changeIP(String ip){
         if (Objects.equals(ip, "")) {
-            ServerUtils.changeIP("localhost");
+            server.changeIP("localhost");
+            server.createStompSession("localhost");
             mainCtrl.showBoard();
         } else {
             if (pingHost(ip, 8080, 1000)) {
-                ServerUtils.changeIP(ip);
+                server.changeIP(ip);
+                server.createStompSession(ip);
                 mainCtrl.showBoard();
             } else {
                 errorConnection.setText("The entered IP address is invalid");

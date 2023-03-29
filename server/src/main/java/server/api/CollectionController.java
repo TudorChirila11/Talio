@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import commons.Card;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import commons.Collection;
@@ -27,6 +29,43 @@ public class CollectionController {
         this.repoCollection = repoCollection;
         this.repoCard = repoCard;
 
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param c the collection that the server has received and will send to all the clients on the network
+     * @return a collection
+     */
+    @MessageMapping("/collections") // /app/collections
+    @SendTo("/topic/update")
+    public Collection addCollection(Collection c){
+        add(c);
+        return c;
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param c the collection that the server has received and will send to all the clients on the network
+     * @return a collection
+     */
+    @MessageMapping("/collectionsDelete") // /app/collectionsDelete
+    @SendTo("/topic/update")
+    public Collection deleteCollection(Collection c){
+        delete(c.getId());
+        return c;
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param s a string that is needed for the method to work
+     * @return a collection
+     */
+    @MessageMapping("/collectionsDeleteAll") // /app/collectionsDelete
+    @SendTo("/topic/update")
+    public Collection deleteAllCollections(Collection s){
+        System.out.println("Hi, I am receiving a signal!");
+        deleteAll();
+        return s;
     }
 
     /**

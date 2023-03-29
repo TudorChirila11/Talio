@@ -6,10 +6,10 @@ import client.utils.ServerUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import commons.Board;
 import commons.Card;
 import commons.Collection;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -91,16 +91,35 @@ public class BoardCtrl implements Initializable {
         boards.add("Board 3");
         boards.add("Board 4");
         boardChoiceBox.setItems(boards);
+
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
     }
 
     /**
      * Resets all stuff on the board.
      */
     public void resetBoard(){
-        server.resetState();
-        Board board = new Board("Board 1");
-        server.addBoard(board);
-        refresh();
+        try {
+            server.send("/app/collectionsDeleteAll", new Collection());
+
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+        try {
+            server.send("/app/cardsDeleteAll", new Card());
+
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+        System.out.println("We did it, we deleted everything!");
     }
 
 
@@ -108,6 +127,7 @@ public class BoardCtrl implements Initializable {
      * Sets the state of board
      */
     public void refresh() {
+        System.out.println("I just got refreshed!");
         List<Collection> taskCollections = server.getCollections();
         // Create a horizontal box to hold the task lists
         HBox taskListsBox = new HBox(25);
@@ -138,7 +158,7 @@ public class BoardCtrl implements Initializable {
 
             // Create the button that allows a user to add to a collection
             Button addButton = new Button();
-            addButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/client/assets/add.png"))));
+            addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
             // Custom css
             addButton.getStyleClass().add("addButton");
             addButton.setOnAction(event -> addCard());
@@ -151,7 +171,7 @@ public class BoardCtrl implements Initializable {
             taskListsBox.getChildren().add(collectionVBox);
 
             // Adding the relevant collectionLabel controls
-            addTaskListControls(collectionLabel, collectionName, current.getId());
+            addTaskListControls(collectionLabel, collectionName, current);
         }
 
         // Finally updating all the values in the pane with the current HBox
@@ -222,7 +242,7 @@ public class BoardCtrl implements Initializable {
      */
     private void setupDragAndDrop(ListView<Card> listView) {
         ObjectMapper om = new ObjectMapper();
-        if(listView.getItems().size()<2) {
+        if(listView.getItems().size()<4) {
             configOnDragOver(listView);
             listView.setOnDragDropped( event -> configDropped(event, listView, getIndex(listView, event.getY()), om));
         }
@@ -263,11 +283,11 @@ public class BoardCtrl implements Initializable {
             String newName = result.get();
             if (!newName.isEmpty()) {
                 Collection randomC = new Collection(newName, server.getBoard());
-                server.getBoard().addCollection(randomC);
                 try {
                     server.addCollection(randomC);
                    // Board b = server.getBoard();
                    // server.addBoard(b);
+                    server.send("/app/collections", randomC);
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
                     e.getCause();
@@ -279,22 +299,29 @@ public class BoardCtrl implements Initializable {
                 }
             }
         }
-        refresh();
     }
 
     /**
      * Controller for Label interactions.
      * @param label the label of the collection
      * @param listName collection / list of cards name
-     * @param id the collection id
+     * @param collection the collection
      */
-    private void addTaskListControls(Label label, String listName, long id) {
+    private void addTaskListControls(Label label, String listName, Collection collection) {
         // Creates a button that has a delete function respective to the source collection
         Button delete = new Button("X");
         delete.setStyle("-fx-font-size: 10px; -fx-background-color: #FF0000; -fx-text-fill: white;");
         delete.setOnAction(event -> {
-            server.deleteCollection(id);
-            refresh();
+            try {
+                server.send("/app/collectionsDelete", collection);
+
+            } catch (WebApplicationException e) {
+
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            }
         });
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);

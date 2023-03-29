@@ -45,6 +45,10 @@ public class MainCtrl {
 
     private Scene welcomePage;
 
+    private KeyboardShortcutFCtrl keyboardShortcutFCtrl;
+
+    private Scene keyboardShortcut;
+
     /**
      * Initializes the mainCtrl method with all the active controllers
      * @param primaryStage primary stage (active)
@@ -54,10 +58,12 @@ public class MainCtrl {
      * @param cardInfo cardInfo scene
      * @param collection collection scene
      * @param welcomePage welcomePage scene
+     * @param keyboardShortcut keyboardShortcut scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
-                           Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage) {
+                           Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
+                           Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -76,6 +82,9 @@ public class MainCtrl {
 
         this.welcomePageCtrl = welcomePage.getKey();
         this.welcomePage = new Scene(welcomePage.getValue());
+
+        this.keyboardShortcutFCtrl = keyboardShortcut.getKey();
+        this.keyboardShortcut = new Scene(keyboardShortcut.getValue());
 
         showWelcomePage();
         primaryStage.show();
@@ -132,11 +141,85 @@ public class MainCtrl {
     }
 
     /**
+     * Getter for the board field
+     * @return Scene - the board scene
+     */
+    public Scene getBoard() {
+        return board;
+    }
+
+    /**
+     * Getter for the overview field
+     * @return Scene - the overview scene
+     */
+    public Scene getOverview() {
+        return overview;
+    }
+
+    /**
+     * Getter for the add field
+     * @return Scene - the add scene
+     */
+    public Scene getAdd() {
+        return add;
+    }
+
+    /**
+     * Getter for the cardInformation field
+     * @return Scene - the cardInformation scene
+     */
+    public Scene getCardInformation() {
+        return cardInformation;
+    }
+
+    /**
+     * Getter for the collection field
+     * @return Scene - the collection scene
+     */
+    public Scene getCollection() {
+        return collection;
+    }
+
+    /**
+     * Getter for the keyboardShortcut field
+     * @return Scene - the keyboardShortcut scene
+     */
+    public Scene getKeyboardShortcut() {
+        return keyboardShortcut;
+    }
+
+    /**
+     * Getter for the welcomePage field
+     * @return Scene - the welcomePage scene
+     */
+    public Scene getWelcomePage() {
+        return welcomePage;
+    }
+
+    /**
+     * Getter for the primaryStage field
+     * @return Stage - the scene that is currently being displayed
+     */
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    /**
      * Displays the collection Scene
      * and enables the controller
      */
     public void showWelcomePage(){
         primaryStage.setTitle("Welcome page Overview: Welcome page");
         primaryStage.setScene(welcomePage);
+
+    }
+
+    /**
+     * Displays the keyboardShortcuts Scene
+     * and enables the controller
+     */
+    public void showKeyboardShortcutPage() {
+        primaryStage.setTitle("Keyboard Shortcuts Overview: Keyboard Shortcuts page");
+        primaryStage.setScene(keyboardShortcut);
     }
 }

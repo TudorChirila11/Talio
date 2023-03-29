@@ -35,6 +35,7 @@ public class MyModule implements Module {
         binder.bind(CardInformationCtrl.class).in(Scopes.SINGLETON);
         binder.bind(CollectionOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(BoardCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(KeyboardShortcutFCtrl.class).in(Scopes.SINGLETON);
         ///TODO add CardInformationCtrl?
     }
 }
