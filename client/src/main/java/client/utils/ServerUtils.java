@@ -298,7 +298,7 @@ public class ServerUtils {
      * @param indexNew - new id
      * @return new collection
      */
-    public Response changeCardIndex(Collection old, int indexOld, Collection newCol, int indexNew)
+    public Response changeCardIndex(Collection old, long indexOld, Collection newCol, long indexNew)
     {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(server).path("api/collections/"+old.getId() +"/"+indexOld + "/" + newCol.getId() + "/" + indexNew) //
@@ -336,4 +336,5 @@ public class ServerUtils {
                 .get(new GenericType<Card>() {
                 });
     }
+
 }

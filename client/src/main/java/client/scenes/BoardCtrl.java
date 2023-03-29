@@ -12,6 +12,7 @@ import commons.Collection;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -158,45 +159,59 @@ public class BoardCtrl implements Initializable {
     }
 
     /**
-     * tells this listview what to do in case a card is dropped onto it
-     * @param listView - current ListView
+     * sets up what happens in case of drop
+     * @param event - the drag event
+     * @param listView - the listView in which this operation happens
+     * @param newIndex - the new index this cell will be on
+     * @param om - object mapper to efficiently handle card data
      */
-    private void setDropped(ListView<Card> listView, ObjectMapper om)
+    private void configDropped(DragEvent event, ListView<Card> listView, long newIndex, ObjectMapper om)
     {
-        listView.setOnDragDropped(event -> {
-            Dragboard dragboard = event.getDragboard();
-            boolean success = false;
-            if (dragboard.hasString()) {
 
-                Card card = null;
-                try {
-                    card = om.readValue(dragboard.getString(), Card.class);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-                //listView.getItems().add(card);
-                //success = true;
-                // Find the source ListView by traversing up the scene graph
-                Node sourceNode = (Node) event.getGestureSource();
-                while (sourceNode != null && !(sourceNode instanceof ListView)) {
-                    sourceNode = sourceNode.getParent();
-                }
-                //TODO Fix the warning here...
-                if (sourceNode != null) {
-                    ListView<Card> sourceList = (ListView<Card>) sourceNode;
-                    int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
-                //    Card sourceCard = sourceList.getItems().get(sourceIndex);
-                  //  sourceList.getItems().remove(sourceCard);
+        Dragboard dragboard = event.getDragboard();
+        boolean success = false;
+        if (dragboard.hasString()) {
 
-                    Collection oldCollection = mapper.get(sourceList);
-                    Collection newCollection = mapper.get(listView);
-                    int oldIndex = sourceIndex;
-                    int currentIndex = getIndex(listView, event.getY());
-                    server.changeCardIndex(oldCollection, oldIndex, newCollection, currentIndex);
-                    refresh();
-                }
+            Card card = null;
+            try {
+                card = om.readValue(dragboard.getString(), Card.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
-            event.setDropCompleted(success);
+            //listView.getItems().add(card);
+            //success = true;
+            // Find the source ListView by traversing up the scene graph
+            Node sourceNode = (Node) event.getGestureSource();
+            while (sourceNode != null && !(sourceNode instanceof ListView)) {
+                sourceNode = sourceNode.getParent();
+            }
+            //TODO Fix the warning here...
+            if (sourceNode != null) {
+                ListView<Card> sourceList = (ListView<Card>) sourceNode;
+                int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
+                //    Card sourceCard = sourceList.getItems().get(sourceIndex);
+                //  sourceList.getItems().remove(sourceCard);
+
+                Collection oldCollection = mapper.get(sourceList);
+                Collection newCollection = mapper.get(listView);
+                long oldIndex = sourceIndex;
+                //int currentIndex = getIndex(listView, event.getY());
+                server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
+                refresh();
+            }
+        }
+        event.setDropCompleted(success);
+        event.consume();
+    }
+
+
+
+    public void configOnDragOver(Node handler)
+    {
+        handler.setOnDragOver(event -> {
+            if (event.getGestureSource() instanceof CardCell && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
             event.consume();
         });
     }
@@ -207,13 +222,10 @@ public class BoardCtrl implements Initializable {
      */
     private void setupDragAndDrop(ListView<Card> listView) {
         ObjectMapper om = new ObjectMapper();
-        listView.setOnDragOver(event -> {
-            if (event.getGestureSource() instanceof CardCell && event.getDragboard().hasString()) {
-                event.acceptTransferModes(TransferMode.MOVE);
-            }
-            event.consume();
-        });
-        setDropped(listView, om);
+        if(listView.getItems().size()<2) {
+            configOnDragOver(listView);
+            listView.setOnDragDropped( event -> configDropped(event, listView, getIndex(listView, event.getY()), om));
+        }
         listView.setCellFactory(param -> {
             CardCell cell = new CardCell(server);
             cell.setOnDragDetected(event -> {
@@ -228,7 +240,8 @@ public class BoardCtrl implements Initializable {
                 dragboard.setContent(content);
                 event.consume();
             });
-
+            configOnDragOver(cell);
+            cell.setOnDragDropped(event -> configDropped(event, listView, server.getCard(cell.getItem().getId()).getIndex(), om));
             return cell;
         });
     }
