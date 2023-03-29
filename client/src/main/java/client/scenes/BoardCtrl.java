@@ -126,7 +126,7 @@ public class BoardCtrl implements Initializable {
      * Sets the state of board
      */
     public void refresh() {
-        System.out.println("I just got refreshed!");
+        //System.out.println("I just got refreshed!");
         List<Collection> taskCollections = server.getCollections();
         // Create a horizontal box to hold the task lists
         HBox taskListsBox = new HBox(25);
@@ -147,6 +147,7 @@ public class BoardCtrl implements Initializable {
             collection.setCellFactory(new CardCellFactory(server));
             collection.setPrefSize(225, 275);
 
+            System.out.println(current.getName() +" " + collection.getItems());
             //maps this listview to its associate Collection
             mapper.put(collection, current);
 
@@ -184,9 +185,9 @@ public class BoardCtrl implements Initializable {
      */
     private void configDropped(DragEvent event, ListView<Card> listView, long newIndex, ObjectMapper om)
     {
-
         Dragboard dragboard = event.getDragboard();
         boolean success = false;
+        System.out.println(dragboard.getString());
         if (dragboard.hasString()) {
 
             Card card = null;
@@ -260,8 +261,10 @@ public class BoardCtrl implements Initializable {
                 dragboard.setContent(content);
                 event.consume();
             });
-            configOnDragOver(cell);
-            cell.setOnDragDropped(event -> configDropped(event, listView, server.getCard(cell.getItem().getId()).getIndex(), om));
+            if(listView.getItems().size()>=4) {
+                configOnDragOver(cell);
+                cell.setOnDragDropped(event -> configDropped(event, listView, server.getCard(cell.getItem().getId()).getIndex(), om));
+            }
             return cell;
         });
     }
@@ -284,7 +287,6 @@ public class BoardCtrl implements Initializable {
             if (!newName.isEmpty()) {
                 Collection randomC = new Collection(newName, server.getBoard());
                 try {
-                    server.addCollection(randomC);
                    // Board b = server.getBoard();
                    // server.addBoard(b);
                     server.send("/app/collections", randomC);
