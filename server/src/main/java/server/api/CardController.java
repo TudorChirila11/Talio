@@ -6,6 +6,7 @@ import java.util.List;
 
 import commons.Card;
 import commons.Collection;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -111,7 +112,7 @@ public class CardController {
      */
     @GetMapping("/{id}/ofCollection")
     public ResponseEntity<List<Card>> getCardsByIdOfCollection(@PathVariable long id) {
-        List<Card> allCards = repo.findAll();
+        List<Card> allCards = repo.findAll(Sort.by(Sort.Direction.ASC, "index"));
         List<Card> res = new ArrayList<>();
 
         for (Card c : allCards) {
@@ -119,6 +120,7 @@ public class CardController {
                 res.add(c);
             }
         }
+        System.out.println(res);
 
         return ResponseEntity.ok(res);
 
@@ -166,6 +168,7 @@ public class CardController {
      */
     @PostMapping(path = { "/", ""})
     public ResponseEntity<Card> add(@RequestBody Card card){
+        System.out.println(card);
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }

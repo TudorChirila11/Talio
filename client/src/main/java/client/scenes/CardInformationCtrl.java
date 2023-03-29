@@ -149,7 +149,6 @@ public class CardInformationCtrl implements Initializable {
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
         ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
 
-
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtasks);

@@ -166,7 +166,6 @@ public class BoardCtrl implements Initializable {
         listView.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
-            //TODO This can be done better without direct parsing...
             if (dragboard.hasString()) {
 
                 Card card = null;
@@ -175,8 +174,8 @@ public class BoardCtrl implements Initializable {
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-                listView.getItems().add(card);
-                success = true;
+                //listView.getItems().add(card);
+                //success = true;
                 // Find the source ListView by traversing up the scene graph
                 Node sourceNode = (Node) event.getGestureSource();
                 while (sourceNode != null && !(sourceNode instanceof ListView)) {
@@ -186,14 +185,15 @@ public class BoardCtrl implements Initializable {
                 if (sourceNode != null) {
                     ListView<Card> sourceList = (ListView<Card>) sourceNode;
                     int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
-                    Card sourceCard = sourceList.getItems().get(sourceIndex);
-                    sourceList.getItems().remove(sourceCard);
+                //    Card sourceCard = sourceList.getItems().get(sourceIndex);
+                  //  sourceList.getItems().remove(sourceCard);
 
                     Collection oldCollection = mapper.get(sourceList);
                     Collection newCollection = mapper.get(listView);
                     int oldIndex = sourceIndex;
                     int currentIndex = getIndex(listView, event.getY());
                     server.changeCardIndex(oldCollection, oldIndex, newCollection, currentIndex);
+                    refresh();
                 }
             }
             event.setDropCompleted(success);
@@ -253,7 +253,8 @@ public class BoardCtrl implements Initializable {
                 server.getBoard().addCollection(randomC);
                 try {
                     server.addCollection(randomC);
-                    server.addBoard(server.getBoard());
+                   // Board b = server.getBoard();
+                   // server.addBoard(b);
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
                     e.getCause();
@@ -314,6 +315,8 @@ public class BoardCtrl implements Initializable {
     public int getIndex(ListView<Card> lv, double y)
     {
         int sz = lv.getItems().size();
+        if(sz == 0)
+            return 0;
         int pos = 0;
         double cardSize = 100, error = 0;
         pos = (int) Math.min(y/(cardSize + error), sz-1);

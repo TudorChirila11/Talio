@@ -154,7 +154,7 @@ public class CollectionController {
         }
         c.setCollectionId(newCollection);
         cardsNew.add(newIndex, c);
-        for(int i = index; i <cardsNew.size() ;++i)
+        for(int i = newIndex; i <cardsNew.size() ;++i)
         {
             cardsNew.get(i).setIndex((long) i);
             repoCard.save(cardsNew.get(i));
