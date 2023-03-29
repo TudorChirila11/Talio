@@ -12,7 +12,6 @@ import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -142,8 +141,6 @@ public class BoardCtrl implements Initializable {
             Label collectionLabel = new Label(collectionName);
             collectionLabel.getStyleClass().add("collectionLabel");
 
-
-
             // Create a list view for the current (list of cards)
             ListView<Card> collection = new ListView<>(list);
             collection.getStyleClass().add("collection");
@@ -225,7 +222,10 @@ public class BoardCtrl implements Initializable {
     }
 
 
-
+    /**
+     * configures what happens on drag over, during the drag-and-drop process
+     * @param handler - object you drag over on - can be a ListView<Card> or a CardCell
+     */
     public void configOnDragOver(Node handler)
     {
         handler.setOnDragOver(event -> {
