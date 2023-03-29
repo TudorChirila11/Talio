@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 
 
 import javax.persistence.Id;
-import java.util.List;
 
 @Entity
 @Table(name = "cards")
@@ -28,23 +27,6 @@ public class Card {
 
     @Column(name = "collection_id")
     private Long collectionId;
-
-    @OneToMany(mappedBy = "cardId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tag> tags;
-
-    /**
-     * the constructor of the card class
-     * @param title the name users can see
-     * @param description the description for the card
-     * @param collection the id of collection
-     * @param tags the tags that the card has
-     */
-    public Card(String title, String description, Collection collection, List<Tag> tags) {
-        this.title = title;
-        this.description = description;
-        this.collectionId = collection.getId();
-        this.tags = tags;
-    }
 
 
     /**
@@ -168,14 +150,6 @@ public class Card {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     /**

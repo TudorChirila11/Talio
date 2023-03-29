@@ -25,13 +25,13 @@ public class BoardController {
     }
 
     /**
-     * This method receives and distributes collections between clients
-     * @param b the collection that the server has received and will send to all the clients on the network
+     * This method receives and distributes boards between clients
+     * @param b the board that the server has received and will send to all the clients on the network
      * @return a collection
      */
     @MessageMapping("/boards") // /app/collections
     @SendTo("/topic/update")
-    public Board addCollection(Board b){
+    public Board addBoard(Board b){
         add(b);
         return b;
     }

@@ -13,22 +13,8 @@ public class Board {
     private Long id;
 
     private String name;
-
-    @OneToMany(mappedBy = "boardId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tag> tags;
-
     @OneToMany(mappedBy = "boardId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Collection> collections = new ArrayList<>();
-
-    /**
-     * board constructor with name
-     * @param name the name of the board
-     * @param tags the tags that the board has
-     */
-    public Board(String name, List<Tag> tags) {
-        this.name = name;
-        this.tags = tags;
-    }
 
 
     /**
@@ -62,30 +48,12 @@ public class Board {
     }
 
     /**
-     * get the name of the board
-     * @return tags
-     */
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    /**
      * set the name of the board
      * @param name the new name
      * @return self
      */
     public Board setName(String name) {
         this.name = name;
-        return this;
-    }
-
-    /**
-     * set the name of the board
-     * @param tags the new tags
-     * @return self
-     */
-    public Board setTags(List<Tag> tags) {
-        this.tags = tags;
         return this;
     }
 
@@ -133,8 +101,7 @@ public class Board {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return Objects.equals(id, board.id) && Objects.equals(name, board.name) && Objects.equals(collections, board.collections)
-                && Objects.equals(tags, board.tags);
+        return Objects.equals(id, board.id) && Objects.equals(name, board.name) && Objects.equals(collections, board.collections);
     }
 
     /**
@@ -143,7 +110,7 @@ public class Board {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, collections, tags);
+        return Objects.hash(id, name, collections);
     }
 
     /**
@@ -156,7 +123,6 @@ public class Board {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", collections=" + collections +
-                ", tags=" + tags +
                 '}';
     }
 }

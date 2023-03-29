@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<VBox id="tagCreator" xmlns="http://javafx.com/javafx"
+            stylesheets="@/client/stylesheets/Global.css"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.scenes.TagCreatorCtrl"
+            prefHeight="400.0" prefWidth="600.0">
+        <HBox>
+                <Button onAction="#goBack" text="go back" />
+                <HBox HBox.hgrow="ALWAYS" />
+        </HBox>
+        <Text id="tagCreatorText" text="Tag name:"/>
+        <TextArea id="tagDescription" fx:id="tagDescription"/>
+        <ColorPicker id="tagColour" fx:id="tagColour"/>
+        <Button id="createTagButton" fx:id="createTagButton" onAction="#createTag" text="create tag" />
+</VBox>

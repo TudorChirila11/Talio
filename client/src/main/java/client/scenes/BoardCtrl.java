@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Card;
 import commons.Collection;
+import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -26,6 +27,10 @@ import java.util.*;
 
 public class BoardCtrl implements Initializable {
     private final ServerUtils server;
+
+    @FXML
+    public Button tagButton;
+    public Button tagOverview;
 
     @FXML
     private Button addCollectionButton;
@@ -87,6 +92,9 @@ public class BoardCtrl implements Initializable {
         boards.add("Board 4");
         boardChoiceBox.setItems(boards);
 
+        tagButton.setOnAction(event -> mainCtrl.showTagCreation());
+        tagOverview.setOnAction(event -> mainCtrl.showTagOverview());
+
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
     }
 
@@ -106,6 +114,16 @@ public class BoardCtrl implements Initializable {
         }
         try {
             server.send("/app/cardsDeleteAll", new Card());
+
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+        try {
+            server.send("/app/tagsDeleteAll", new Tag());
 
         } catch (WebApplicationException e) {
 

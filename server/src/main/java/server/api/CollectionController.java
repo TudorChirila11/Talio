@@ -63,7 +63,6 @@ public class CollectionController {
     @MessageMapping("/collectionsDeleteAll") // /app/collectionsDelete
     @SendTo("/topic/update")
     public Collection deleteAllCollections(Collection s){
-        System.out.println("Hi, I am receiving a signal!");
         deleteAll();
         return s;
     }

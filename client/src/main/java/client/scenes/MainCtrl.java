@@ -49,6 +49,15 @@ public class MainCtrl {
 
     private Scene keyboardShortcut;
 
+    private TagCreatorCtrl tagCreatorCtrl;
+
+    private Scene tagCreator;
+
+    private TagOverviewCtrl tagOverviewCtrl;
+
+    private Scene tagOverview;
+
+
     /**
      * Initializes the mainCtrl method with all the active controllers
      * @param primaryStage primary stage (active)
@@ -59,11 +68,14 @@ public class MainCtrl {
      * @param collection collection scene
      * @param welcomePage welcomePage scene
      * @param keyboardShortcut keyboardShortcut scene
+     * @param tagCreator tagCreator scene
+     * @param tagOverview tagCreator scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
-                           Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut) {
+                           Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
+                           Pair<TagOverviewCtrl, Parent> tagOverview) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -85,6 +97,12 @@ public class MainCtrl {
 
         this.keyboardShortcutFCtrl = keyboardShortcut.getKey();
         this.keyboardShortcut = new Scene(keyboardShortcut.getValue());
+
+        this.tagCreatorCtrl = tagCreator.getKey();
+        this.tagCreator = new Scene(tagCreator.getValue());
+
+        this.tagOverviewCtrl = tagOverview.getKey();
+        this.tagOverview = new Scene(tagOverview.getValue());
 
         showWelcomePage();
         primaryStage.show();
@@ -129,6 +147,24 @@ public class MainCtrl {
         primaryStage.setTitle("Board Overview: Board");
         primaryStage.setScene(board);
         boardCtrl.refresh();
+    }
+
+    /**
+     * Displays the tag creation Scene
+     * and enables the controller
+     */
+    public void showTagCreation(){
+        primaryStage.setTitle("Tag Creation Window");
+        primaryStage.setScene(tagCreator);
+    }
+
+    /**
+     * Displays the tag creation Scene
+     * and enables the controller
+     */
+    public void showTagOverview(){
+        primaryStage.setTitle("Tag Overview Window");
+        primaryStage.setScene(tagOverview);
     }
 
     /**
