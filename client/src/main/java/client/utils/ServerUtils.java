@@ -294,29 +294,6 @@ public class ServerUtils {
     }
 
     /**
-     * Retrieves the only board
-     *
-     * @return a board
-     */
-    public Board getBoard() {
-        List<Board> boards = ClientBuilder.newClient(new ClientConfig())
-                .target(server)
-                .path("api/boards")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<Board>>() {
-                });
-        if (boards.isEmpty()) {
-            // create a new board and add it to the database
-            Board newBoard = new Board("Main Board");
-            addBoard(newBoard);
-            return newBoard;
-        }
-        return boards.get(0);
-    }
-
-
-    /**
      * Gets a board by id
      * @param id id of the board
      * @return returns the board object

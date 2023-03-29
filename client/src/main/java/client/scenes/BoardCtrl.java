@@ -32,6 +32,10 @@ public class BoardCtrl implements Initializable {
     private Board currentBoard;
     @FXML
     private Button addCollectionButton;
+
+    @FXML
+    private Label boardLabel;
+
     @FXML
     private ScrollPane collectionsContainer;
 
@@ -68,7 +72,6 @@ public class BoardCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        server.getBoard();
 
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -80,21 +83,11 @@ public class BoardCtrl implements Initializable {
     }
 
     /**
-     * Resets all stuff on the board.
+     * Resets all the collections and cards on the board.
      */
     public void resetBoard(){
         try {
-            server.send("/app/collectionsDeleteAll", new Collection());
-
-        } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-        }
-        try {
-            server.send("/app/cardsDeleteAll", new Card());
+            server.send("/app/collectionsDeleteAll", currentBoard);
 
         } catch (WebApplicationException e) {
 
@@ -119,41 +112,43 @@ public class BoardCtrl implements Initializable {
      * */
     public void refresh(Board board) {
         currentBoard = board;
-        if(currentBoard == null) currentBoard = server.getBoard();
-        System.out.println("I just got refreshed!");
-        List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
+        if(currentBoard != null){
+            boardLabel.setText("Board: " + board.getName());
+            System.out.println("I just got refreshed!");
+            List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
 
-        HBox taskListsBox = new HBox(25);
-        taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
+            HBox taskListsBox = new HBox(25);
+            taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
 
-        for (Collection current: taskCollections) {
-            ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
-            // Create a label for the collection name
-            Label collectionLabel = new Label(current.getName());
-            collectionLabel.getStyleClass().add("collectionLabel");
-            // Create a list view for the current (list of cards)
-            ListView<Card> collection = new ListView<>(list);
-            collection.getStyleClass().add("collection");
-            collection.setCellFactory(new CardCellFactory(server));
-            collection.setPrefSize(225, 275);
-            setupDragAndDrop(collection);
+            for (Collection current: taskCollections) {
+                ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
+                // Create a label for the collection name
+                Label collectionLabel = new Label(current.getName());
+                collectionLabel.getStyleClass().add("collectionLabel");
+                // Create a list view for the current (list of cards)
+                ListView<Card> collection = new ListView<>(list);
+                collection.getStyleClass().add("collection");
+                collection.setCellFactory(new CardCellFactory(server));
+                collection.setPrefSize(225, 275);
+                setupDragAndDrop(collection);
 
-            // Create the button that allows a user to add to a collection
-            Button addButton = new Button();
-            addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
-            addButton.getStyleClass().add("addButton");
-            addButton.setOnAction(event -> addCard());
+                // Create the button that allows a user to add to a collection
+                Button addButton = new Button();
+                addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
+                addButton.getStyleClass().add("addButton");
+                addButton.setOnAction(event -> addCard());
 
-            // Creating a vertical stacked box with the label -> collection -> addButton
-            VBox collectionVBox = new VBox(10);
-            collectionVBox.getChildren().addAll(collectionLabel, collection, addButton);
+                // Creating a vertical stacked box with the label -> collection -> addButton
+                VBox collectionVBox = new VBox(10);
+                collectionVBox.getChildren().addAll(collectionLabel, collection, addButton);
 
-            // Adding this to Hbox which contains each collection object + controls.
-            taskListsBox.getChildren().add(collectionVBox);
-            addTaskListControls(collectionLabel, current.getName(), current);
+                // Adding this to Hbox which contains each collection object + controls.
+                taskListsBox.getChildren().add(collectionVBox);
+                addTaskListControls(collectionLabel, current.getName(), current);
 
+            }
+            collectionsContainer.setContent(taskListsBox);
         }
-        collectionsContainer.setContent(taskListsBox);
     }
 
     /**

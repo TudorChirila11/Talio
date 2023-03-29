@@ -50,21 +50,21 @@ public class BoardController {
     }
 
     /**
-     * This method receives and distributes collections between clients
-     * @param o a null object that is used to signify that all the collections need to be deleted
-     * @return a collection
+     * This method deletes all boards.
+     * @param board any given board
+     * @return a board
      */
     @MessageMapping("/allBoardsDelete") // /app/collectionsDelete
     @SendTo("/topic/update")
-    public Object deleteAll(Object o){
+    public Board deleteAll(Board board){
         deleteAll();
-        return o;
+        return board;
     }
 
     /**
      * Hardcoded mapping all cards
      *
-     * @return List of cards objects
+     * @return List of boards objects
      */
     @GetMapping(path = {"", "/"})
     public List<Board> getAll() {
@@ -102,7 +102,7 @@ public class BoardController {
     }
 
     /**
-     * deletes all the Cards in the database
+     * deletes all the Boards in the database
      *
      * @return responseEntity
      */

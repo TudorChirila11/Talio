@@ -75,20 +75,20 @@ public class CardInformationCtrl implements Initializable {
 
     private void setupCollectionMenu()
     {
-
         collectionMenu.getItems().clear();
-
-        if(currentBoard == null) currentBoard = server.getBoard();
-        for(Collection c: server.getCollectionsFromBoard(currentBoard)){
-            MenuItem i = new MenuItem(c.getName());
-            i.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    collectionMenu.setText(i.getText());
-                    collectionCurrent = c;
-                }
-            });
-            collectionMenu.getItems().add(i);
+        collectionMenu.setText("Choose collection:");
+        if(currentBoard != null){
+            for(Collection c: server.getCollectionsFromBoard(currentBoard)){
+                MenuItem i = new MenuItem(c.getName());
+                i.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        collectionMenu.setText(i.getText());
+                        collectionCurrent = c;
+                    }
+                });
+                collectionMenu.getItems().add(i);
+            }
         }
     }
 

@@ -39,6 +39,7 @@
                 </ImageView>
             </graphic>
         </Button>
+        <Button fx:id="resetBoard" layoutX="14.0" layoutY="473.0" mnemonicParsing="false" onAction="#resetOverview" text="Reset all Boards" />
     </children>
 
 </AnchorPane>

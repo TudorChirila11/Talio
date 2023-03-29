@@ -367,6 +367,22 @@ public class BoardOverviewCtrl implements Initializable {
     }
 
     /**
+     * Resets the overview of all Boards!
+     */
+    public void resetOverview(){
+        try {
+            server.send("/app/allBoardsDelete", new Board());
+
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    /**
      * Switch back to welcome page
      */
     public void showWelcomePage() {

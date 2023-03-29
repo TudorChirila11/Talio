@@ -62,7 +62,7 @@ public class CollectionOverviewCtrl implements Initializable {
      */
     public void addCard(){
         // Just changed to get rid of error we don't really need this file anymore
-        mainCtrl.showCardInformation(server.getBoard());
+//        mainCtrl.showCardInformation(server.getBoard());
     }
 
     /**
