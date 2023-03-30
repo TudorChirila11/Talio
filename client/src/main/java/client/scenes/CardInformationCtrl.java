@@ -149,7 +149,6 @@ public class CardInformationCtrl implements Initializable {
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
         ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
 
-
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtasks);
@@ -188,7 +187,7 @@ public class CardInformationCtrl implements Initializable {
      */
     public Card getCard() {
         // null collection for now
-        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent);
+        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()));
     }
 
     /**

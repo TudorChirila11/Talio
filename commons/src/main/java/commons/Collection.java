@@ -25,7 +25,8 @@ public class Collection {
     @Column(name = "board_id")
     private Long boardId;
 
-    @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name="index")
+    @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL)
     private List<Card> cards = new ArrayList<>();
 
 

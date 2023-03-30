@@ -105,7 +105,7 @@ public class BoardController {
      * @param board a new board obj
      * @return the Response Entity
      */
-    @PostMapping(path = {"/", ""})
+    @PostMapping(path = {"", "/"})
     public ResponseEntity<Board> add(@RequestBody Board board) {
         Board saved = repo.save(board);
         return ResponseEntity.ok(saved);

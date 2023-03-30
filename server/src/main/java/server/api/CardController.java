@@ -5,24 +5,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import commons.Card;
+import commons.Collection;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import server.database.CardRepository;
+import server.database.CollectionRepository;
 
 @RestController
 @RequestMapping("/api/cards")
 public class CardController {
     private final CardRepository repo;
 
+    private final CollectionRepository collectionRepository;
+
     /**
      * Controller constructor
      * @param repo repo reference
+     * @param collectionRepository reference to Collection repository
      */
-    public CardController(CardRepository repo) {
+    public CardController(CardRepository repo, CollectionRepository collectionRepository) {
         this.repo = repo;
+        this.collectionRepository = collectionRepository;
     }
 
     /**
@@ -115,20 +122,22 @@ public class CardController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Card> updateCard(@PathVariable("id") long id, @RequestBody Card updatedCard) {
-        // check if we have the card in the database
+        System.out.println(" check if we have the card in the database" + id);
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
-        // get the card as it is in the database
+        System.out.println("get the card as it is in the database");
         Card cardInDatabase = repo.findById(id).get();
 
         // update the property's
+        System.out.println("update the props");
         cardInDatabase.setDescription(updatedCard.getDescription());
         cardInDatabase.setTitle(updatedCard.getTitle());
         cardInDatabase.setCollectionId(updatedCard.getCollectionId());
 
         // save the card
+        System.out.println("save the card");
         Card theSavedCard = repo.save(cardInDatabase);
         return ResponseEntity.ok(theSavedCard);
     }
@@ -141,7 +150,7 @@ public class CardController {
      */
     @GetMapping("/{id}/ofCollection")
     public ResponseEntity<List<Card>> getCardsByIdOfCollection(@PathVariable long id) {
-        List<Card> allCards = repo.findAll();
+        List<Card> allCards = repo.findAll(Sort.by(Sort.Direction.ASC, "index"));
         List<Card> res = new ArrayList<>();
 
         for (Card c : allCards) {
@@ -149,6 +158,7 @@ public class CardController {
                 res.add(c);
             }
         }
+        System.out.println(res);
 
         return ResponseEntity.ok(res);
 
@@ -164,6 +174,16 @@ public class CardController {
     public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
+        }
+        Card card = repo.getById(id);
+        System.out.println(card.getId() + card.getTitle() + " " + card.getCollectionId());
+        if(card.getCollectionId() != null){
+            Collection oldCollection = collectionRepository.getById(card.getCollectionId());
+            System.out.println(oldCollection);
+            oldCollection.removeCard(card);
+            System.out.println(card);
+            System.out.println(oldCollection);
+            collectionRepository.save(oldCollection);
         }
         repo.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -186,6 +206,7 @@ public class CardController {
      */
     @PostMapping(path = { "/", ""})
     public ResponseEntity<Card> add(@RequestBody Card card){
+        System.out.println(card);
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }
