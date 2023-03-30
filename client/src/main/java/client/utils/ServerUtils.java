@@ -267,6 +267,35 @@ public class ServerUtils {
         return boards.get(0);
     }
 
+    /**
+     * deletes card from index, in the Collection col's card array
+     * @param col - the collection we want the card deleted from
+     * @param index - the index
+     * @return response
+     */
+    public Response deleteCardFromIndex(Collection col, int index)
+    {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/collections/" + col.getId() + "/deleteCard/"+index) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+    }
+
+    /**
+     * adds card to specific index inside a specific collection's card array
+     * @param col - the collection we want to add the card to
+     * @param c - the card object
+     * @param index - the new index where Card c will be located in col's card ArrayList
+     * @return Collection object
+     */
+    public Collection addCardToIndex(Collection col, Card c, int index) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/collections/" + col.getId() + "/" + c.getId() + "/" + index) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(col, APPLICATION_JSON), Collection.class);
+    }
     private StompSession session = connect("ws://localhost:8080/websocket");
 
     /**
@@ -277,6 +306,54 @@ public class ServerUtils {
         session = connect("ws://" + ip + ":8080/websocket");
     }
 
+
+    /**
+     * switches the position of card from indexOld, Collection old to indexNew, Collection newCol
+     *
+     * @param old      - old collection
+     * @param indexOld - old index
+     * @param newCol   - new collection
+     * @param indexNew - new id
+     * @return new collection
+     */
+    public Response changeCardIndex(Collection old, long indexOld, Collection newCol, long indexNew)
+    {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/collections/"+old.getId() +"/"+indexOld + "/" + newCol.getId() + "/" + indexNew) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get();
+    }
+
+
+    /**
+     * updates this card
+     * @param cardId - the id of the card we want to update
+     * @param newCard - the new card data we want to update with
+     * @return Collection object
+     */
+    public Card updateCard(Long cardId, Card newCard)
+    {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/cards/"+cardId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(newCard, APPLICATION_JSON), Card.class);
+    }
+
+    /**
+     * returns this card object
+     * @param id - card id
+     * @return the Card object
+     */
+    public Card getCard(Long id) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/cards/"+id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Card>() {
+                });
+    }
 
     /**
      * This method creates a stomp client that connects to the server
@@ -326,4 +403,5 @@ public class ServerUtils {
     public void send(String dest, Object o) {
         session.send(dest, o);
     }
+
 }
