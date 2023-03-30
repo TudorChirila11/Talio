@@ -179,7 +179,7 @@ public class BoardOverviewCtrl implements Initializable {
 
         imageView.setPreserveRatio(true);
         imageView.setPickOnBounds(true);
-        imageView.setFitHeight(40);
+        imageView.setFitHeight(50);
         copyKey.setGraphic(imageView);
 
 
