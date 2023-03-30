@@ -26,13 +26,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import commons.Board;
-import commons.Card;
-import commons.Collection;
+import commons.*;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
-import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -319,6 +316,20 @@ public class ServerUtils {
     }
 
     /**
+     * Retrieves all tags
+     *
+     * @return List of tags
+     */
+    public List<Tag> getTags() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/tags") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Tag>>() {
+                });
+    }
+
+    /**
      * deletes card from index, in the Collection col's card array
      * @param col - the collection we want the card deleted from
      * @param index - the index
@@ -347,6 +358,7 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(col, APPLICATION_JSON), Collection.class);
     }
+    
     private StompSession session = connect("ws://localhost:8080/websocket");
 
     /**
