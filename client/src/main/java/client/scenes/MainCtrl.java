@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import commons.Board;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -37,6 +38,10 @@ public class MainCtrl {
 
     private Scene board;
 
+    private BoardOverviewCtrl boardOverviewCtrl;
+
+    private Scene boardOverview;
+
     private CollectionOverviewCtrl collectionOverviewCtrl;
 
     private Scene collection;
@@ -51,18 +56,21 @@ public class MainCtrl {
 
     /**
      * Initializes the mainCtrl method with all the active controllers
-     * @param primaryStage primary stage (active)
-     * @param overview overview of quotes
-     * @param add add of quote
-     * @param board board scene
-     * @param cardInfo cardInfo scene
-     * @param collection collection scene
-     * @param welcomePage welcomePage scene
-     * @param keyboardShortcut keyboardShortcut scene
+     *
+     * @param primaryStage         primary stage (active)
+     * @param overview             overview of quotes
+     * @param add                  add of quote
+     * @param board                board scene
+     * @param cardInfo             cardInfo scene
+     * @param collection           collection scene
+     * @param welcomePage          welcomePage scene
+     * @param boardOverview        boardOverview scene
+     * @param keyboardShortcut     keyboardShortcut scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
+                           Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
+                           Pair<BoardOverviewCtrl, Parent> boardOverview,
                            Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
@@ -83,6 +91,9 @@ public class MainCtrl {
         this.welcomePageCtrl = welcomePage.getKey();
         this.welcomePage = new Scene(welcomePage.getValue());
 
+        this.boardOverviewCtrl = boardOverview.getKey();
+        this.boardOverview = new Scene(boardOverview.getValue());
+
         this.keyboardShortcutFCtrl = keyboardShortcut.getKey();
         this.keyboardShortcut = new Scene(keyboardShortcut.getValue());
 
@@ -101,6 +112,16 @@ public class MainCtrl {
     }
 
     /**
+     * Displays the overview Scene
+     * and enables the controller
+     */
+    public void showBoardOverview() {
+        primaryStage.setTitle("Boards: Overview");
+        primaryStage.setScene(boardOverview);
+        boardOverviewCtrl.refresh();
+    }
+
+    /**
      * Displays the quote add Scene
      * and enables the controller
      */
@@ -113,22 +134,24 @@ public class MainCtrl {
     /**
      * Displays the cardInformation Scene
      * and enables the controller
+     * @param currentBoard the current Board
      */
-    public void showCardInformation()
+    public void showCardInformation(Board currentBoard)
     {
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.refresh();
+        cardInformationCtrl.refresh(currentBoard);
     }
 
     /**
      * Displays the board Scene
      * and enables the controller
+     * @param currentBoard the current Board
      */
-    public void showBoard(){
+    public void showBoard(Board currentBoard){
         primaryStage.setTitle("Board Overview: Board");
         primaryStage.setScene(board);
-        boardCtrl.refresh();
+        boardCtrl.refresh(currentBoard);
     }
 
     /**

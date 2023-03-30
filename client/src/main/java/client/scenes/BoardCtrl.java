@@ -4,6 +4,7 @@ import client.fxml.CardCell;
 import client.fxml.CardCellFactory;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Board;
 import commons.Card;
 import commons.Collection;
 import jakarta.ws.rs.WebApplicationException;
@@ -25,22 +26,21 @@ import java.net.URL;
 import java.util.*;
 
 public class BoardCtrl implements Initializable {
-    private final ServerUtils server;
 
+
+    private final ServerUtils server;
+    private Board currentBoard;
     @FXML
     private Button addCollectionButton;
 
     @FXML
-    private ScrollPane collectionsContainer;
+    private Label boardLabel;
 
     @FXML
-    private ComboBox<String> boardChoiceBox;
-
-
+    private ScrollPane collectionsContainer;
 
     private final MainCtrl mainCtrl;
 
-    //TODO fix checkstyle code refactoing, make a bit more readable...
 
     /**
      * Board Ctrl constructor
@@ -58,7 +58,7 @@ public class BoardCtrl implements Initializable {
      * Adding a card from the + button
      */
     public void addCard(){
-        mainCtrl.showCardInformation();
+        mainCtrl.showCardInformation(currentBoard);
     }
 
     /**
@@ -72,40 +72,22 @@ public class BoardCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        server.getBoard();
 
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
-        refresh();
+        refresh(currentBoard);
 
-        // Dummy values for the combo box.
-        ObservableList<String> boards = FXCollections.observableArrayList();
-        boards.add("Board 1");
-        boards.add("Board 2");
-        boards.add("Board 3");
-        boards.add("Board 4");
-        boardChoiceBox.setItems(boards);
 
-        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
     }
 
     /**
-     * Resets all stuff on the board.
+     * Resets all the collections and cards on the board.
      */
     public void resetBoard(){
         try {
-            server.send("/app/collectionsDeleteAll", new Collection());
-
-        } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-        }
-        try {
-            server.send("/app/cardsDeleteAll", new Card());
+            server.send("/app/collectionsDeleteAll", currentBoard);
 
         } catch (WebApplicationException e) {
 
@@ -117,56 +99,56 @@ public class BoardCtrl implements Initializable {
         System.out.println("We did it, we deleted everything!");
     }
 
+    /**
+     * Goes back to boardOverview
+     */
+    public void boardOverview(){
+        mainCtrl.showBoardOverview();
+    }
 
     /**
      * Sets the state of board
-     */
-    public void refresh() {
-        System.out.println("I just got refreshed!");
-        List<Collection> taskCollections = server.getCollections();
-        // Create a horizontal box to hold the task lists
-        HBox taskListsBox = new HBox(25);
-        taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
+     * @param board current board
+     * */
+    public void refresh(Board board) {
+        currentBoard = board;
+        if(currentBoard != null){
+            boardLabel.setText("Board: " + board.getName());
+            System.out.println("I just got refreshed!");
+            List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
 
-        // Add each task list to the box
-        for (Collection current: taskCollections) {
+            HBox taskListsBox = new HBox(25);
+            taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
 
-            String collectionName = current.getName();
-            ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
-            // Create a label for the collection name
-            Label collectionLabel = new Label(collectionName);
-            collectionLabel.getStyleClass().add("collectionLabel");
+            for (Collection current: taskCollections) {
+                ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
+                // Create a label for the collection name
+                Label collectionLabel = new Label(current.getName());
+                collectionLabel.getStyleClass().add("collectionLabel");
+                // Create a list view for the current (list of cards)
+                ListView<Card> collection = new ListView<>(list);
+                collection.getStyleClass().add("collection");
+                collection.setCellFactory(new CardCellFactory(server));
+                collection.setPrefSize(225, 275);
+                setupDragAndDrop(collection);
 
+                // Create the button that allows a user to add to a collection
+                Button addButton = new Button();
+                addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
+                addButton.getStyleClass().add("addButton");
+                addButton.setOnAction(event -> addCard());
 
-            // Create a list view for the current (list of cards)
-            ListView<Card> collection = new ListView<>(list);
-            collection.getStyleClass().add("collection");
-            collection.setCellFactory(new CardCellFactory(server));
-            collection.setPrefSize(225, 275);
+                // Creating a vertical stacked box with the label -> collection -> addButton
+                VBox collectionVBox = new VBox(10);
+                collectionVBox.getChildren().addAll(collectionLabel, collection, addButton);
 
-            // Set up drag and drop for the individual collections...
-            setupDragAndDrop(collection);
+                // Adding this to Hbox which contains each collection object + controls.
+                taskListsBox.getChildren().add(collectionVBox);
+                addTaskListControls(collectionLabel, current.getName(), current);
 
-            // Create the button that allows a user to add to a collection
-            Button addButton = new Button();
-            addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
-            // Custom css
-            addButton.getStyleClass().add("addButton");
-            addButton.setOnAction(event -> addCard());
-
-            // Creating a vertical stacked box with the label -> collection -> addButton
-            VBox collectionVBox = new VBox(10);
-            collectionVBox.getChildren().addAll(collectionLabel, collection, addButton);
-
-            // Adding this to Hbox which contains each collection object + controls.
-            taskListsBox.getChildren().add(collectionVBox);
-
-            // Adding the relevant collectionLabel controls
-            addTaskListControls(collectionLabel, collectionName, current);
+            }
+            collectionsContainer.setContent(taskListsBox);
         }
-
-        // Finally updating all the values in the pane with the current HBox
-        collectionsContainer.setContent(taskListsBox);
     }
 
     /**
@@ -203,7 +185,7 @@ public class BoardCtrl implements Initializable {
 
                     // Find the source ListView by traversing up the scene graph
                     Node sourceNode = (Node) event.getGestureSource();
-                    while (sourceNode != null && !(sourceNode instanceof ListView)) {
+                    while (sourceNode != null && !(sourceNode instanceof ListView<?>)) {
                         sourceNode = sourceNode.getParent();
                     }
 
@@ -238,9 +220,10 @@ public class BoardCtrl implements Initializable {
         if (result.isPresent()) {
             String newName = result.get();
             if (!newName.isEmpty()) {
-                Collection randomC = new Collection(newName, server.getBoard());
+                Collection randomC = new Collection(newName, currentBoard);
                 try {
                     server.send("/app/collections", randomC);
+
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
                     e.getCause();
@@ -248,7 +231,6 @@ public class BoardCtrl implements Initializable {
                     alert.initModality(Modality.APPLICATION_MODAL);
                     alert.setContentText(e.getMessage());
                     alert.showAndWait();
-                    return;
                 }
             }
         }
@@ -265,6 +247,7 @@ public class BoardCtrl implements Initializable {
         Button delete = new Button("X");
         delete.setStyle("-fx-font-size: 10px; -fx-background-color: #FF0000; -fx-text-fill: white;");
         delete.setOnAction(event -> {
+
             try {
                 server.send("/app/collectionsDelete", collection);
 
@@ -279,7 +262,6 @@ public class BoardCtrl implements Initializable {
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);
 
-        // TODO Change this to the correct method from another team member.
         label.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 // Rename collection
@@ -291,8 +273,9 @@ public class BoardCtrl implements Initializable {
                 if (result.isPresent()) {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
-                        // TODO update based on Teun's new API
-                        label.setText(newName);
+                        collection.setName(newName);
+                        // collection ref is valid no need to catch
+                        server.send("/app/collections", collection);
                     }
                 }
             }
