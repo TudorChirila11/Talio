@@ -1,0 +1,16 @@
+/* This is cs config for the element with the id: boardOverviewPane*/
+#boardOverviewPane{
+    -fx-background-color:  #6096B4;
+}
+
+#boardContainer{
+    -fx-background-color: transparent;
+}
+
+#boardContainer .viewport {
+    -fx-background-color: transparent;
+}
+
+#headingBoard {
+    -fx-font-size: 36;
+}

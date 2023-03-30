@@ -29,16 +29,26 @@ public class Card {
     private Long collectionId;
 
 
+    /***
+     * this is this card's index inside its collection.
+     * IMPORTANT CONVENTION TO RESPECT: each card's value inside a collection needs to be a distinct number from 0 to collection.getCards().size() - 1
+     */
+    @Column(name = "index")
+    private Long index;
+
+
     /**
      * the constructor of the card class
      * @param title the name users can see
      * @param description the description for the card
      * @param collectionId the id of collection
+     * @param index the index of this card inside its collection
      */
-    public Card(String title, String description, Long collectionId) {
+    public Card(String title, String description, Long collectionId, Long index) {
         this.title = title;
         this.description = description;
         this.collectionId = collectionId;
+        this.index = index;
     }
 
     /**
@@ -46,11 +56,30 @@ public class Card {
      * @param title the name users can see
      * @param description the description for the card
      * @param collection the id of collection
+     * @param index the id of the card inside its collection
      */
-    public Card(String title, String description, Collection collection) {
+    public Card(String title, String description, Collection collection, Long index) {
         this.title = title;
         this.description = description;
         this.collectionId = collection.getId();
+        this.index = index;
+
+    }
+
+    /**
+     * the constructor of the card class
+     * @param id the id of the card
+     * @param title the name users can see
+     * @param description the description for the card
+     * @param collectionId the id of collection
+     * @param index the id of the card inside its collection
+     */
+    public Card(Long id, String title, String description, Long collectionId, Long index) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.collectionId = collectionId;
+        this.index = index;
     }
 
     /**
@@ -136,6 +165,21 @@ public class Card {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return this object's index value
+     */
+    public Long getIndex() {
+        return index;
+    }
+
+    /**
+     * sets this object's index value
+     * @param index
+     */
+    public void setIndex(Long index) {
+        this.index = index;
     }
 
     /**

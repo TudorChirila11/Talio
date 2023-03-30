@@ -5,22 +5,66 @@ import java.util.ArrayList;
 import java.util.List;
 
 import commons.Card;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import server.database.CardRepository;
+import server.database.CollectionRepository;
 
 @RestController
 @RequestMapping("/api/cards")
 public class CardController {
     private final CardRepository repo;
 
+    private final CollectionRepository collectionRepository;
+
     /**
      * Controller constructor
      * @param repo repo reference
+     * @param collectionRepository reference to Collection repository
      */
-    public CardController(CardRepository repo) {
+    public CardController(CardRepository repo, CollectionRepository collectionRepository) {
         this.repo = repo;
+        this.collectionRepository = collectionRepository;
+    }
+
+    /**
+     * This method receives and distributes cards between clients
+     * @param c the card that the server has received and will send to all the clients on the network
+     * @return a card
+     */
+    @MessageMapping("/cards") // /app/cards
+    @SendTo("/topic/update")
+    public Card addCard(Card c){
+        add(c);
+        return c;
+    }
+
+    /**
+     * This method receives and distributes cards between clients
+     * @param id the card's id that the server has received and will send to all the clients on the network
+     * @return a card
+     */
+    @MessageMapping("/cardsDelete") // /app/cards
+    @SendTo("/topic/update")
+    public Long deleteCard(Long id){
+        delete(id);
+        return id;
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param s a string that is needed for the method to work
+     * @return a collection
+     */
+    @MessageMapping("/cardsDeleteAll") // /app/collectionsDelete
+    @SendTo("/topic/update")
+    public Card deleteAllCards(Card s){
+        deleteAll();
+        return s;
     }
 
     /**
@@ -69,6 +113,34 @@ public class CardController {
         }
     }
 
+    /**
+     * the put API for the card object
+     * @param id the id of the card
+     * @param updatedCard the new data it should have
+     * @return the responseEntity
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Card> updateCard(@PathVariable("id") long id, @RequestBody Card updatedCard) {
+        System.out.println(" check if we have the card in the database" + id);
+        if (!repo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        System.out.println("get the card as it is in the database");
+        Card cardInDatabase = repo.findById(id).get();
+
+        // update the property's
+        System.out.println("update the props");
+        cardInDatabase.setDescription(updatedCard.getDescription());
+        cardInDatabase.setTitle(updatedCard.getTitle());
+        cardInDatabase.setCollectionId(updatedCard.getCollectionId());
+
+        // save the card
+        System.out.println("save the card");
+        Card theSavedCard = repo.save(cardInDatabase);
+        return ResponseEntity.ok(theSavedCard);
+    }
+
 
     /**
      * get the cards by the id of collectioni
@@ -77,7 +149,7 @@ public class CardController {
      */
     @GetMapping("/{id}/ofCollection")
     public ResponseEntity<List<Card>> getCardsByIdOfCollection(@PathVariable long id) {
-        List<Card> allCards = repo.findAll();
+        List<Card> allCards = repo.findAll(Sort.by(Sort.Direction.ASC, "index"));
         List<Card> res = new ArrayList<>();
 
         for (Card c : allCards) {
@@ -85,6 +157,7 @@ public class CardController {
                 res.add(c);
             }
         }
+        System.out.println(res);
 
         return ResponseEntity.ok(res);
 
@@ -122,6 +195,7 @@ public class CardController {
      */
     @PostMapping(path = { "/", ""})
     public ResponseEntity<Card> add(@RequestBody Card card){
+        System.out.println(card);
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }

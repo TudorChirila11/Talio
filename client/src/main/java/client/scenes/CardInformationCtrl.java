@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Card;
 import commons.Collection;
+import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,13 +23,14 @@ public class CardInformationCtrl implements Initializable {
 
 
 
-
     enum State{
         EDIT, CREATE
     }
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+
+    private Board currentBoard;
 
     private ArrayList<HBox> subtasks;
 
@@ -90,8 +92,7 @@ public class CardInformationCtrl implements Initializable {
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
-        refresh();
-        ///dummy part
+        refresh(currentBoard);
     }
 
     /**
@@ -107,21 +108,21 @@ public class CardInformationCtrl implements Initializable {
      * sets up the MenuButton for choosing a Collection for the current Card
      */
 
-    private void setupCollectionMenu()
-    {
-
-    //    System.out.println(server.getCollections());
+    private void setupCollectionMenu() {
         collectionMenu.getItems().clear();
-        for(Collection c: server.getCollections()){
-            MenuItem i = new MenuItem(c.getName());
-            i.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    collectionMenu.setText(i.getText());
-                    collectionCurrent = c;
-                }
-            });
-            collectionMenu.getItems().add(i);
+        collectionMenu.setText("Choose collection:");
+        if (currentBoard != null) {
+            for (Collection c : server.getCollectionsFromBoard(currentBoard)) {
+                MenuItem i = new MenuItem(c.getName());
+                i.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        collectionMenu.setText(i.getText());
+                        collectionCurrent = c;
+                    }
+                });
+                collectionMenu.getItems().add(i);
+            }
         }
     }
 
@@ -154,13 +155,13 @@ public class CardInformationCtrl implements Initializable {
                         @Override
                         public void handle(ActionEvent event) {
                             hb.getChildren().clear();
-                            refresh();
+                            refresh(currentBoard);
                         }
                     });
                     tf.setPromptText("Add subtask...");
                     tf.setText("");
                 }
-                refresh();
+                refresh(currentBoard);
             }
         });
         HBox hbox = new HBox();
@@ -173,14 +174,15 @@ public class CardInformationCtrl implements Initializable {
      */
     public void goBack()
     {
-        mainCtrl.showBoard();
+        mainCtrl.showBoard(currentBoard);
     }
 
 
     /**
      * Refresh method
+     * @param board the board
      */
-    public void refresh()
+    public void refresh(Board board)
     {
        // System.out.println(state + " " + card.getTitle());
         if(state == State.EDIT)
@@ -192,6 +194,11 @@ public class CardInformationCtrl implements Initializable {
         else collectionMenu.setText(collectionCurrent.getName());
         cardName.setText(card.getTitle());
         cardDescription.setText(card.getDescription());
+
+        currentBoard = board;
+        ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
+        ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
+
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtasks);
@@ -217,9 +224,9 @@ public class CardInformationCtrl implements Initializable {
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
         card.setCollectionId(collectionCurrent.getId());
-
         try {
-            server.addCard(card);
+            server.send("/app/cards", card);
+
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -229,7 +236,8 @@ public class CardInformationCtrl implements Initializable {
             return;
         }
         clearFields(); ///security measure
-        mainCtrl.showBoard();
+        mainCtrl.showBoard(currentBoard);
+
     }
 
     /**
@@ -237,8 +245,7 @@ public class CardInformationCtrl implements Initializable {
      * @return A card object.
      */
     public Card getCard() {
-        // null collection for now
-        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent);
+        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()));
     }
 
     /**
@@ -276,5 +283,13 @@ public class CardInformationCtrl implements Initializable {
         //System.out.println(cardId);
         Card card = server.getCardById(cardId);
         return card; ///null check?
+    }
+
+    /**
+     * Board getter
+     * @return the board we are currently running this scene in
+     */
+    public Board getBoard() {
+        return currentBoard;
     }
 }

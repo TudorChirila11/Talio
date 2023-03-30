@@ -5,11 +5,14 @@ import client.scenes.MainCtrl;
 
 import client.utils.ServerUtils;
 import commons.Card;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
@@ -30,12 +33,14 @@ public class CardCell extends ListCell<Card>  {
     @FXML
     private Button editButton;
 
+    private VBox vBox;
 
     private Long id;
 
 
     /**
      * Constructor for the Custom Task Cell of type Card
+     * @param mainCtrl - reference for main controller
      * @param server reference for server
      */
     public CardCell(MainCtrl mainCtrl, ServerUtils server) {
@@ -46,13 +51,33 @@ public class CardCell extends ListCell<Card>  {
         removeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                server.deleteCard(id);
+                try {
+                    server.send("/app/cardsDelete", id);
+
+                } catch (WebApplicationException e) {
+
+                    var alert = new Alert(Alert.AlertType.ERROR);
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                }
                 getListView().getItems().remove(getItem());
             }
         });
         editButton.setOnAction(event -> {
             mainCtrl.editCard(id);
         });
+
+       /* this.vBox.setOnMouseEntered(event -> {
+            this.vBox.setStyle("-fx-border-color: yellow;-fx-border-radius: 10; -fx-background-radius: 10; " +
+                    "-fx-pref-height: 50; -fx-background-color: #93BFCF");
+        });
+
+        this.vBox.setOnMouseExited(event -> {
+            this.vBox.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; " +
+                    "-fx-pref-height: 50; -fx-background-color: #93BFCF ");
+        });*/
+
     }
 
     /**
@@ -69,6 +94,7 @@ public class CardCell extends ListCell<Card>  {
             throw new RuntimeException(e);
         }
     }
+
 
     /**
      * Overriding the defined update Item for Custom Card Cell

@@ -17,9 +17,9 @@ public class CardCellFactory implements Callback<ListView<Card>, ListCell<Card>>
 
     /**
      * Constructor that takes the server reference
-     * @param server
+     * @param mainCtrl - main controller
+     * @param server - server referecne
      */
-
 
     public CardCellFactory(MainCtrl mainCtrl, ServerUtils server) {
         super();
