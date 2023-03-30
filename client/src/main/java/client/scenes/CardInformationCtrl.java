@@ -232,17 +232,17 @@ public class CardInformationCtrl implements Initializable {
 
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
-        card.setCollectionId(collectionCurrent.getId());
+        Collection oldCol = null;
+        if(card.getCollectionId()!=null)
+            oldCol = server.getCollectionById(card.getCollectionId());
         if(state == State.CREATE)
         {
+            card.setCollectionId(collectionCurrent.getId());
             card.setIndex((long) collectionCurrent.getCards().size());
             server.addCard(card);
         }
         else
         {
-            Collection oldCol = null;
-            if(card.getCollectionId()!=null)
-                oldCol = server.getCollectionById(card.getCollectionId());
             server.updateCard(card.getId(), card);
             try {
                 ///TODO sockets
@@ -251,7 +251,7 @@ public class CardInformationCtrl implements Initializable {
                 Long index = card.getIndex();
                 Long newIndex = (long) collectionCurrent.getCards().size();
 
-                if(oldCol!= null && newCol.getId()!=oldCol.getId() && state == State.EDIT)
+                if(oldCol!= null && (long) newCol.getId()!= (long) oldCol.getId() && state == State.EDIT)
                     server.changeCardIndex(oldCol, index, newCol, newIndex);
 
                 //  server.send("/app/cards", card);
