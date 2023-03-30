@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.Card;
 import commons.Collection;
+import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -31,6 +32,11 @@ public class BoardCtrl implements Initializable {
 
     @FXML
     private Button addCollectionButton;
+
+    private Board currentBoard;
+
+    @FXML
+    private Label boardLabel;
 
     @FXML
     private ScrollPane collectionsContainer;
@@ -62,7 +68,7 @@ public class BoardCtrl implements Initializable {
      * Adding a card from the + button
      */
     public void addCard(){
-        mainCtrl.showCardInformation();
+        mainCtrl.showCardInformation(currentBoard);
     }
 
     /**
@@ -76,22 +82,11 @@ public class BoardCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        server.getBoard();
-
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
-        refresh();
-
-        // Dummy values for the combo box.
-        ObservableList<String> boards = FXCollections.observableArrayList();
-        boards.add("Board 1");
-        boards.add("Board 2");
-        boards.add("Board 3");
-        boards.add("Board 4");
-        boardChoiceBox.setItems(boards);
-
-        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
+        refresh(currentBoard);
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
     }
 
     /**
@@ -99,7 +94,7 @@ public class BoardCtrl implements Initializable {
      */
     public void resetBoard(){
         try {
-            server.send("/app/collectionsDeleteAll", new Collection());
+            server.send("/app/collectionsDeleteAll", currentBoard);
 
         } catch (WebApplicationException e) {
 
@@ -121,59 +116,66 @@ public class BoardCtrl implements Initializable {
         System.out.println("We did it, we deleted everything!");
     }
 
+    /**
+     * Goes back to boardOverview
+     */
+    public void boardOverview(){
+        mainCtrl.showBoardOverview();
+    }
+
 
     /**
      * Sets the state of board
+     * @param board the current Board
      */
-    public void refresh() {
-        //System.out.println("I just got refreshed!");
-        List<Collection> taskCollections = server.getCollections();
-        // Create a horizontal box to hold the task lists
-        HBox taskListsBox = new HBox(25);
-        taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
-        mapper = new HashMap<ListView<Card>, Collection>();
-        // Add each task list to the box
-        for (Collection current: taskCollections) {
+    public void refresh(Board board) {
+        currentBoard = board;
+        if(currentBoard != null) {
+            boardLabel.setText(board.getName());
+            List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
+            // Create a horizontal box to hold the task lists
+            HBox taskListsBox = new HBox(25);
+            taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
+            mapper = new HashMap<ListView<Card>, Collection>();
+            for (Collection current : taskCollections) {
+                String collectionName = current.getName();
+                ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
+                // Create a label for the collection name
+                Label collectionLabel = new Label(collectionName);
+                collectionLabel.getStyleClass().add("collectionLabel");
+                ListView<Card> collection = new ListView<>(list);
+                collection.getStyleClass().add("collection");
+                collection.setCellFactory(new CardCellFactory(server));
+                collection.setPrefSize(225, 275);
 
-            String collectionName = current.getName();
-            ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
-            // Create a label for the collection name
-            Label collectionLabel = new Label(collectionName);
-            collectionLabel.getStyleClass().add("collectionLabel");
+                System.out.println(current.getName() + " " + collection.getItems());
+                //maps this listview to its associate Collection
+                mapper.put(collection, current);
 
-            // Create a list view for the current (list of cards)
-            ListView<Card> collection = new ListView<>(list);
-            collection.getStyleClass().add("collection");
-            collection.setCellFactory(new CardCellFactory(server));
-            collection.setPrefSize(225, 275);
+                // Set up drag and drop for the individual collections...
+                setupDragAndDrop(collection);
 
-            System.out.println(current.getName() +" " + collection.getItems());
-            //maps this listview to its associate Collection
-            mapper.put(collection, current);
+                // Create the button that allows a user to add to a collection
+                Button addButton = new Button();
+                addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
+                // Custom css
+                addButton.getStyleClass().add("addButton");
+                addButton.setOnAction(event -> addCard());
 
-            // Set up drag and drop for the individual collections...
-            setupDragAndDrop(collection);
+                // Creating a vertical stacked box with the label -> collection -> addButton
+                VBox collectionVBox = new VBox(10);
+                collectionVBox.getChildren().addAll(collectionLabel, collection, addButton);
 
-            // Create the button that allows a user to add to a collection
-            Button addButton = new Button();
-            addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
-            // Custom css
-            addButton.getStyleClass().add("addButton");
-            addButton.setOnAction(event -> addCard());
+                // Adding this to Hbox which contains each collection object + controls.
+                taskListsBox.getChildren().add(collectionVBox);
 
-            // Creating a vertical stacked box with the label -> collection -> addButton
-            VBox collectionVBox = new VBox(10);
-            collectionVBox.getChildren().addAll(collectionLabel, collection, addButton);
+                // Adding the relevant collectionLabel controls
+                addTaskListControls(collectionLabel, collectionName, current);
+            }
 
-            // Adding this to Hbox which contains each collection object + controls.
-            taskListsBox.getChildren().add(collectionVBox);
-
-            // Adding the relevant collectionLabel controls
-            addTaskListControls(collectionLabel, collectionName, current);
+            // Finally updating all the values in the pane with the current HBox
+            collectionsContainer.setContent(taskListsBox);
         }
-
-        // Finally updating all the values in the pane with the current HBox
-        collectionsContainer.setContent(taskListsBox);
     }
 
     /**
@@ -189,7 +191,6 @@ public class BoardCtrl implements Initializable {
         boolean success = false;
         System.out.println(dragboard.getString());
         if (dragboard.hasString()) {
-
             Card card = null;
             try {
                 card = om.readValue(dragboard.getString(), Card.class);
@@ -215,7 +216,7 @@ public class BoardCtrl implements Initializable {
                 long oldIndex = sourceIndex;
                 //int currentIndex = getIndex(listView, event.getY());
                 server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
-                refresh();
+                refresh(currentBoard);
             }
         }
         event.setDropCompleted(success);
@@ -285,10 +286,8 @@ public class BoardCtrl implements Initializable {
         if (result.isPresent()) {
             String newName = result.get();
             if (!newName.isEmpty()) {
-                Collection randomC = new Collection(newName, server.getBoard());
+                Collection randomC = new Collection(newName, currentBoard);
                 try {
-                   // Board b = server.getBoard();
-                   // server.addBoard(b);
                     server.send("/app/collections", randomC);
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
@@ -297,7 +296,6 @@ public class BoardCtrl implements Initializable {
                     alert.initModality(Modality.APPLICATION_MODAL);
                     alert.setContentText(e.getMessage());
                     alert.showAndWait();
-                    return;
                 }
             }
         }
@@ -340,8 +338,8 @@ public class BoardCtrl implements Initializable {
                 if (result.isPresent()) {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
-                        // TODO update based on Teun's new API
-                        label.setText(newName);
+                        collection.setName(newName);
+                        server.send("/app/collections", collection);
                     }
                 }
             }

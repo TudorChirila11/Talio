@@ -19,6 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import commons.Board;
 
 public class MainCtrl {
 
@@ -26,6 +27,9 @@ public class MainCtrl {
 
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
+
+    private BoardOverviewCtrl boardOverviewCtrl;
+    private Scene boardOverview;
 
     private AddQuoteCtrl addCtrl;
 
@@ -59,11 +63,12 @@ public class MainCtrl {
      * @param collection collection scene
      * @param welcomePage welcomePage scene
      * @param keyboardShortcut keyboardShortcut scene
+     * @param boardOverview  boardOverview scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
-                           Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut) {
+                           Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<BoardOverviewCtrl, Parent> boardOverview) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -86,6 +91,9 @@ public class MainCtrl {
         this.keyboardShortcutFCtrl = keyboardShortcut.getKey();
         this.keyboardShortcut = new Scene(keyboardShortcut.getValue());
 
+        this.boardOverviewCtrl = boardOverview.getKey();
+        this.boardOverview = new Scene(boardOverview.getValue());
+
         showWelcomePage();
         primaryStage.show();
     }
@@ -101,6 +109,16 @@ public class MainCtrl {
     }
 
     /**
+     * Displays the overview Scene
+     * and enables the controller
+     */
+    public void showBoardOverview() {
+        primaryStage.setTitle("Boards: Overview");
+        primaryStage.setScene(boardOverview);
+        boardOverviewCtrl.refresh();
+    }
+
+    /**
      * Displays the quote add Scene
      * and enables the controller
      */
@@ -113,22 +131,25 @@ public class MainCtrl {
     /**
      * Displays the cardInformation Scene
      * and enables the controller
+     * @param currentBoard the current Board
      */
-    public void showCardInformation()
+    public void showCardInformation(Board currentBoard)
     {
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.refresh();
+        cardInformationCtrl.refresh(currentBoard);
     }
+
 
     /**
      * Displays the board Scene
      * and enables the controller
+     * @param currentBoard the current Board
      */
-    public void showBoard(){
+    public void showBoard(Board currentBoard){
         primaryStage.setTitle("Board Overview: Board");
         primaryStage.setScene(board);
-        boardCtrl.refresh();
+        boardCtrl.refresh(currentBoard);
     }
 
     /**
