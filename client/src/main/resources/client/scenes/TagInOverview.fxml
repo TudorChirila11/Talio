@@ -7,10 +7,10 @@
 <HBox fx:id="mainTagBody" id="mainTagBodyInOverview" alignment="CENTER" xmlns="http://javafx.com/javafx"
       stylesheets="@/client/stylesheets/Global.css"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="client.scenes.TagInOverviewCtrl" maxWidth="200">
-    <HBox fx:id="tagContain" HBox.hgrow="SOMETIMES" maxWidth="200">
-        <Text fx:id="tagText" text="test" wrappingWidth="${tagContain.width}" />
+      fx:controller="client.scenes.TagInOverviewCtrl" prefWidth="300">
+    <HBox fx:id="tagContain" HBox.hgrow="ALWAYS">
+        <Label fx:id="tagText" text="test" wrapText="true" />
     </HBox>
-    <Button text="edit"/>
-    <Button text="delete"/>
+    <Button fx:id="editTagButton" text="edit" minWidth="60" />
+    <Button fx:id="deleteTagButton" text="delete" minWidth="70" />
 </HBox>

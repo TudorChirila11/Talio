@@ -1,15 +1,15 @@
 package client.scenes;
 
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 
 import java.util.List;
 
 public class TagInOverviewCtrl {
 
 
-    public Text tagText;
+    public Label tagText;
     public HBox mainTagBody;
 
     /**
