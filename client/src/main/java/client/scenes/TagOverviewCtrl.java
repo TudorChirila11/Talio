@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Board;
 import commons.Tag;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -20,6 +21,8 @@ public class TagOverviewCtrl implements Initializable{
 
     @FXML
     public Button createTagButton;
+
+    private Board currentBoard;
 
     @FXML
     public VBox tagContainer;
@@ -45,7 +48,11 @@ public class TagOverviewCtrl implements Initializable{
      *
      */
     public void createTag() {
-        mainCtrl.showTagCreation();
+        mainCtrl.showTagCreation(currentBoard);
+    }
+
+    public void initialize(Board board) {
+        currentBoard = board;
     }
 
     /**
@@ -93,6 +100,6 @@ public class TagOverviewCtrl implements Initializable{
      * The method is used to go back to the main board view
      */
     public void goBack() {
-        mainCtrl.showBoard();
+        mainCtrl.showBoard(currentBoard);
     }
 }

@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Board;
 import commons.Tag;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,6 +20,8 @@ public class TagCreatorCtrl implements Initializable {
 
     @FXML
     public TextArea tagDescription;
+
+    private Board currentBoard;
 
     @FXML
     public ColorPicker tagColour;
@@ -47,13 +50,13 @@ public class TagCreatorCtrl implements Initializable {
     public void createTag() {
         Color color = tagColour.getValue();
         if(!tagDescription.getText().equals("")) {
-            Tag newTag = new Tag(tagDescription.getText(), server.getBoard().getId(), new ArrayList<Double>(){{
+            Tag newTag = new Tag(tagDescription.getText(), currentBoard.getId(), new ArrayList<Double>(){{
                     add(color.getRed());
                     add(color.getGreen());
                     add(color.getBlue());
                 }});
             server.send("/app/tags", newTag);
-            mainCtrl.showBoard();
+            mainCtrl.showBoard(currentBoard);
         }
     }
 
@@ -71,9 +74,17 @@ public class TagCreatorCtrl implements Initializable {
     }
 
     /**
+     * Used to initialize the tagCreator with a board
+     * @param board the current board
+     */
+    public void initialize(Board board) {
+        currentBoard = board;
+    }
+
+    /**
      * Used to go back to the main board view
      */
     public void goBack() {
-        mainCtrl.showBoard();
+        mainCtrl.showBoard(currentBoard);
     }
 }

@@ -90,6 +90,10 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
+
+        tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard));
+        tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
+
         refresh(currentBoard);
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
     }

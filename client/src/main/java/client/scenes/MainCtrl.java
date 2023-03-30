@@ -174,18 +174,20 @@ public class MainCtrl {
      * Displays the tag creation Scene
      * and enables the controller
      */
-    public void showTagCreation(){
+    public void showTagCreation(Board currentBoard){
         primaryStage.setTitle("Tag Creation Window");
         primaryStage.setScene(tagCreator);
+        tagCreatorCtrl.initialize(currentBoard);
     }
 
     /**
      * Displays the tag creation Scene
      * and enables the controller
      */
-    public void showTagOverview(){
+    public void showTagOverview(Board currentBoard){
         primaryStage.setTitle("Tag Overview Window");
         primaryStage.setScene(tagOverview);
+        tagOverviewCtrl.initialize(currentBoard);
     }
 
     /**
