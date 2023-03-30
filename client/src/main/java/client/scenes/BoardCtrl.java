@@ -3,6 +3,8 @@ package client.scenes;
 import client.fxml.CardCell;
 import client.fxml.CardCellFactory;
 import client.utils.ServerUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.Card;
 import commons.Collection;
@@ -40,6 +42,8 @@ public class BoardCtrl implements Initializable {
 
     @FXML
     private ComboBox<String> boardChoiceBox;
+
+    HashMap<ListView<Card>, Collection> mapper;
 
 
 
@@ -143,7 +147,7 @@ public class BoardCtrl implements Initializable {
         // Create a horizontal box to hold the task lists
         HBox taskListsBox = new HBox(25);
         taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
-
+        mapper = new HashMap<ListView<Card>, Collection>();
         // Add each task list to the box
         for (Collection current: taskCollections) {
 
@@ -153,12 +157,15 @@ public class BoardCtrl implements Initializable {
             Label collectionLabel = new Label(collectionName);
             collectionLabel.getStyleClass().add("collectionLabel");
 
-
             // Create a list view for the current (list of cards)
             ListView<Card> collection = new ListView<>(list);
             collection.getStyleClass().add("collection");
             collection.setCellFactory(new CardCellFactory(server));
             collection.setPrefSize(225, 275);
+
+            System.out.println(current.getName() +" " + collection.getItems());
+            //maps this listview to its associate Collection
+            mapper.put(collection, current);
 
             // Set up drag and drop for the individual collections...
             setupDragAndDrop(collection);
@@ -186,54 +193,94 @@ public class BoardCtrl implements Initializable {
     }
 
     /**
+     * sets up what happens in case of drop
+     * @param event - the drag event
+     * @param listView - the listView in which this operation happens
+     * @param newIndex - the new index this cell will be on
+     * @param om - object mapper to efficiently handle card data
+     */
+    private void configDropped(DragEvent event, ListView<Card> listView, long newIndex, ObjectMapper om)
+    {
+        Dragboard dragboard = event.getDragboard();
+        boolean success = false;
+        System.out.println(dragboard.getString());
+        if (dragboard.hasString()) {
+
+            Card card = null;
+            try {
+                card = om.readValue(dragboard.getString(), Card.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            //listView.getItems().add(card);
+            //success = true;
+            // Find the source ListView by traversing up the scene graph
+            Node sourceNode = (Node) event.getGestureSource();
+            while (sourceNode != null && !(sourceNode instanceof ListView)) {
+                sourceNode = sourceNode.getParent();
+            }
+            //TODO Fix the warning here...
+            if (sourceNode != null) {
+                ListView<Card> sourceList = (ListView<Card>) sourceNode;
+                int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
+                //    Card sourceCard = sourceList.getItems().get(sourceIndex);
+                //  sourceList.getItems().remove(sourceCard);
+
+                Collection oldCollection = mapper.get(sourceList);
+                Collection newCollection = mapper.get(listView);
+                long oldIndex = sourceIndex;
+                //int currentIndex = getIndex(listView, event.getY());
+                server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
+                refresh();
+            }
+        }
+        event.setDropCompleted(success);
+        event.consume();
+    }
+
+
+    /**
+     * configures what happens on drag over, during the drag-and-drop process
+     * @param handler - object you drag over on - can be a ListView<Card> or a CardCell
+     */
+    public void configOnDragOver(Node handler)
+    {
+        handler.setOnDragOver(event -> {
+            if (event.getGestureSource() instanceof CardCell && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+            event.consume();
+        });
+    }
+
+    /**
      * Sets up the drag and Drop for all listviews stored
      * @param listView list view from the scroll view.
      */
     private void setupDragAndDrop(ListView<Card> listView) {
+        ObjectMapper om = new ObjectMapper();
+        if(listView.getItems().size()<4) {
+            configOnDragOver(listView);
+            listView.setOnDragDropped( event -> configDropped(event, listView, getIndex(listView, event.getY()), om));
+        }
         listView.setCellFactory(param -> {
             CardCell cell = new CardCell(server);
             cell.setOnDragDetected(event -> {
                 if (cell.getItem() == null) {return;}
                 Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
-                content.putString(cell.getItem().getTitle() + "-----" +cell.getItem().getDescription() +  "-----");
+                try {
+                    content.putString(om.writeValueAsString(cell.getItem()));
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
                 dragboard.setContent(content);
                 event.consume();
             });
-            cell.setOnDragOver(event -> {
-                if (event.getGestureSource() != cell && event.getDragboard().hasString()) {
-                    event.acceptTransferModes(TransferMode.MOVE);
-                }
-                event.consume();
-            });
-            cell.setOnDragDropped(event -> {
-                Dragboard dragboard = event.getDragboard();
-                boolean success = false;
-                //TODO This can be done better without direct parsing...
-                if (dragboard.hasString()) {
-                    String[] card = dragboard.getString().split("-----");
-                    // This doesn't really work
-                    Card newCard = new Card(card[0], card[1]);
-                    listView.getItems().add(newCard);
-                    success = true;
-
-                    // Find the source ListView by traversing up the scene graph
-                    Node sourceNode = (Node) event.getGestureSource();
-                    while (sourceNode != null && !(sourceNode instanceof ListView)) {
-                        sourceNode = sourceNode.getParent();
-                    }
-
-                    //TODO Fix the warning here...
-                    if (sourceNode != null) {
-                        ListView<Card> sourceList = (ListView<Card>) sourceNode;
-                        int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
-                        Card sourceCard = sourceList.getItems().get(sourceIndex);
-                        sourceList.getItems().remove(sourceCard);
-                    }
-                }
-                event.setDropCompleted(success);
-                event.consume();
-            });
+            if(listView.getItems().size()>=4) {
+                configOnDragOver(cell);
+                cell.setOnDragDropped(event -> configDropped(event, listView, server.getCard(cell.getItem().getId()).getIndex(), om));
+            }
             return cell;
         });
     }
@@ -256,6 +303,8 @@ public class BoardCtrl implements Initializable {
             if (!newName.isEmpty()) {
                 Collection randomC = new Collection(newName, server.getBoard());
                 try {
+                   // Board b = server.getBoard();
+                   // server.addBoard(b);
                     server.send("/app/collections", randomC);
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
@@ -315,4 +364,21 @@ public class BoardCtrl implements Initializable {
         });
     }
 
+    /**
+     * returns this card's future index inside listview lv
+     * @param lv - current listview
+     * @param y - y position
+     * @return this card's new index
+     */
+    public int getIndex(ListView<Card> lv, double y)
+    {
+        int sz = lv.getItems().size();
+        if(sz == 0)
+            return 0;
+        int pos = 0;
+        double cardSize = 100, error = 0;
+        pos = (int) Math.min(y/(cardSize + error), sz);
+        System.out.println(y + " position " + pos);
+        return pos;
+    }
 }
