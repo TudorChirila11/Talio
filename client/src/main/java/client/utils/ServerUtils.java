@@ -278,7 +278,7 @@ public class ServerUtils {
                 });
     }
 
-    /*
+    /**
      * deletes card from index, in the Collection col's card array
      * @param col - the collection we want the card deleted from
      * @param index - the index
