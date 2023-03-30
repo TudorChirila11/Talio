@@ -137,16 +137,12 @@ public class BoardCtrl implements Initializable {
             HBox taskListsBox = new HBox(25);
             taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
             mapper = new HashMap<ListView<Card>, Collection>();
-            // Add each task list to the box
             for (Collection current : taskCollections) {
-
                 String collectionName = current.getName();
                 ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
                 // Create a label for the collection name
                 Label collectionLabel = new Label(collectionName);
                 collectionLabel.getStyleClass().add("collectionLabel");
-
-                // Create a list view for the current (list of cards)
                 ListView<Card> collection = new ListView<>(list);
                 collection.getStyleClass().add("collection");
                 collection.setCellFactory(new CardCellFactory(server));
