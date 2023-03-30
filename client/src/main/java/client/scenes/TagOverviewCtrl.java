@@ -45,12 +45,16 @@ public class TagOverviewCtrl implements Initializable{
     }
 
     /**
-     *
+     * this method redirects the user to the tag creation window
      */
     public void createTag() {
         mainCtrl.showTagCreation(currentBoard);
     }
 
+    /**
+     * This method passes the current board to this controller
+     * @param board the board that the tag overview is related to
+     */
     public void initialize(Board board) {
         currentBoard = board;
     }

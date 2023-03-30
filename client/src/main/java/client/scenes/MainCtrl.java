@@ -173,6 +173,7 @@ public class MainCtrl {
     /**
      * Displays the tag creation Scene
      * and enables the controller
+     * @param currentBoard the board that the tag creation window is related to
      */
     public void showTagCreation(Board currentBoard){
         primaryStage.setTitle("Tag Creation Window");
@@ -183,6 +184,7 @@ public class MainCtrl {
     /**
      * Displays the tag creation Scene
      * and enables the controller
+     * @param currentBoard the board that the tag overview window is related to
      */
     public void showTagOverview(Board currentBoard){
         primaryStage.setTitle("Tag Overview Window");
