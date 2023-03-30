@@ -241,7 +241,15 @@ public class BoardOverviewCtrl implements Initializable {
     public void joinBoardMethod() {
         String[] tokens = boardKey.getText().split("-ID-");
         Board b = server.getBoardById(Long.parseLong(tokens[1]));
-        boolean joined = checkBoard(b.getId(), new File(boardFilePath));
+        File f = new File(boardFilePath);
+        if(!f.exists()){
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        boolean joined = checkBoard(b.getId(),f);
         if(!joined){
             writeClientBoard(b, false);
         }else{
