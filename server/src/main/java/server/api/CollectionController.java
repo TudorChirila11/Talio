@@ -1,11 +1,9 @@
 
 package server.api;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import commons.Board;
 import commons.Card;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -59,15 +57,15 @@ public class CollectionController {
 
     /**
      * This method receives and distributes collections between clients
-     * @param board board to delete collections from.
+     * @param s a string that is needed for the method to work
      * @return a collection
      */
     @MessageMapping("/collectionsDeleteAll") // /app/collectionsDelete
     @SendTo("/topic/update")
-    public Board deleteAllCollections(Board board){
+    public Collection deleteAllCollections(Collection s){
         System.out.println("Hi, I am receiving a signal!");
-        deleteCollectionsByBoardId(board.getId());
-        return board;
+        deleteAll();
+        return s;
     }
 
     /**
@@ -271,49 +269,6 @@ public class CollectionController {
         }
         repoCollection.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * get the collections by the id of board
-     * @param id the id of the board
-     * @return the collections
-     */
-    @DeleteMapping("/{id}/ofBoard")
-    public ResponseEntity<Void> deleteCollectionsByBoardId(@PathVariable long id) {
-        List<Collection> allCards = repoCollection.findAll();
-        List<Collection> res = new ArrayList<>();
-
-        for (Collection c : allCards) {
-            if (c.getId() != null && c.getBoardId() == id) {
-                res.add(c);
-            }
-        }
-
-        repoCollection.deleteAll(res);
-        return ResponseEntity.noContent().build();
-
-
-    }
-
-    /**
-     * get the collections by the id of board
-     * @param id the id of the board
-     * @return the collections
-     */
-    @GetMapping("/{id}/ofBoard")
-    public ResponseEntity<List<Collection>> getCollectionsByBoardID(@PathVariable long id) {
-        List<Collection> allCards = repoCollection.findAll();
-        List<Collection> res = new ArrayList<>();
-
-        for (Collection c : allCards) {
-            if (c.getId() != null && c.getBoardId() == id) {
-                res.add(c);
-            }
-        }
-
-        return ResponseEntity.ok(res);
-
-
     }
 
     /**

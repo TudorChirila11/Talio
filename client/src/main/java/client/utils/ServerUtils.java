@@ -47,25 +47,13 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 public class ServerUtils {
 
     private static String server = "http://localhost:8080/";
-    private String ip = "localhost";
 
     /**
      * @param ip the ip that the user will be connecting to
      */
     public void changeIP(String ip) {
-
         server = "http://" + ip + ":8080/";
-        this.ip = ip;
     }
-
-    /**
-     * Returns the current ip the client is connected too.
-     * @return the ip
-     */
-    public String getIp(){
-        return ip;
-    }
-
 
     /**
      * Manual logger of all the active quates
@@ -111,8 +99,6 @@ public class ServerUtils {
     }
 
 
-
-
     /**
      * Adding a new Card to the server DB
      *
@@ -156,27 +142,6 @@ public class ServerUtils {
 
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(server).path("api/cards/" + id + "/ofCollection") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .delete();
-
-    }
-
-    /**
-     * deletes a collection and all associated cards
-     *
-     * @param id the id of a collection
-     * @return a response
-     */
-    public Response deleteBoard(long id) {
-        ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/boards/" + id) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .delete();
-
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/collections/" + id + "/ofBoard") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .delete();
@@ -243,20 +208,6 @@ public class ServerUtils {
     }
 
     /**
-     * Gets all the collections from a board.
-     * @param board
-     * @return a list of collections.
-     */
-    public List<Collection> getCollectionsFromBoard(Board board){
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/collections/" + board.getId() + "/ofBoard") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Collection>>() {
-                });
-    }
-
-    /**
      * Retrieves all Collections
      */
     public void resetState() {
@@ -294,31 +245,26 @@ public class ServerUtils {
     }
 
     /**
-     * Gets a board by id
-     * @param id id of the board
-     * @return returns the board object
-     */
-    public Board getBoardById(long id){
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/boards/" + id) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(Board.class);
-    }
-
-    /**
      * Retrieves the only board
      *
      * @return a board
      */
-    public List<Board> getBoards() {
-        return ClientBuilder.newClient(new ClientConfig())
+    public Board getBoard() {
+        List<Board> boards = ClientBuilder.newClient(new ClientConfig())
                 .target(server)
                 .path("api/boards")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Board>>() {
                 });
+        if (boards.isEmpty()) {
+            // create a new board and add it to the database
+            Board newBoard = new Board("Main Board");
+            addBoard(newBoard);
+            return newBoard;
+        }
+
+        return boards.get(0);
     }
 
     private StompSession session = connect("ws://localhost:8080/websocket");
@@ -328,7 +274,6 @@ public class ServerUtils {
      * @param ip the url of the server to which the stomp client will connect to
      */
     public void createStompSession(String ip) {
-        this.ip = ip;
         session = connect("ws://" + ip + ":8080/websocket");
     }
 

@@ -6,7 +6,7 @@
 
 <fx:root stylesheets="@/client/stylesheets/card/Card.css"  prefHeight="100.0" prefWidth="175.0" type="javafx.scene.control.ListCell" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
     <graphic>
-        <VBox fx:id="verticalContainer" style="-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; -fx-pref-height: 50; -fx-background-color: #93BFCF ">
+        <VBox fx:id="VBox" style="-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; -fx-pref-height: 50; -fx-background-color: #93BFCF ">
             <children>
                 <Label fx:id="titleLabel" style="-fx-font-size: 10pt; -fx-padding: 2 0 2 5" />
                   <Label fx:id="descriptionLabel" style="-fx-font-size: 6pt; -fx-padding: 2 0 2 5" />
