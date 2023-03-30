@@ -1,4 +1,5 @@
 @import "board/Board.css";
+@import "board/BoardOverview.css";
 @import "collection/Collection.css";
 @import "card/Card.css";
 @import "welcome/Welcome.css";
@@ -7,4 +8,26 @@
 .root{
     -fx-font-family: 'DM Sans', sans-serif;
     -fx-font-size: 8pt;
+}
+.defaultButton {
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 15;
+    -fx-padding: 10 10 10 10;
+    -fx-border-radius: 15;
+    -fx-border-color: #000000;
+    -fx-border-insets: -.25;
+    -fx-background-color: #D9D9D9;
+}
+
+.deleteButton {
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 15;
+    -fx-padding: 10 10 10 10;
+    -fx-font-weight: bold;
+    -fx-border-radius: 15;
+    -fx-border-width: 2;
+    -fx-border-color: #000000;
+    -fx-background-color: #FD3318;
 }
