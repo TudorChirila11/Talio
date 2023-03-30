@@ -63,8 +63,9 @@ public class Main extends Application {
         var keyboardShortcutPage = FXML.load(KeyboardShortcutFCtrl.class, "client", "scenes", "KeyboardShortcuts.fxml");
         var tagCreator = FXML.load(TagCreatorCtrl.class, "client", "scenes", "TagCreator.fxml");
         var tagOverview = FXML.load(TagOverviewCtrl.class, "client", "scenes", "TagOverview.fxml");
+        var boardOverview = FXML.load(BoardOverviewCtrl.class, "client", "scenes", "BoardOverview.fxml");
 
         mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection, welcomePage, keyboardShortcutPage,
-                tagCreator, tagOverview);
+                tagCreator, tagOverview, boardOverview);
     }
 }

@@ -44,13 +44,25 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 public class ServerUtils {
 
     private static String server = "http://localhost:8080/";
+    private String ip = "localhost";
 
     /**
      * @param ip the ip that the user will be connecting to
      */
     public void changeIP(String ip) {
+
         server = "http://" + ip + ":8080/";
+        this.ip = ip;
     }
+
+    /**
+     * Returns the current ip the client is connected too.
+     * @return the ip
+     */
+    public String getIp(){
+        return ip;
+    }
+
 
     /**
      * Manual logger of all the active quates
@@ -145,6 +157,25 @@ public class ServerUtils {
 
     }
 
+    /**
+     * deletes a collection and all associated cards
+     *
+     * @param id the id of a collection
+     * @return a response
+     */
+    public Response deleteBoard(long id) {
+        ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/boards/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/collections/" + id + "/ofBoard") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+    }
+
 
     /**
      * Adds a card to collection
@@ -205,6 +236,20 @@ public class ServerUtils {
     }
 
     /**
+     * Gets all the collections from a board.
+     * @param board
+     * @return a list of collections.
+     */
+    public List<Collection> getCollectionsFromBoard(Board board){
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/collections/" + board.getId() + "/ofBoard") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Collection>>() {
+                });
+    }
+
+    /**
      * Retrieves all Collections
      */
     public void resetState() {
@@ -242,26 +287,32 @@ public class ServerUtils {
     }
 
     /**
-     * Retrieves the only board
-     *
-     * @return a board
+     * Gets a board by id
+     * @param id id of the board
+     * @return returns the board object
      */
-    public Board getBoard() {
-        List<Board> boards = ClientBuilder.newClient(new ClientConfig())
+    public Board getBoardById(long id){
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/boards/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(Board.class);
+    }
+
+    /**
+     * Retrieves all boards
+     *
+     * @return list of boards
+     */
+    public List<Board> getBoards() {
+        return ClientBuilder.newClient(new ClientConfig())
                 .target(server)
                 .path("api/boards")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Board>>() {
                 });
-        if (boards.isEmpty()) {
-            // create a new board and add it to the database
-            Board newBoard = new Board("Main Board");
-            addBoard(newBoard);
-            return newBoard;
-        }
 
-        return boards.get(0);
     }
 
     /**

@@ -61,7 +61,7 @@ public class CollectionOverviewCtrl implements Initializable {
      * Adding a card from the + button
      */
     public void addCard(){
-        mainCtrl.showCardInformation();
+//        mainCtrl.showCardInformation();
     }
 
     /**

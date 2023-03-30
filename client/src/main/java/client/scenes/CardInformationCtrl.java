@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Card;
 import commons.Collection;
+import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,6 +20,8 @@ import java.util.ResourceBundle;
 public class CardInformationCtrl implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+
+    private Board currentBoard;
 
     private Pane emptyPane;
     private ArrayList<HBox> subtasks;
@@ -63,29 +66,28 @@ public class CardInformationCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         subtasks = new ArrayList<>();
-        refresh();
-        ///dummy part
+        refresh(currentBoard);
     }
 
     /**
      * sets up the MenuButton for choosing a Collection for the current Card
      */
 
-    private void setupCollectionMenu()
-    {
-
-    //    System.out.println(server.getCollections());
+    private void setupCollectionMenu() {
         collectionMenu.getItems().clear();
-        for(Collection c: server.getCollections()){
-            MenuItem i = new MenuItem(c.getName());
-            i.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    collectionMenu.setText(i.getText());
-                    collectionCurrent = c;
-                }
-            });
-            collectionMenu.getItems().add(i);
+        collectionMenu.setText("Choose collection:");
+        if (currentBoard != null) {
+            for (Collection c : server.getCollectionsFromBoard(currentBoard)) {
+                MenuItem i = new MenuItem(c.getName());
+                i.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        collectionMenu.setText(i.getText());
+                        collectionCurrent = c;
+                    }
+                });
+                collectionMenu.getItems().add(i);
+            }
         }
     }
 
@@ -118,13 +120,13 @@ public class CardInformationCtrl implements Initializable {
                         @Override
                         public void handle(ActionEvent event) {
                             hb.getChildren().clear();
-                            refresh();
+                            refresh(currentBoard);
                         }
                     });
                     tf.setPromptText("Add subtask...");
                     tf.setText("");
                 }
-                refresh();
+                refresh(currentBoard);
             }
         });
         HBox hbox = new HBox();
@@ -137,15 +139,17 @@ public class CardInformationCtrl implements Initializable {
      */
     public void goBack()
     {
-        mainCtrl.showBoard();
+        mainCtrl.showBoard(currentBoard);
     }
 
 
     /**
      * Refresh method
+     * @param board the board
      */
-    public void refresh()
+    public void refresh(Board board)
     {
+        currentBoard = board;
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
         ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
 
@@ -178,7 +182,7 @@ public class CardInformationCtrl implements Initializable {
             return;
         }
         clearFields();
-        mainCtrl.showBoard();
+        mainCtrl.showBoard(currentBoard);
     }
 
     /**
@@ -186,7 +190,6 @@ public class CardInformationCtrl implements Initializable {
      * @return A card object.
      */
     public Card getCard() {
-        // null collection for now
         return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()));
     }
 
