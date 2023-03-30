@@ -92,7 +92,7 @@ public class CardInformationCtrl implements Initializable {
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
-        refresh(currentBoard);
+        refresh();
     }
 
     /**
@@ -102,7 +102,8 @@ public class CardInformationCtrl implements Initializable {
     public void setCard(Card card)
     {
         this.card = card;
-        this.collectionCurrent = server.getCollectionById(card.getCollectionId());
+        if(card.getCollectionId() != null)
+            this.collectionCurrent = server.getCollectionById(card.getCollectionId());
     }
     /**
      * sets up the MenuButton for choosing a Collection for the current Card
@@ -110,9 +111,13 @@ public class CardInformationCtrl implements Initializable {
 
     private void setupCollectionMenu() {
         collectionMenu.getItems().clear();
-        collectionMenu.setText("Choose collection:");
+        if(collectionCurrent == null)
+            collectionMenu.setText("Choose collection:");
+        else collectionMenu.setText(collectionCurrent.getName());
+
         if (currentBoard != null) {
             for (Collection c : server.getCollectionsFromBoard(currentBoard)) {
+                System.out.println(c.getName());
                 MenuItem i = new MenuItem(c.getName());
                 i.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
@@ -155,13 +160,13 @@ public class CardInformationCtrl implements Initializable {
                         @Override
                         public void handle(ActionEvent event) {
                             hb.getChildren().clear();
-                            refresh(currentBoard);
+                            refresh();
                         }
                     });
                     tf.setPromptText("Add subtask...");
                     tf.setText("");
                 }
-                refresh(currentBoard);
+                refresh();
             }
         });
         HBox hbox = new HBox();
@@ -180,22 +185,27 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * Refresh method
-     * @param board the board
      */
-    public void refresh(Board board)
+    public void refresh()
     {
        // System.out.println(state + " " + card.getTitle());
+        setupCollectionMenu();
         if(state == State.EDIT)
+        {
             title.setText("Edit card");
+            collectionCurrent = server.getCollectionById(card.getCollectionId());
+        }
         else
+        {
             title.setText("Add card");
+            collectionCurrent = null;
+        }
         if(collectionCurrent == null)
             collectionMenu.setText("Select...");
         else collectionMenu.setText(collectionCurrent.getName());
         cardName.setText(card.getTitle());
         cardDescription.setText(card.getDescription());
 
-        currentBoard = board;
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
         ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
 
@@ -203,38 +213,57 @@ public class CardInformationCtrl implements Initializable {
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtasks);
         scrollPane.setContent(vbox);
-        setupCollectionMenu();
+
     }
 
     /**
      * Method to add Card to referencing Collection and
      * saving to database.
      */
-    public void addCard(){
-        if(cardName.getText().equals(""))
-        {
+    public void addCard() {
+        if (cardName.getText().equals("")) {
             showError("Card name cannot be empty!");
             return;
         }
-        if(collectionCurrent == null)
-        {
+        if (collectionCurrent == null) {
             showError("You need to select a collection for this card!");
             return;
         }
+
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
         card.setCollectionId(collectionCurrent.getId());
-        card.setIndex((long) collectionCurrent.getCards().size());
-        try {
-            server.send("/app/cards", card);
+        if(state == State.CREATE)
+        {
+            card.setIndex((long) collectionCurrent.getCards().size());
+            server.addCard(card);
+        }
+        else
+        {
+            Collection oldCol = null;
+            if(card.getCollectionId()!=null)
+                oldCol = server.getCollectionById(card.getCollectionId());
+            server.updateCard(card.getId(), card);
+            try {
+                ///TODO sockets
 
-        } catch (WebApplicationException e) {
+                Collection newCol = collectionCurrent;
+                Long index = card.getIndex();
+                Long newIndex = (long) collectionCurrent.getCards().size();
 
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            return;
+                if(oldCol!= null && newCol.getId()!=oldCol.getId() && state == State.EDIT)
+                    server.changeCardIndex(oldCol, index, newCol, newIndex);
+
+                //  server.send("/app/cards", card);
+
+            } catch (WebApplicationException e) {
+
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+                return;
+            }
         }
         clearFields(); ///security measure
         mainCtrl.showBoard(currentBoard);
@@ -292,5 +321,40 @@ public class CardInformationCtrl implements Initializable {
      */
     public Board getBoard() {
         return currentBoard;
+    }
+
+    /**
+     * Board setter
+     * @param board - the new value of this class's currentBoard field
+     */
+    public void setBoard(Board board)
+    {
+        this.currentBoard = board;
+    }
+
+    /**
+     * configures this controller to enter in 'Edit Card' Mode
+     * @param cardId - the Id of the card we want to edit
+     */
+    public void setEditMode(Long cardId)
+    {
+        setCard(getCardById(cardId));
+        collectionCurrent = server.getCollectionById(card.getCollectionId());
+        setState(CardInformationCtrl.State.EDIT);
+        Board board = server.getBoardOfCard(cardId);
+        setBoard(board);
+        refresh();
+    }
+
+    /**
+     * configures this controller to enter in 'Create Card' Mode
+     * @param board - the id of the board we are currently in
+     */
+    public void setCreateMode(Board board)
+    {
+        setState(CardInformationCtrl.State.CREATE);
+        setCard(new Card());
+        setBoard(board);
+        refresh();
     }
 }

@@ -131,17 +131,15 @@ public class MainCtrl {
     }
 
     /**
-     * Displays the cardInformation Scene
+     * Displays the cardInformation Scene when adding card
      * and enables the controller
      * @param currentBoard the current Board
      */
     public void showCardInformation(Board currentBoard)
     {
+        cardInformationCtrl.setCreateMode(currentBoard);
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.setState(CardInformationCtrl.State.CREATE);
-        cardInformationCtrl.setCard(new Card());
-        cardInformationCtrl.refresh(currentBoard);
     }
 
 
@@ -170,11 +168,9 @@ public class MainCtrl {
      * @param cardId - id of the card we want to edit
      */
     public void editCard(Long cardId) {
+        cardInformationCtrl.setEditMode(cardId);
         primaryStage.setTitle("Edit card");
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.setCard(cardInformationCtrl.getCardById(cardId));
-        cardInformationCtrl.setState(CardInformationCtrl.State.EDIT);
-        cardInformationCtrl.refresh(cardInformationCtrl.getBoard());
     }
 
     /**
