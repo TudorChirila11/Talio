@@ -224,6 +224,7 @@ public class CardInformationCtrl implements Initializable {
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
         card.setCollectionId(collectionCurrent.getId());
+        card.setIndex((long) collectionCurrent.getCards().size());
         try {
             server.send("/app/cards", card);
 
