@@ -8,13 +8,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 import server.database.CardRepository;
 
-import javax.lang.model.type.ArrayType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+//CHECKSTYLE:OFF
 public class TestCardRepository implements CardRepository {
 
     private ArrayList<Card> cards = new ArrayList<>();
