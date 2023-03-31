@@ -6,6 +6,7 @@ import commons.Card;
 import commons.Collection;
 import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public class CardInformationCtrl implements Initializable {
 
     @FXML
     private Text title;
+
+    private StompSession session;
 
     /**
      * sets the CardInformationCtrl's state field
@@ -93,6 +97,15 @@ public class CardInformationCtrl implements Initializable {
         card = new Card();
         collectionCurrent = null;
         refresh();
+    }
+
+    /**
+     * A method for starting to listen to a server once the connection has been established
+     * @param session the session that is connected to a server that the client is connected to
+     */
+    public void subscriber(StompSession session) {
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
+        this.session = session;
     }
 
     /**
@@ -228,7 +241,6 @@ public class CardInformationCtrl implements Initializable {
             showError("You need to select a collection for this card!");
             return;
         }
-
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
         Collection oldCol = null;
@@ -238,22 +250,25 @@ public class CardInformationCtrl implements Initializable {
         {
             card.setCollectionId(collectionCurrent.getId());
             card.setIndex((long) collectionCurrent.getCards().size());
-            server.addCard(card);
+            Card c = server.addCard(card);
+            server.send("/app/cards", c, session);
         }
         else
         {
-            server.updateCard(card.getId(), card);
+            Card c = server.updateCard(card.getId(), card);
+            server.send("/app/cards", c, session);
             try {
-                ///TODO sockets
 
                 Collection newCol = collectionCurrent;
                 Long index = card.getIndex();
                 Long newIndex = (long) collectionCurrent.getCards().size();
 
-                if(oldCol!= null && (long) newCol.getId()!= (long) oldCol.getId() && state == State.EDIT)
-                    server.changeCardIndex(oldCol, index, newCol, newIndex);
-
-                //  server.send("/app/cards", card);
+                if(oldCol!= null && (long) newCol.getId()!= (long) oldCol.getId() && state == State.EDIT) {
+                    Card d = server.changeCardIndex(oldCol, index, newCol, newIndex);
+                    server.send("/app/collections", oldCol, session);
+                    server.send("/app/collections", newCol, session);
+                    server.send("/app/cards", d, session);
+                }
 
             } catch (WebApplicationException e) {
 
@@ -266,7 +281,6 @@ public class CardInformationCtrl implements Initializable {
         }
         clearFields(); ///security measure
         mainCtrl.showBoard(currentBoard);
-
     }
 
     /**

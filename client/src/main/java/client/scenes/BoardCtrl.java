@@ -56,6 +56,8 @@ public class BoardCtrl implements Initializable {
 
     private final MainCtrl mainCtrl;
 
+    private StompSession session;
+
     //TODO fix checkstyle code refactoing, make a bit more readable...
 
     /**
@@ -104,6 +106,7 @@ public class BoardCtrl implements Initializable {
      */
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)), session);
+        this.session = session;
     }
 
     /**
@@ -111,7 +114,7 @@ public class BoardCtrl implements Initializable {
      */
     public void resetBoard(){
         try {
-            server.send("/app/collectionsDeleteAll", currentBoard);
+            server.send("/app/collectionsDeleteAll", currentBoard, session);
 
         } catch (WebApplicationException e) {
 
@@ -121,7 +124,7 @@ public class BoardCtrl implements Initializable {
             alert.showAndWait();
         }
         try {
-            server.send("/app/cardsDeleteAll", new Card());
+            server.send("/app/cardsDeleteAll", new Card(), session);
 
         } catch (WebApplicationException e) {
 
@@ -131,7 +134,7 @@ public class BoardCtrl implements Initializable {
             alert.showAndWait();
         }
         try {
-            server.send("/app/tagsDeleteAll", new Tag());
+            server.send("/app/tagsDeleteAll", new Tag(), session);
 
         } catch (WebApplicationException e) {
 
@@ -172,7 +175,7 @@ public class BoardCtrl implements Initializable {
 
                 ListView<Card> collection = new ListView<>(list);
                 collection.getStyleClass().add("collection");
-                collection.setCellFactory(new CardCellFactory(mainCtrl, server));
+                collection.setCellFactory(new CardCellFactory(mainCtrl, server, session));
                 collection.setPrefSize(225, 275);
 
                 //maps this listview to its associate Collection
@@ -241,7 +244,10 @@ public class BoardCtrl implements Initializable {
                 Collection newCollection = mapper.get(listView);
                 long oldIndex = sourceIndex;
                 //int currentIndex = getIndex(listView, event.getY());
-                server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
+                Card d = server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
+                server.send("/app/collections", server.getCollectionById(oldCollection.getId()), session);
+                server.send("/app/collections", server.getCollectionById(newCollection.getId()), session);
+                server.send("/app/cards", d, session);
                 refresh(currentBoard);
             }
         }
@@ -275,7 +281,7 @@ public class BoardCtrl implements Initializable {
             listView.setOnDragDropped( event -> configDropped(event, listView, getIndex(listView, event.getY()), om));
         }
         listView.setCellFactory(param -> {
-            CardCell cell = new CardCell(mainCtrl, server);
+            CardCell cell = new CardCell(mainCtrl, server, session);
             cell.setOnDragDetected(event -> {
                 if (cell.getItem() == null) {return;}
                 Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
@@ -314,7 +320,7 @@ public class BoardCtrl implements Initializable {
             if (!newName.isEmpty()) {
                 Collection randomC = new Collection(newName, currentBoard);
                 try {
-                    server.send("/app/collections", randomC);
+                    server.send("/app/collections", randomC, session);
                 } catch (WebApplicationException e) {
                     e.printStackTrace();
                     e.getCause();
@@ -339,7 +345,7 @@ public class BoardCtrl implements Initializable {
         delete.setStyle("-fx-font-size: 10px; -fx-background-color: #FF0000; -fx-text-fill: white;");
         delete.setOnAction(event -> {
             try {
-                server.send("/app/collectionsDelete", collection);
+                server.send("/app/collectionsDelete", collection, session);
 
             } catch (WebApplicationException e) {
 
@@ -365,7 +371,7 @@ public class BoardCtrl implements Initializable {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
                         collection.setName(newName);
-                        server.send("/app/collections", collection);
+                        server.send("/app/collections", collection, session);
                     }
                 }
             }

@@ -6,6 +6,7 @@ import commons.Card;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 public class CardCellFactory implements Callback<ListView<Card>, ListCell<Card>> {
 
@@ -15,16 +16,21 @@ public class CardCellFactory implements Callback<ListView<Card>, ListCell<Card>>
 
     private final ServerUtils server;
 
+    private StompSession session;
+
     /**
      * Constructor that takes the server reference
      * @param mainCtrl - main controller
-     * @param server - server referecne
+     * @param server - server reference
+     * @param session - session reference for websockets
+     *
      */
 
-    public CardCellFactory(MainCtrl mainCtrl, ServerUtils server) {
+    public CardCellFactory(MainCtrl mainCtrl, ServerUtils server, StompSession session) {
         super();
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.session = session;
     }
 
     /**
@@ -36,6 +42,6 @@ public class CardCellFactory implements Callback<ListView<Card>, ListCell<Card>>
     @Override
     public ListCell<Card> call(ListView<Card> param) {
 
-        return new CardCell(mainCtrl, server);
+        return new CardCell(mainCtrl, server, session);
     }
 }
