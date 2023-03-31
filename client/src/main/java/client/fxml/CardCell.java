@@ -67,16 +67,7 @@ public class CardCell extends ListCell<Card>  {
         editButton.setOnAction(event -> {
             mainCtrl.editCard(id);
         });
-
-       /* this.vBox.setOnMouseEntered(event -> {
-            this.vBox.setStyle("-fx-border-color: yellow;-fx-border-radius: 10; -fx-background-radius: 10; " +
-                    "-fx-pref-height: 50; -fx-background-color: #93BFCF");
-        });
-
-        this.vBox.setOnMouseExited(event -> {
-            this.vBox.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; " +
-                    "-fx-pref-height: 50; -fx-background-color: #93BFCF ");
-        });*/
+        
 
     }
 

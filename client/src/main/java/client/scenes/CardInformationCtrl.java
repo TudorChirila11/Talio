@@ -295,7 +295,11 @@ public class CardInformationCtrl implements Initializable {
         subtasks.add(buildAddSubtask());
     }
 
-
+    /**
+     * displays an alert with the given text.
+     * this method exists to avoid boilerplate code
+     * @param text - the message to be displayed inside the error
+     */
     private void showError(String text)
     {
         Alert a = new Alert(Alert.AlertType.ERROR);

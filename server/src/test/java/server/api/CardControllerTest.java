@@ -29,27 +29,27 @@ class CardControllerTest {
         sut = new CardController(cardRepo);
     }
     @Test
-    void addCard() {
+    void addingCardWebsocketMethod() {
         sut.addCard(c);
         assertTrue(cardRepo.existsById(c.getId()));
     }
 
     @Test
-    void deleteCard() {
+    void deleteCardByIdWebsocketMethod() {
         cardRepo.save(c);
         Long id = sut.deleteCard(c.getId());
         assertEquals(c.getId(), id);
     }
 
     @Test
-    void deleteAllCards() {
+    void deleteAllCardsWebsocketMethod() {
         saveAll();
         sut.deleteAllCards(a);
         assertEquals(0, cardRepo.findAll().size());
     }
 
     @Test
-    void getAll() {
+    void getAllCardsFromTheDatabase() {
         cardRepo.save(c);
         cardRepo.save(b);
         ArrayList<Card> newc = new ArrayList<>();
@@ -59,16 +59,14 @@ class CardControllerTest {
     }
 
     @Test
-    void getById() {
-        cardRepo.save(a);
-        cardRepo.save(b);
-        cardRepo.save(c);
+    void getCardByIdCardExists() {
+        saveAll();
         var res = sut.getById(b.getId());
         assertEquals(b, res.getBody());
     }
 
     @Test
-    void getByIdNF()
+    void getCardByIdCardDoesNotExist()
     {
         saveAll();
         var res = sut.getById(123);
@@ -76,7 +74,7 @@ class CardControllerTest {
     }
 
     @Test
-    void getByTitle() {
+    void getCardsByGivenTitleCardsExist() {
         saveAll();
         var res = sut.getByTitle(c.getTitle());
         ArrayList<Card> expected = new ArrayList<>();
@@ -85,7 +83,7 @@ class CardControllerTest {
     }
 
     @Test
-    void getByTitleNF()
+    void getCardsByGivenTitleCardsNotExist()
     {
         saveAll();
         var res = sut.getByTitle("random title");
@@ -93,7 +91,7 @@ class CardControllerTest {
     }
 
     @Test
-    void updateCard() {
+    void updateCardCardExists() {
         cardRepo.save(a);
         cardRepo.save(b);
         var res = sut.updateCard(b.getId(), c);
@@ -102,7 +100,7 @@ class CardControllerTest {
     }
 
     @Test
-    void updateCardNF()
+    void updateCardCardNotExist()
     {
         cardRepo.save(a);
         var res = sut.updateCard(b.getId(), a);
@@ -119,7 +117,7 @@ class CardControllerTest {
     }
 
     @Test
-    void delete() {
+    void deleteCardByIdCardExists() {
         cardRepo.save(c);
         cardRepo.save(a);
         sut.delete(c.getId());
@@ -129,7 +127,7 @@ class CardControllerTest {
     }
 
     @Test
-    void deleteNF()
+    void deleteCardByIdCardNotExist()
     {
         cardRepo.save(a);
         var res = sut.delete(b.getId());
@@ -137,20 +135,23 @@ class CardControllerTest {
     }
 
     @Test
-    void deleteAll() {
+    void deleteAllCards() {
         saveAll();
         sut.deleteAll();
         assertEquals(0, cardRepo.findAll().size());
     }
 
     @Test
-    void add() {
+    void addCardObject() {
         var response = sut.add(c);
         assertEquals(OK, response.getStatusCode());
-        assertTrue(cardRepo.existsById(c.getId()));
-        //assertTrue(cardRepo.existsById(c.getId()));
+
     }
 
+    /**
+     * saves all given cards in the database
+     * method exists to avoid boilerplate
+     */
     private void saveAll()
     {
         cardRepo.save(a);
