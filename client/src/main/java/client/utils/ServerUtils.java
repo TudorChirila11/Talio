@@ -123,6 +123,20 @@ public class ServerUtils {
     }
 
     /**
+     * gets a Card with this ID
+     * @param id - card name
+     * @return - a card object
+     */
+    public Card getCardById(Long id)
+    {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/cards/"+id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Card.class);
+
+    }
+    /**
      * deletes a card
      *
      * @param id the id of a card
@@ -315,6 +329,19 @@ public class ServerUtils {
 
     }
 
+    /***
+     * gets collection by Id
+     * @param collectionId - the Id of the collection
+     * @return requested collection
+     */
+    public Collection getCollectionById(Long collectionId) {
+        List<Collection> collections = getCollections();
+        for(Collection c : collections)
+            if(Long.compare(c.getId(), collectionId) == 0)
+                return c;
+        return null;
+    }
+
     /**
      * Retrieves all tags
      *
@@ -419,6 +446,18 @@ public class ServerUtils {
     }
 
     /**
+     * returns this card's board object
+     * @param cardId - the card we want to search the board of
+     * @return board object
+     */
+    public Board getBoardOfCard(Long cardId) {
+        Card c = getCardById(cardId);
+        Collection collection = getCollectionById(c.getCollectionId());
+        Board board = getBoardById(collection.getBoardId());
+        return board;
+    }
+
+    /**
      * This method creates a stomp client that connects to the server
      * @param url the url that directs the clients to the server
      * @return a stomp client server instance that lets the user communicate with the server.
@@ -466,5 +505,6 @@ public class ServerUtils {
     public void send(String dest, Object o) {
         session.send(dest, o);
     }
+
 
 }

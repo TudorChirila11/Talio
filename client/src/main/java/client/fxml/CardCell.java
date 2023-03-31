@@ -1,6 +1,8 @@
 package client.fxml;
 
 import client.Main;
+import client.scenes.MainCtrl;
+
 import client.utils.ServerUtils;
 import commons.Card;
 import jakarta.ws.rs.WebApplicationException;
@@ -15,8 +17,10 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 
 public class CardCell extends ListCell<Card>  {
+
     private final ServerUtils server;
 
+    private final MainCtrl mainCtrl;
     @FXML
     private Label titleLabel;
 
@@ -27,15 +31,21 @@ public class CardCell extends ListCell<Card>  {
     private Button removeButton;
 
     @FXML
+    private Button editButton;
+
     private VBox vBox;
 
     private Long id;
 
+
     /**
      * Constructor for the Custom Task Cell of type Card
+     * @param mainCtrl - reference for main controller
      * @param server reference for server
      */
-    public CardCell(ServerUtils server) {
+    public CardCell(MainCtrl mainCtrl, ServerUtils server) {
+        super();
+        this.mainCtrl = mainCtrl;
         this.server = server;
         loadFXML();
         removeButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -54,6 +64,11 @@ public class CardCell extends ListCell<Card>  {
                 getListView().getItems().remove(getItem());
             }
         });
+        editButton.setOnAction(event -> {
+            mainCtrl.editCard(id);
+        });
+
+
     }
 
     /**
