@@ -25,33 +25,46 @@ public class BoardController {
     }
 
     /**
-     * This method receives and distributes collections between clients
-     * @param b the collection that the server has received and will send to all the clients on the network
-     * @return a collection
+     * This method receives and distributes board between clients
+     * @param b the board that the server has received and will send to all the clients on the network
+     * @return a board
      */
     @MessageMapping("/boards") // /app/collections
     @SendTo("/topic/update")
-    public Board addCollection(Board b){
+    public Board addBoard(Board b){
         add(b);
         return b;
     }
 
+
     /**
-     * This method receives and distributes collections between clients
-     * @param o a null object that is used to signify that all the collections need to be deleted
-     * @return a collection
+     * This method receives and distributes boards between clients
+     * @param b the b that the server has received and will send to all the clients on the network
+     * @return a board
+     */
+    @MessageMapping("/boardsDelete") // /app/collections
+    @SendTo("/topic/update")
+    public Board deleteBoard(Board b){
+        delete(b.getId());
+        return b;
+    }
+
+    /**
+     * This method deletes all boards.
+     * @param board any given board
+     * @return a board
      */
     @MessageMapping("/allBoardsDelete") // /app/collectionsDelete
     @SendTo("/topic/update")
-    public Object deleteAll(Object o){
+    public Board deleteAll(Board board){
         deleteAll();
-        return o;
+        return board;
     }
 
     /**
      * Hardcoded mapping all cards
      *
-     * @return List of cards objects
+     * @return List of boards objects
      */
     @GetMapping(path = {"", "/"})
     public List<Board> getAll() {
@@ -89,7 +102,7 @@ public class BoardController {
     }
 
     /**
-     * deletes all the Cards in the database
+     * deletes all the Boards in the database
      *
      * @return responseEntity
      */
@@ -113,4 +126,3 @@ public class BoardController {
 
 
 }
-

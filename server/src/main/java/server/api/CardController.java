@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import commons.Card;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -16,6 +17,7 @@ import server.database.CardRepository;
 @RequestMapping("/api/cards")
 public class CardController {
     private final CardRepository repo;
+
 
     /**
      * Controller constructor
@@ -115,12 +117,12 @@ public class CardController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Card> updateCard(@PathVariable("id") long id, @RequestBody Card updatedCard) {
-        // check if we have the card in the database
+
+        //check if card is in database
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
-        // get the card as it is in the database
         Card cardInDatabase = repo.findById(id).get();
 
         // update the property's
@@ -141,7 +143,7 @@ public class CardController {
      */
     @GetMapping("/{id}/ofCollection")
     public ResponseEntity<List<Card>> getCardsByIdOfCollection(@PathVariable long id) {
-        List<Card> allCards = repo.findAll();
+        List<Card> allCards = repo.findAll(Sort.by(Sort.Direction.ASC, "index"));
         List<Card> res = new ArrayList<>();
 
         for (Card c : allCards) {
@@ -186,6 +188,7 @@ public class CardController {
      */
     @PostMapping(path = { "/", ""})
     public ResponseEntity<Card> add(@RequestBody Card card){
+
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }

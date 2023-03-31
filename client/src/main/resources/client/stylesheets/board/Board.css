@@ -1,3 +1,16 @@
+
+#tagButton{
+    -fx-background-color: transparent;
+    -fx-font-size: 18;
+    -fx-text-fill: black;
+}
+
+#tagButton:hover{
+    -fx-background-color: transparent;
+    -fx-font-size: 18;
+    -fx-text-fill: blue;
+}
+
 /* This is cs config for the element with the id: boardPane*/
 #boardPane{
     -fx-background-color:  #6096B4;

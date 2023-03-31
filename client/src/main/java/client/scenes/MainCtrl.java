@@ -19,6 +19,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import commons.Board;
+
 
 public class MainCtrl {
 
@@ -26,6 +28,9 @@ public class MainCtrl {
 
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
+
+    private BoardOverviewCtrl boardOverviewCtrl;
+    private Scene boardOverview;
 
     private AddQuoteCtrl addCtrl;
 
@@ -49,6 +54,15 @@ public class MainCtrl {
 
     private Scene keyboardShortcut;
 
+    private TagCreatorCtrl tagCreatorCtrl;
+
+    private Scene tagCreator;
+
+    private TagOverviewCtrl tagOverviewCtrl;
+
+    private Scene tagOverview;
+
+
     /**
      * Initializes the mainCtrl method with all the active controllers
      * @param primaryStage primary stage (active)
@@ -59,11 +73,15 @@ public class MainCtrl {
      * @param collection collection scene
      * @param welcomePage welcomePage scene
      * @param keyboardShortcut keyboardShortcut scene
+     * @param tagCreator tagCreator scene
+     * @param tagOverview tagCreator scene
+     * @param boardOverview  boardOverview scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
-                           Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut) {
+                           Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
+                           Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -86,6 +104,17 @@ public class MainCtrl {
         this.keyboardShortcutFCtrl = keyboardShortcut.getKey();
         this.keyboardShortcut = new Scene(keyboardShortcut.getValue());
 
+        this.tagCreatorCtrl = tagCreator.getKey();
+        this.tagCreator = new Scene(tagCreator.getValue());
+
+        this.tagOverviewCtrl = tagOverview.getKey();
+        this.tagOverview = new Scene(tagOverview.getValue());
+
+        this.boardOverviewCtrl = boardOverview.getKey();
+        this.boardOverview = new Scene(boardOverview.getValue());
+
+        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
+
         showWelcomePage();
         primaryStage.show();
     }
@@ -101,6 +130,16 @@ public class MainCtrl {
     }
 
     /**
+     * Displays the overview Scene
+     * and enables the controller
+     */
+    public void showBoardOverview() {
+        primaryStage.setTitle("Boards: Overview");
+        primaryStage.setScene(boardOverview);
+        boardOverviewCtrl.refresh();
+    }
+
+    /**
      * Displays the quote add Scene
      * and enables the controller
      */
@@ -111,24 +150,49 @@ public class MainCtrl {
     }
 
     /**
-     * Displays the cardInformation Scene
+     * Displays the cardInformation Scene when adding card
      * and enables the controller
+     * @param currentBoard the current Board
      */
-    public void showCardInformation()
+    public void showCardInformation(Board currentBoard)
     {
+        cardInformationCtrl.setCreateMode(currentBoard);
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.refresh();
     }
+
 
     /**
      * Displays the board Scene
      * and enables the controller
+     * @param currentBoard the current Board
      */
-    public void showBoard(){
+    public void showBoard(Board currentBoard){
         primaryStage.setTitle("Board Overview: Board");
         primaryStage.setScene(board);
-        boardCtrl.refresh();
+        boardCtrl.refresh(currentBoard);
+    }
+
+    /**
+     * Displays the tag creation Scene
+     * and enables the controller
+     * @param currentBoard the board that the tag creation window is related to
+     */
+    public void showTagCreation(Board currentBoard){
+        primaryStage.setTitle("Tag Creation Window");
+        primaryStage.setScene(tagCreator);
+        tagCreatorCtrl.initialize(currentBoard);
+    }
+
+    /**
+     * Displays the tag creation Scene
+     * and enables the controller
+     * @param currentBoard the board that the tag overview window is related to
+     */
+    public void showTagOverview(Board currentBoard){
+        primaryStage.setTitle("Tag Overview Window");
+        primaryStage.setScene(tagOverview);
+        tagOverviewCtrl.initialize(currentBoard);
     }
 
     /**
@@ -138,6 +202,16 @@ public class MainCtrl {
     public void showCollection(){
         primaryStage.setTitle("Collection Overview: Collection");
         primaryStage.setScene(collection);
+    }
+
+    /**
+     * edit card method
+     * @param cardId - id of the card we want to edit
+     */
+    public void editCard(Long cardId) {
+        cardInformationCtrl.setEditMode(cardId);
+        primaryStage.setTitle("Edit card");
+        primaryStage.setScene(cardInformation);
     }
 
     /**
@@ -211,7 +285,6 @@ public class MainCtrl {
     public void showWelcomePage(){
         primaryStage.setTitle("Welcome page Overview: Welcome page");
         primaryStage.setScene(welcomePage);
-
     }
 
     /**

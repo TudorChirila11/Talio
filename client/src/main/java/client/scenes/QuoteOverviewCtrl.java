@@ -82,13 +82,6 @@ public class QuoteOverviewCtrl implements Initializable {
         mainCtrl.showAdd();
     }
 
-    /**
-     * Displays the boardView
-     */
-    public void boardView(){
-        mainCtrl.showBoard();
-    }
-
 
     /**
      * Refreshes the current state of the overview

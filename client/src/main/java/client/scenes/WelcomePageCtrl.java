@@ -54,16 +54,20 @@ public class WelcomePageCtrl implements Initializable {
      * makes sure that the user is connected to the right server
      * @param ip the ip that the user has entered
      */
-    public void changeIP(String ip){
+    public void changeIP(String ip) throws InterruptedException {
         if (Objects.equals(ip, "")) {
-            server.changeIP("localhost");
-            server.createStompSession("localhost");
-            mainCtrl.showBoard();
+            if (pingHost("localhost", 8080, 1000)) {
+                server.changeIP("localhost");
+                server.createStompSession("localhost");
+                mainCtrl.showBoardOverview();
+            } else {
+                errorConnection.setText("The localhost server has not yet been started");
+            }
         } else {
             if (pingHost(ip, 8080, 1000)) {
                 server.changeIP(ip);
                 server.createStompSession(ip);
-                mainCtrl.showBoard();
+                mainCtrl.showBoardOverview();
             } else {
                 errorConnection.setText("The entered IP address is invalid");
             }
@@ -83,7 +87,22 @@ public class WelcomePageCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        enterButton.setOnAction(event -> changeIP(userIP.getText()));
+        enterButton.setOnAction(event -> {
+            try {
+                changeIP(userIP.getText());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
+    }
+
+    /**
+     * This method is only used by the MainCtrl in order to give the server all the controllers
+     * that it needs in order to use auto-synchronization
+     * @return the only instance of server on the client
+     */
+    public ServerUtils getServer() {
+        return server;
     }
 }
