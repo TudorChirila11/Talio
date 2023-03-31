@@ -97,6 +97,11 @@ public class WelcomePageCtrl implements Initializable {
 
     }
 
+    /**
+     * This method is only used by the MainCtrl in order to give the server all the controllers
+     * that it needs in order to use auto-synchronization
+     * @return the only instance of server on the client
+     */
     public ServerUtils getServer() {
         return server;
     }

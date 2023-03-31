@@ -98,10 +98,12 @@ public class BoardCtrl implements Initializable {
         refresh(currentBoard);
     }
 
+    /**
+     * A method for starting to listen to a server once the connection has been established
+     * @param session the session that is connected to a server that the client is connected to
+     */
     public void subscriber(StompSession session) {
-        System.out.println("I am being called!");
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)), session);
-        System.out.println("I am done!");
     }
 
     /**

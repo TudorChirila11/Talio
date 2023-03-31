@@ -377,17 +377,12 @@ public class ServerUtils {
      */
     public void createStompSession(String ip) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
-        StompSessionHandlerAdapter sessionHandler = new MySessionHandler(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, latch);
+        StompSessionHandlerAdapter sessionHandler = new MySessionHandler(latch);
         session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
         latch.await();
-        System.out.println(getSession());
-        System.out.println("Doing this method!");
         boardCtrl.subscriber(session);
-        System.out.println("Doing this method!");
         boardOverviewCtrl.subscriber(session);
-        System.out.println("Doing this method!");
         tagOverviewCtrl.subscriber(session);
-        System.out.println("Doing this method!");
     }
 
 
@@ -464,6 +459,7 @@ public class ServerUtils {
      * @param type what kind of information is received
      * @param consumer the client that is using the stomp client to receive and send data from and to the server
      * @param <T> the arbitrary type that lets this method receive any type of data and send it to the client.
+     * @param session the session that the register will use to subscribe to a server.
      */
     public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer, StompSession session) {
         System.out.println(session);
@@ -490,14 +486,16 @@ public class ServerUtils {
         session.send(dest, o);
     }
 
+    /**
+     * This method gets all the controllers that are used in websockets and thus auto-synchronization
+     * @param boardCtrl a controller that uses websockets
+     * @param boardOverviewCtrl a controller that uses websockets
+     * @param tagOverviewCtrl a controller that uses websockets
+     */
     public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl){
         this.boardCtrl = boardCtrl;
         this.boardOverviewCtrl = boardOverviewCtrl;
         this.tagOverviewCtrl = tagOverviewCtrl;
-    }
-
-    public StompSession getSession() {
-        return session;
     }
 
 }

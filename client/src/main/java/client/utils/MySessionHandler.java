@@ -1,8 +1,5 @@
 package client.utils;
 
-import client.scenes.BoardCtrl;
-import client.scenes.BoardOverviewCtrl;
-import client.scenes.TagOverviewCtrl;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
@@ -11,27 +8,24 @@ import java.util.concurrent.CountDownLatch;
 
 public class MySessionHandler extends StompSessionHandlerAdapter {
 
-    private BoardCtrl boardCtrl;
-
-    private BoardOverviewCtrl boardOverviewCtrl;
-
-    private TagOverviewCtrl tagOverviewCtrl;
-
     private CountDownLatch latch;
 
-    public MySessionHandler(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl,
-                            CountDownLatch latch) {
-        this.boardCtrl = boardCtrl;
-        this.boardOverviewCtrl = boardOverviewCtrl;
-        this.tagOverviewCtrl = tagOverviewCtrl;
+    /**
+     * The constructor that is used by the connect method
+     * @param latch the latch that will make the javafx thread wait before the session gets connected
+     */
+    public MySessionHandler(CountDownLatch latch) {
         this.latch = latch;
     }
 
+    /**
+     * the methods that lets the session get fully created before anything is done on the javafx thread
+     * @param session          the client STOMP session
+     * @param connectedHeaders the STOMP CONNECTED frame headers
+     */
     @Override
     public void afterConnected(StompSession session,
                                StompHeaders connectedHeaders) {
-        System.out.println("Counting down!");
         latch.countDown();
-        System.out.println("Stopped counting down!");
     }
 }
