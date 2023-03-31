@@ -95,7 +95,12 @@ public class BoardCtrl implements Initializable {
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
 
         refresh(currentBoard);
+    }
+
+    public void subscriber() {
+        System.out.println("I am being called!");
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
+        System.out.println("I am done!");
     }
 
     /**

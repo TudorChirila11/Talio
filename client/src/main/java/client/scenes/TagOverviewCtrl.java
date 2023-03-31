@@ -71,9 +71,11 @@ public class TagOverviewCtrl implements Initializable{
      */
     public void initialize(URL location, ResourceBundle resources) {
         tagContainer.getChildren().add(new HBox());
-        refresh();
 
 
+    }
+
+    public void subscriber() {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
     }
 

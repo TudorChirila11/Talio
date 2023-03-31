@@ -78,6 +78,9 @@ public class BoardOverviewCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    }
+
+    public void subscriber() {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
         boardFilePath = "boards_"+ server.getIp() + ".txt";
     }
