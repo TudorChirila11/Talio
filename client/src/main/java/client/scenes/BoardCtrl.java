@@ -24,6 +24,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.*;
@@ -95,7 +96,14 @@ public class BoardCtrl implements Initializable {
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
 
         refresh(currentBoard);
-        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
+    }
+
+    /**
+     * A method for starting to listen to a server once the connection has been established
+     * @param session the session that is connected to a server that the client is connected to
+     */
+    public void subscriber(StompSession session) {
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)), session);
     }
 
     /**

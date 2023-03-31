@@ -23,9 +23,13 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+import client.scenes.BoardCtrl;
+import client.scenes.BoardOverviewCtrl;
+import client.scenes.TagOverviewCtrl;
 import commons.*;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
@@ -43,8 +47,16 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 public class ServerUtils {
 
-    private static String server = "http://localhost:8080/";
-    private String ip = "localhost";
+    private static String server;
+    private String ip;
+
+    private StompSession session;
+
+    private BoardCtrl boardCtrl;
+
+    private BoardOverviewCtrl boardOverviewCtrl;
+
+    private TagOverviewCtrl tagOverviewCtrl;
 
     /**
      * @param ip the ip that the user will be connecting to
@@ -385,15 +397,19 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(col, APPLICATION_JSON), Collection.class);
     }
-    
-    private StompSession session = connect("ws://localhost:8080/websocket");
 
     /**
      * This method changes the session to the appropriate url when the user connects to a server
      * @param ip the url of the server to which the stomp client will connect to
      */
-    public void createStompSession(String ip) {
-        session = connect("ws://" + ip + ":8080/websocket");
+    public void createStompSession(String ip) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        StompSessionHandlerAdapter sessionHandler = new MySessionHandler(latch);
+        session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
+        latch.await();
+        boardCtrl.subscriber(session);
+        boardOverviewCtrl.subscriber(session);
+        tagOverviewCtrl.subscriber(session);
     }
 
 
@@ -462,12 +478,12 @@ public class ServerUtils {
      * @param url the url that directs the clients to the server
      * @return a stomp client server instance that lets the user communicate with the server.
      */
-    private StompSession connect(String url) {
+    private StompSession connect(String url, StompSessionHandlerAdapter sessionHandler) {
         var client = new StandardWebSocketClient();
         var stomp = new WebSocketStompClient(client);
         stomp.setMessageConverter(new MappingJackson2MessageConverter());
         try {
-            return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();
+            return stomp.connect(url, sessionHandler).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
@@ -482,8 +498,10 @@ public class ServerUtils {
      * @param type what kind of information is received
      * @param consumer the client that is using the stomp client to receive and send data from and to the server
      * @param <T> the arbitrary type that lets this method receive any type of data and send it to the client.
+     * @param session the session that the register will use to subscribe to a server.
      */
-    public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer) {
+    public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer, StompSession session) {
+        System.out.println(session);
         session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -503,8 +521,20 @@ public class ServerUtils {
      * @param o what to send
      */
     public void send(String dest, Object o) {
+        System.out.println(session);
         session.send(dest, o);
     }
 
+    /**
+     * This method gets all the controllers that are used in websockets and thus auto-synchronization
+     * @param boardCtrl a controller that uses websockets
+     * @param boardOverviewCtrl a controller that uses websockets
+     * @param tagOverviewCtrl a controller that uses websockets
+     */
+    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl){
+        this.boardCtrl = boardCtrl;
+        this.boardOverviewCtrl = boardOverviewCtrl;
+        this.tagOverviewCtrl = tagOverviewCtrl;
+    }
 
 }

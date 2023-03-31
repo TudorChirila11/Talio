@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.IOException;
 import java.net.URL;
@@ -71,10 +72,16 @@ public class TagOverviewCtrl implements Initializable{
      */
     public void initialize(URL location, ResourceBundle resources) {
         tagContainer.getChildren().add(new HBox());
-        refresh();
 
 
-        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
+    }
+
+    /**
+     * A method for starting to listen to a server once the connection has been established
+     * @param session the session that is connected to a server that the client is connected to
+     */
+    public void subscriber(StompSession session) {
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
     }
 
     /**
