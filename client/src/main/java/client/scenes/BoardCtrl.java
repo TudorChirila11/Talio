@@ -137,9 +137,7 @@ public class BoardCtrl implements Initializable {
             HBox taskListsBox = new HBox(25);
             taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
             mapper = new HashMap<ListView<Card>, Collection>();
-
             for (Collection current : taskCollections) {
-
                 String collectionName = current.getName();
                 ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
                 // Create a label for the collection name
@@ -165,11 +163,9 @@ public class BoardCtrl implements Initializable {
                 addButton.getStyleClass().add("addButton");
                 addButton.setOnAction(event -> addCard());
 
-
                 // Creating a vertical stacked box with the label -> collection -> addButton
                 VBox collectionVBox = new VBox(10);
                 collectionVBox.getChildren().addAll(collectionLabel, collection, addButton);
-
 
                 // Adding this to Hbox which contains each collection object + controls.
                 taskListsBox.getChildren().add(collectionVBox);
@@ -179,7 +175,6 @@ public class BoardCtrl implements Initializable {
             }
 
             // Finally updating all the values in the pane with the current HBox
-            System.out.println(taskListsBox.getChildren().size());
             collectionsContainer.setContent(taskListsBox);
         }
     }
