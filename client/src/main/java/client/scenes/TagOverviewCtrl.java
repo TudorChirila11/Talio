@@ -34,6 +34,8 @@ public class TagOverviewCtrl implements Initializable{
 
     private List<Tag> tagsList;
 
+    private StompSession session;
+
     /**
      * Constructor for the CollectionOverview Ctrl
      * @param server serverUtils ref
@@ -82,6 +84,7 @@ public class TagOverviewCtrl implements Initializable{
      */
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
+        this.session = session;
     }
 
     /**
@@ -102,6 +105,7 @@ public class TagOverviewCtrl implements Initializable{
             TagInOverviewCtrl tagController = loader.getController();
             tagController.setTagText(tag.getName());
             tagController.setColor(tag.getColour());
+            tagController.subscriber(session, server, tag);
             tagListView.getItems().add(newTag);
         }
         tagContainer.getChildren().set(0, tagListView);

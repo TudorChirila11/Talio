@@ -526,7 +526,6 @@ public class ServerUtils {
      * @param session StompSession to send the info through
      */
     public void send(String dest, Object o, StompSession session) {
-        System.out.println(session);
         session.send(dest, o);
     }
 
