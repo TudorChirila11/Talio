@@ -79,7 +79,7 @@ public class BoardOverviewCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
-        boardFilePath = "boards_"+ server.getIp() + ".txt";
+        boardFilePath = "boards_" + server.getIp() + ".txt";
     }
 
     /**
@@ -237,33 +237,35 @@ public class BoardOverviewCtrl implements Initializable {
      * Joins a board
      */
     public void joinBoardMethod() {
-        if(boardKey.getText().equals("")){
-            show("Please enter a key!"); return;
+        if (boardKey.getText().equals("")) {
+            show("Please enter a key!");
+            return;
         }
         String[] tokens = boardKey.getText().split("-ID-");
-        if(tokens.length != 2){
-            show("Invalid Key!"); return;
+        if (tokens.length != 2) {
+            show("Invalid Key!");
+            return;
         }
         Board b;
-        try{
-             b = server.getBoardById(Long.parseLong(tokens[1]));
-        }catch (BadRequestException e) {
+        try {
+            b = server.getBoardById(Long.parseLong(tokens[1]));
+        } catch (BadRequestException e) {
             show("Invalid Key!");
             return;
         }
 
         File f = new File(boardFilePath);
-        if(!f.exists()){
+        if (!f.exists()) {
             try {
                 f.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        boolean joined = checkBoard(b.getId(),f);
-        if(!joined){
+        boolean joined = checkBoard(b.getId(), f);
+        if (!joined) {
             writeClientBoard(b, false);
-        }else{
+        } else {
             show("Board has already been joined!");
         }
 
@@ -391,7 +393,7 @@ public class BoardOverviewCtrl implements Initializable {
     /**
      * Resets the overview of all Boards!
      */
-    public void resetOverview(){
+    public void resetOverview() {
         try {
             server.send("/app/allBoardsDelete", new Board());
 
