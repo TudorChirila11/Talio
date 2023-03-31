@@ -15,7 +15,6 @@
  */
 package client.scenes;
 
-import commons.Card;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

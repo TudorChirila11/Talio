@@ -12,23 +12,19 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import server.database.CardRepository;
-import server.database.CollectionRepository;
 
 @RestController
 @RequestMapping("/api/cards")
 public class CardController {
     private final CardRepository repo;
 
-    private final CollectionRepository collectionRepository;
 
     /**
      * Controller constructor
      * @param repo repo reference
-     * @param collectionRepository reference to Collection repository
      */
-    public CardController(CardRepository repo, CollectionRepository collectionRepository) {
+    public CardController(CardRepository repo) {
         this.repo = repo;
-        this.collectionRepository = collectionRepository;
     }
 
     /**
@@ -195,7 +191,7 @@ public class CardController {
      */
     @PostMapping(path = { "/", ""})
     public ResponseEntity<Card> add(@RequestBody Card card){
-        System.out.println(card);
+        //System.out.println(card);
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }
