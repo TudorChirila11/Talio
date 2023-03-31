@@ -241,7 +241,17 @@ public class BoardOverviewCtrl implements Initializable {
             show("Please enter a key!"); return;
         }
         String[] tokens = boardKey.getText().split("-ID-");
-        Board b = server.getBoardById(Long.parseLong(tokens[1]));
+        if(tokens.length != 2){
+            show("Invalid Key!"); return;
+        }
+        Board b;
+        try{
+             b = server.getBoardById(Long.parseLong(tokens[1]));
+        }catch (BadRequestException e) {
+            show("Invalid Key!");
+            return;
+        }
+
         File f = new File(boardFilePath);
         if(!f.exists()){
             try {
