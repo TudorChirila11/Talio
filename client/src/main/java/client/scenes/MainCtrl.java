@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import commons.Board;
 
+
 public class MainCtrl {
 
     private Stage primaryStage;
@@ -149,15 +150,15 @@ public class MainCtrl {
     }
 
     /**
-     * Displays the cardInformation Scene
+     * Displays the cardInformation Scene when adding card
      * and enables the controller
      * @param currentBoard the current Board
      */
     public void showCardInformation(Board currentBoard)
     {
+        cardInformationCtrl.setCreateMode(currentBoard);
         primaryStage.setTitle(("Card Information"));
         primaryStage.setScene(cardInformation);
-        cardInformationCtrl.refresh(currentBoard);
     }
 
 
@@ -201,6 +202,16 @@ public class MainCtrl {
     public void showCollection(){
         primaryStage.setTitle("Collection Overview: Collection");
         primaryStage.setScene(collection);
+    }
+
+    /**
+     * edit card method
+     * @param cardId - id of the card we want to edit
+     */
+    public void editCard(Long cardId) {
+        cardInformationCtrl.setEditMode(cardId);
+        primaryStage.setTitle("Edit card");
+        primaryStage.setScene(cardInformation);
     }
 
     /**

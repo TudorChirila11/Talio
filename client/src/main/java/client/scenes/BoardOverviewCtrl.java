@@ -103,7 +103,7 @@ public class BoardOverviewCtrl implements Initializable {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 long boardID = Long.parseLong(line.split(" -BOOL- ")[0]);
-                System.out.println(boardID);
+
                 boolean created = line.split(" -BOOL- ")[1].equals("true");
                 try {
                     Board b = server.getBoardById(boardID);
@@ -130,8 +130,7 @@ public class BoardOverviewCtrl implements Initializable {
                     new File("boardsTemp.txt").delete();
                 }
                 new File(boardFilePath).delete();
-                System.out.println(current.getName());
-                System.out.println(current.renameTo(new File(boardFilePath)));
+                current.renameTo(new File(boardFilePath));
                 new File("boardsTest.txt").delete();
             }
             boardsBox.setPrefSize(600, 225 * size);
@@ -217,8 +216,7 @@ public class BoardOverviewCtrl implements Initializable {
                         new File("boardsTemp.txt").delete();
                     }
                     new File(boardFilePath).delete();
-                    System.out.println(current.getName());
-                    System.out.println(current.renameTo(new File(boardFilePath)));
+                    current.renameTo(new File(boardFilePath));
                     new File("boardsTest.txt").delete();
                 }
                 show("Left " + board.getName() + "!");

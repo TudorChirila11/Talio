@@ -135,6 +135,20 @@ public class ServerUtils {
     }
 
     /**
+     * gets a Card with this ID
+     * @param id - card name
+     * @return - a card object
+     */
+    public Card getCardById(Long id)
+    {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/cards/"+id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Card.class);
+
+    }
+    /**
      * deletes a card
      *
      * @param id the id of a card
@@ -327,6 +341,19 @@ public class ServerUtils {
 
     }
 
+    /***
+     * gets collection by Id
+     * @param collectionId - the Id of the collection
+     * @return requested collection
+     */
+    public Collection getCollectionById(Long collectionId) {
+        List<Collection> collections = getCollections();
+        for(Collection c : collections)
+            if(Long.compare(c.getId(), collectionId) == 0)
+                return c;
+        return null;
+    }
+
     /**
      * Retrieves all tags
      *
@@ -432,6 +459,18 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Card>() {
                 });
+    }
+
+    /**
+     * returns this card's board object
+     * @param cardId - the card we want to search the board of
+     * @return board object
+     */
+    public Board getBoardOfCard(Long cardId) {
+        Card c = getCardById(cardId);
+        Collection collection = getCollectionById(c.getCollectionId());
+        Board board = getBoardById(collection.getBoardId());
+        return board;
     }
 
     /**
