@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.Card;
 import commons.Collection;
+import commons.Tag;
 import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
@@ -29,6 +30,10 @@ import java.util.*;
 
 public class BoardCtrl implements Initializable {
     private final ServerUtils server;
+
+    @FXML
+    public Button tagButton;
+    public Button tagOverview;
 
     @FXML
     private Button addCollectionButton;
@@ -85,6 +90,10 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
+
+        tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard));
+        tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
+
         refresh(currentBoard);
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
     }
@@ -113,7 +122,16 @@ public class BoardCtrl implements Initializable {
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
-        System.out.println("We did it, we deleted everything!");
+        try {
+            server.send("/app/tagsDeleteAll", new Tag());
+
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     /**
@@ -361,7 +379,7 @@ public class BoardCtrl implements Initializable {
         int pos = 0;
         double cardSize = 100, error = 0;
         pos = (int) Math.min(y/(cardSize + error), sz);
-        System.out.println(y + " position " + pos);
+       // System.out.println(y + " position " + pos);
         return pos;
     }
 }

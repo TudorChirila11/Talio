@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<VBox id="tagCreator" xmlns="http://javafx.com/javafx"
+            stylesheets="@/client/stylesheets/Global.css"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.scenes.TagOverviewCtrl"
+            prefHeight="400.0" prefWidth="600.0">
+
+        <HBox>
+                <Button onAction="#goBack" text="go Back" />
+                <HBox HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <Text id="tagOverviewText" text="List of current tags:"/>
+        <VBox id="tagContainer" VBox.vgrow="ALWAYS" fx:id="tagContainer" />
+        <Button id="createTagButton" fx:id="createTagButton" onAction="#createTag" text="create a new tag" />
+</VBox>
