@@ -167,7 +167,6 @@ public class BoardCtrl implements Initializable {
                 collection.setCellFactory(new CardCellFactory(mainCtrl, server));
                 collection.setPrefSize(225, 275);
 
-                System.out.println(current.getName() + " " + collection.getItems());
                 //maps this listview to its associate Collection
                 mapper.put(collection, current);
 
@@ -208,7 +207,7 @@ public class BoardCtrl implements Initializable {
     {
         Dragboard dragboard = event.getDragboard();
         boolean success = false;
-        System.out.println(dragboard.getString());
+
         if (dragboard.hasString()) {
             Card card = null;
             try {
@@ -379,7 +378,7 @@ public class BoardCtrl implements Initializable {
         int pos = 0;
         double cardSize = 100, error = 0;
         pos = (int) Math.min(y/(cardSize + error), sz);
-       // System.out.println(y + " position " + pos);
+
         return pos;
     }
 }

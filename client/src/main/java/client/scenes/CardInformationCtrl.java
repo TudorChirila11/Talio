@@ -112,12 +112,12 @@ public class CardInformationCtrl implements Initializable {
     private void setupCollectionMenu() {
         collectionMenu.getItems().clear();
         if(collectionCurrent == null)
-            collectionMenu.setText("Choose collection:");
+            collectionMenu.setText("Select...");
         else collectionMenu.setText(collectionCurrent.getName());
 
         if (currentBoard != null) {
             for (Collection c : server.getCollectionsFromBoard(currentBoard)) {
-                System.out.println(c.getName());
+
                 MenuItem i = new MenuItem(c.getName());
                 i.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
@@ -188,7 +188,7 @@ public class CardInformationCtrl implements Initializable {
      */
     public void refresh()
     {
-       // System.out.println(state + " " + card.getTitle());
+
         setupCollectionMenu();
         if(state == State.EDIT)
         {
@@ -207,7 +207,6 @@ public class CardInformationCtrl implements Initializable {
         cardDescription.setText(card.getDescription());
 
         ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
-        ///TODO Retrieve all collections from the database and put them as options inside the "Choose collection" menu
 
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
@@ -310,7 +309,7 @@ public class CardInformationCtrl implements Initializable {
      * @return - a card object
      */
     public Card getCardById(Long cardId) {
-        //System.out.println(cardId);
+
         Card card = server.getCardById(cardId);
         return card; ///null check?
     }

@@ -117,22 +117,20 @@ public class CardController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Card> updateCard(@PathVariable("id") long id, @RequestBody Card updatedCard) {
-        System.out.println(" check if we have the card in the database" + id);
+
+        //check if card is in database
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
-        System.out.println("get the card as it is in the database");
         Card cardInDatabase = repo.findById(id).get();
 
         // update the property's
-        System.out.println("update the props");
         cardInDatabase.setDescription(updatedCard.getDescription());
         cardInDatabase.setTitle(updatedCard.getTitle());
         cardInDatabase.setCollectionId(updatedCard.getCollectionId());
 
         // save the card
-        System.out.println("save the card");
         Card theSavedCard = repo.save(cardInDatabase);
         return ResponseEntity.ok(theSavedCard);
     }
@@ -153,7 +151,6 @@ public class CardController {
                 res.add(c);
             }
         }
-        System.out.println(res);
 
         return ResponseEntity.ok(res);
 
@@ -191,7 +188,7 @@ public class CardController {
      */
     @PostMapping(path = { "/", ""})
     public ResponseEntity<Card> add(@RequestBody Card card){
-        //System.out.println(card);
+
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }

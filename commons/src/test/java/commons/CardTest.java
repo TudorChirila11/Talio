@@ -127,7 +127,6 @@ class CardTest {
 
     @Test
     void testToString() {
-        System.out.println(a.hashCode());
         String res = a.toString();
         assertTrue(res.contains("Card"));
         assertTrue(res.contains("id=324"));

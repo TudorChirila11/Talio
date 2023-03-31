@@ -65,7 +65,7 @@ public class CollectionController {
     @MessageMapping("/collectionsDeleteAll") // /app/collectionsDelete
     @SendTo("/topic/update")
     public Board deleteAllCollections(Board board){
-        System.out.println("Hi, I am receiving a signal!");
+
         deleteCollectionsByBoardId(board.getId());
         return board;
     }
@@ -128,12 +128,11 @@ public class CollectionController {
 
         Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
 
-        System.out.println("collection found?");
         // the collection is not found
         if (collectionOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        System.out.println("yes, remove");
+
         Collection collection = collectionOpt.get();
         List<Card> cards = collection.getCards();
 
@@ -142,7 +141,7 @@ public class CollectionController {
         assert (index >= 0 && index < cards.size());
 
         Card c = cards.get(index);
-        c.setIndex(null); ///TODO makes index null, you have to be careful
+        c.setIndex(null); // makes index null, you have to be careful
         cards.remove(index);
         for(int i = index; i <cards.size(); ++i)
         {
@@ -168,12 +167,12 @@ public class CollectionController {
     (@PathVariable long collectionId, @PathVariable int index, @PathVariable long newCollection, @PathVariable int newIndex) {
         Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
         Optional<Collection> collectionOpt2 = repoCollection.findById(newCollection);
-        System.out.println("collection found?");
+
         // the collection is not found
         if (collectionOpt.isEmpty() || collectionOpt2.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        System.out.println("yes, remove");
+
         Collection collection = collectionOpt.get();
         List<Card> cardsOld = collection.getCards();
 
