@@ -100,20 +100,20 @@ class CardTest {
     }
 
     @Test
-    void testEquals1() {
+    void testEqualsSameObject() {
         Card b = a;
         assertEquals(a, b);
     }
 
     @Test
-    void testEquals2()
+    void testEqualsDifferentData()
     {
         Card b = new Card(324L, "card34", "description", 1254L, 234L);
         assertNotEquals(a, b);
     }
 
     @Test
-    void testEquals3()
+    void testEqualsDifferentObjectsSameData()
     {
         Card c = new Card(324L, "card", "description", 1254L, 234L);
         assertEquals(a, c);

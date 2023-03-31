@@ -67,7 +67,7 @@ public class CardCell extends ListCell<Card>  {
         editButton.setOnAction(event -> {
             mainCtrl.editCard(id);
         });
-        
+
 
     }
 
