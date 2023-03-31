@@ -380,6 +380,14 @@ public class ServerUtils {
         StompSessionHandlerAdapter sessionHandler = new MySessionHandler(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, latch);
         session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
         latch.await();
+        System.out.println(getSession());
+        System.out.println("Doing this method!");
+        boardCtrl.subscriber(session);
+        System.out.println("Doing this method!");
+        boardOverviewCtrl.subscriber(session);
+        System.out.println("Doing this method!");
+        tagOverviewCtrl.subscriber(session);
+        System.out.println("Doing this method!");
     }
 
 
@@ -457,7 +465,8 @@ public class ServerUtils {
      * @param consumer the client that is using the stomp client to receive and send data from and to the server
      * @param <T> the arbitrary type that lets this method receive any type of data and send it to the client.
      */
-    public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer) {
+    public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer, StompSession session) {
+        System.out.println(session);
         session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {

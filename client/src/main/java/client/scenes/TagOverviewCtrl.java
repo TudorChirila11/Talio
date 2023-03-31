@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.IOException;
 import java.net.URL;
@@ -75,8 +76,8 @@ public class TagOverviewCtrl implements Initializable{
 
     }
 
-    public void subscriber() {
-        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
+    public void subscriber(StompSession session) {
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
     }
 
     /**

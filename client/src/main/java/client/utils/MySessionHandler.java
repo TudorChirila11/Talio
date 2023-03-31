@@ -33,12 +33,5 @@ public class MySessionHandler extends StompSessionHandlerAdapter {
         System.out.println("Counting down!");
         latch.countDown();
         System.out.println("Stopped counting down!");
-        System.out.println("Doing this method!");
-        boardCtrl.subscriber();
-        System.out.println("Doing this method!");
-        boardOverviewCtrl.subscriber();
-        System.out.println("Doing this method!");
-        tagOverviewCtrl.subscriber();
-        System.out.println("Doing this method!");
     }
 }

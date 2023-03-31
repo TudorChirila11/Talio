@@ -24,6 +24,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.*;
@@ -97,9 +98,9 @@ public class BoardCtrl implements Initializable {
         refresh(currentBoard);
     }
 
-    public void subscriber() {
+    public void subscriber(StompSession session) {
         System.out.println("I am being called!");
-        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)), session);
         System.out.println("I am done!");
     }
 
