@@ -1,0 +1,29 @@
+#tagCreator{
+    -fx-alignment: CENTER;
+    -fx-padding: 50 50 50 50;
+    -fx-background-color: #93BFCF;
+    -fx-spacing: 10;
+    -fx-font-size: 16;
+}
+
+#tagDescription{
+    -fx-pref-height: 100;
+}
+
+#tagColour{
+    -fx-pref-width: 200;
+    -fx-pref-height: 50;
+}
+
+#tagOverviewText{
+    -fx-font-size: 18;
+}
+
+#tagContainer .list-cell{
+    -fx-background-color: transparent;
+    -fx-padding: 10 0 10 0;
+}
+
+#tagContainer .list-view{
+    -fx-background-color: transparent;
+}

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.Card;
 import commons.Collection;
+import commons.Tag;
 import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
@@ -29,6 +30,10 @@ import java.util.*;
 
 public class BoardCtrl implements Initializable {
     private final ServerUtils server;
+
+    @FXML
+    public Button tagButton;
+    public Button tagOverview;
 
     @FXML
     private Button addCollectionButton;
@@ -85,6 +90,10 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
+
+        tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard));
+        tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
+
         refresh(currentBoard);
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)));
     }
@@ -113,7 +122,16 @@ public class BoardCtrl implements Initializable {
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
-        System.out.println("We did it, we deleted everything!");
+        try {
+            server.send("/app/tagsDeleteAll", new Tag());
+
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     /**
@@ -143,12 +161,12 @@ public class BoardCtrl implements Initializable {
                 // Create a label for the collection name
                 Label collectionLabel = new Label(collectionName);
                 collectionLabel.getStyleClass().add("collectionLabel");
+
                 ListView<Card> collection = new ListView<>(list);
                 collection.getStyleClass().add("collection");
-                collection.setCellFactory(new CardCellFactory(server));
+                collection.setCellFactory(new CardCellFactory(mainCtrl, server));
                 collection.setPrefSize(225, 275);
 
-                System.out.println(current.getName() + " " + collection.getItems());
                 //maps this listview to its associate Collection
                 mapper.put(collection, current);
 
@@ -189,7 +207,7 @@ public class BoardCtrl implements Initializable {
     {
         Dragboard dragboard = event.getDragboard();
         boolean success = false;
-        System.out.println(dragboard.getString());
+
         if (dragboard.hasString()) {
             Card card = null;
             try {
@@ -249,7 +267,7 @@ public class BoardCtrl implements Initializable {
             listView.setOnDragDropped( event -> configDropped(event, listView, getIndex(listView, event.getY()), om));
         }
         listView.setCellFactory(param -> {
-            CardCell cell = new CardCell(server);
+            CardCell cell = new CardCell(mainCtrl, server);
             cell.setOnDragDetected(event -> {
                 if (cell.getItem() == null) {return;}
                 Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
@@ -359,8 +377,8 @@ public class BoardCtrl implements Initializable {
             return 0;
         int pos = 0;
         double cardSize = 100, error = 0;
-        pos = (int) Math.min(y/(cardSize + error), sz-1);
-        System.out.println(y + " position " + pos);
+        pos = (int) Math.min(y/(cardSize + error), sz);
+
         return pos;
     }
 }

@@ -1,5 +1,6 @@
 package client.fxml;
 
+import client.scenes.MainCtrl;
 import client.utils.ServerUtils;
 import commons.Card;
 import javafx.scene.control.ListCell;
@@ -8,14 +9,22 @@ import javafx.util.Callback;
 
 public class CardCellFactory implements Callback<ListView<Card>, ListCell<Card>> {
 
+
+    private final MainCtrl mainCtrl;
+
+
     private final ServerUtils server;
 
     /**
      * Constructor that takes the server reference
-     * @param server
+     * @param mainCtrl - main controller
+     * @param server - server referecne
      */
-    public CardCellFactory(ServerUtils server) {
+
+    public CardCellFactory(MainCtrl mainCtrl, ServerUtils server) {
+        super();
         this.server = server;
+        this.mainCtrl = mainCtrl;
     }
 
     /**
@@ -26,6 +35,7 @@ public class CardCellFactory implements Callback<ListView<Card>, ListCell<Card>>
      */
     @Override
     public ListCell<Card> call(ListView<Card> param) {
-        return new CardCell(server);
+
+        return new CardCell(mainCtrl, server);
     }
 }

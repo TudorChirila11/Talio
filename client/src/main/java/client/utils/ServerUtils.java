@@ -26,13 +26,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import commons.Board;
-import commons.Card;
-import commons.Collection;
+import commons.*;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
-import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -125,6 +122,20 @@ public class ServerUtils {
                 .post(Entity.entity(card, APPLICATION_JSON), Card.class);
     }
 
+    /**
+     * gets a Card with this ID
+     * @param id - card name
+     * @return - a card object
+     */
+    public Card getCardById(Long id)
+    {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/cards/"+id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Card.class);
+
+    }
     /**
      * deletes a card
      *
@@ -318,6 +329,33 @@ public class ServerUtils {
 
     }
 
+    /***
+     * gets collection by Id
+     * @param collectionId - the Id of the collection
+     * @return requested collection
+     */
+    public Collection getCollectionById(Long collectionId) {
+        List<Collection> collections = getCollections();
+        for(Collection c : collections)
+            if(Long.compare(c.getId(), collectionId) == 0)
+                return c;
+        return null;
+    }
+
+    /**
+     * Retrieves all tags
+     *
+     * @return List of tags
+     */
+    public List<Tag> getTags() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/tags") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Tag>>() {
+                });
+    }
+
     /**
      * deletes card from index, in the Collection col's card array
      * @param col - the collection we want the card deleted from
@@ -347,6 +385,7 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(col, APPLICATION_JSON), Collection.class);
     }
+    
     private StompSession session = connect("ws://localhost:8080/websocket");
 
     /**
@@ -407,6 +446,18 @@ public class ServerUtils {
     }
 
     /**
+     * returns this card's board object
+     * @param cardId - the card we want to search the board of
+     * @return board object
+     */
+    public Board getBoardOfCard(Long cardId) {
+        Card c = getCardById(cardId);
+        Collection collection = getCollectionById(c.getCollectionId());
+        Board board = getBoardById(collection.getBoardId());
+        return board;
+    }
+
+    /**
      * This method creates a stomp client that connects to the server
      * @param url the url that directs the clients to the server
      * @return a stomp client server instance that lets the user communicate with the server.
@@ -454,5 +505,6 @@ public class ServerUtils {
     public void send(String dest, Object o) {
         session.send(dest, o);
     }
+
 
 }

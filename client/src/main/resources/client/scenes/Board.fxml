@@ -4,8 +4,11 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
+
 <AnchorPane id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
     <children>
+        <Button id="tagButton" fx:id="tagOverview" layoutX="407.0" layoutY="87.0" minWidth="41.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="110.0" text="all tags" />
+        <Button id="tagButton" fx:id="tagButton" layoutX="507.0" layoutY="87.0" minWidth="41.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="110.0" text="create tag" />
         <Button id="backButton" layoutX="20.0" layoutY="20.0" minWidth="41.0" mnemonicParsing="false" onAction="#boardOverview" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
             <graphic>
                 <ImageView fitHeight="65.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">

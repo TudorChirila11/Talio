@@ -13,7 +13,6 @@ public class Board {
     private Long id;
 
     private String name;
-
     @OneToMany(mappedBy = "boardId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Collection> collections = new ArrayList<>();
 
