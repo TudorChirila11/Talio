@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+//CHECKSTYLE:OFF
+
 public class TestCollectionRepository implements CollectionRepository {
 
     private ArrayList<Collection> collections = new ArrayList<>();
@@ -186,3 +188,5 @@ public class TestCollectionRepository implements CollectionRepository {
         return null;
     }
 }
+
+//CHECKSTYLE:ON

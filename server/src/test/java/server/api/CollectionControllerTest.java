@@ -16,6 +16,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//CHECKSTYLE:OFF
+
 public class CollectionControllerTest {
 
     private TestCollectionRepository repoCollection;
@@ -286,3 +288,5 @@ public class CollectionControllerTest {
 
     }
 }
+
+//CHECKSTYLE:ON
