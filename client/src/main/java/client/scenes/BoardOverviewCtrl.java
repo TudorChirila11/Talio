@@ -239,6 +239,9 @@ public class BoardOverviewCtrl implements Initializable {
      * Joins a board
      */
     public void joinBoardMethod() {
+        if(boardKey.getText().equals("")){
+            show("Please enter a key!"); return;
+        }
         String[] tokens = boardKey.getText().split("-ID-");
         Board b = server.getBoardById(Long.parseLong(tokens[1]));
         File f = new File(boardFilePath);
