@@ -163,7 +163,7 @@ public class CollectionController {
      * @return new collection
      */
     @GetMapping("{collectionId}/{index}/{newCollection}/{newIndex}")
-    public ResponseEntity<Collection> switchCardPosition
+    public ResponseEntity<Card> switchCardPosition
     (@PathVariable long collectionId, @PathVariable int index, @PathVariable long newCollection, @PathVariable int newIndex) {
         Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
         Optional<Collection> collectionOpt2 = repoCollection.findById(newCollection);
@@ -203,7 +203,7 @@ public class CollectionController {
         Collection updatedCollection1 = repoCollection.save(collection);
         Collection updatedCollection2 = repoCollection.save(collection2);
         Card updatedCard = repoCard.save(c);
-        return ResponseEntity.ok(updatedCollection2);
+        return ResponseEntity.ok(updatedCard);
     }
 
 //    /{collectionId}/{cardId}/{position}
