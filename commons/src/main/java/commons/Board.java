@@ -125,4 +125,12 @@ public class Board {
                 ", collections=" + collections +
                 '}';
     }
+
+    /**
+     * set the id of the board
+     * @param l the id
+     */
+    public void setId(Long l) {
+        this.id = l;
+    }
 }
