@@ -52,6 +52,8 @@ public class BoardOverviewCtrl implements Initializable {
     private TextField boardKey;
 
 
+    private AdminLogInCtrl adminLogInCtrl;
+
     private final ServerUtils server;
 
     private final MainCtrl mainCtrl;
@@ -65,11 +67,13 @@ public class BoardOverviewCtrl implements Initializable {
      *
      * @param server   serverUtils ref
      * @param mainCtrl main controller ref
+     * @param adminLogInCtrl admin controller ref
      */
     @Inject
-    public BoardOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public BoardOverviewCtrl(ServerUtils server, MainCtrl mainCtrl, AdminLogInCtrl adminLogInCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.adminLogInCtrl = adminLogInCtrl;
     }
 
     /**
@@ -98,11 +102,10 @@ public class BoardOverviewCtrl implements Initializable {
      * Refreshes the board Overview
      */
     public void refresh() {
-        if (!AdminLogInCtrl.getAdmin()) {
+        if (!adminLogInCtrl.getAdmin()) {
             try {
                 File current = new File(boardFilePath);
                 Scanner scanner = new Scanner(current);
-                // Vbox to contain all boards.
                 VBox boardsBox = new VBox(25);
                 int size = 0;
                 while (scanner.hasNextLine()) {
@@ -120,16 +123,12 @@ public class BoardOverviewCtrl implements Initializable {
                                 getResourceAsStream("/client/assets/key.png"))));
                         Button openBoard = new Button("Open Board");
                         Button delete = new Button("X");
-
                         prepareContent(boardLabel, copyKey, imageView, openBoard, delete, b, created);
-
                         boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
                         boardsBox.getChildren().add(boardContent);
                     } catch (BadRequestException e) {
                         current = removeBoardFromClient(boardID, current);
-                        e.printStackTrace();
-                    }
-                }
+                        e.printStackTrace(); }}
                 scanner.close();
                 if (!current.getName().equals(boardFilePath)) {
                     if (!current.getName().equals("boardsTemp.txt")) {
@@ -143,9 +142,8 @@ public class BoardOverviewCtrl implements Initializable {
                 new File(boardFilePath).delete();
                 current.renameTo(new File(boardFilePath));
                 new File("boardsTest.txt").delete();
-            boardsBox.setPrefSize(600, 225 * size);
-            boardContainer.setContent(boardsBox);
-
+                boardsBox.setPrefSize(600, 225 * size);
+                boardContainer.setContent(boardsBox);
             } catch (FileNotFoundException e) {
                 System.out.println("No boards exist for client.");
             }
@@ -426,6 +424,10 @@ public class BoardOverviewCtrl implements Initializable {
         }
     }
 
+    /**
+     * Helper method that adds all boards to the overview,
+     * used if a user is an admin
+     */
     public void addAllBoards() {
         int size = 0;
         VBox boardsBox = new VBox(25);

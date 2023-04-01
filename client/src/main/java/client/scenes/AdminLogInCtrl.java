@@ -18,7 +18,7 @@ public class AdminLogInCtrl implements Initializable {
 
     private final MainCtrl mainCtrl;
 
-    private static boolean isAdmin;
+    private boolean isAdmin;
 
     @FXML
     private TextField adminKey;
@@ -51,6 +51,11 @@ public class AdminLogInCtrl implements Initializable {
         isAdmin = false;
     }
 
+
+    /**
+     * Makes the current user an admin and displays a popup to let them know
+     * the operation was successful
+     */
     public void makeAdmin() {
         if (adminKey.getText().equals(mainCtrl.getAdmin())) {
             isAdmin = true;
@@ -60,6 +65,10 @@ public class AdminLogInCtrl implements Initializable {
     }
 
 
+    /**
+     * Helper method to create a popup with a message
+     * @param message String that will become the displayed message
+     */
     public static void show(String message) {
         var alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initModality(Modality.APPLICATION_MODAL);
@@ -69,14 +78,25 @@ public class AdminLogInCtrl implements Initializable {
         alert.showAndWait();
     }
 
-    public static boolean getAdmin() {
+    /**
+     * Getter to check if a user is an admin
+     * @return boolean checks if the user is an admin\
+     */
+    public boolean getAdmin() {
         return isAdmin;
     }
 
+    /**
+     * Displays the board overview Scene
+     */
     public void showBoardOverviewPage() {
         mainCtrl.showBoardOverview();
     }
 
+    /**
+     * Getter for the server
+     * @return ServerUtils - the server
+     */
     public ServerUtils getServer() {
         return server;
     }

@@ -135,6 +135,10 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * Admin key getter
+     * @return String admin
+     */
     public String getAdmin() {
         return admin;
     }
