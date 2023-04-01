@@ -68,7 +68,7 @@ class CardTest {
     }
 
     @Test
-    void testConsctructorTD()
+    void testConstructorTD()
     {
         Card b = new Card("ttt", "ddd");
         assertEquals("ttt", b.getTitle());

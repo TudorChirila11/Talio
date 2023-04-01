@@ -28,7 +28,21 @@ public class TestSubtaskRepository implements SubtaskRepository {
 
     @Override
     public List<Subtask> findAll(Sort sort) {
-        return null;
+        ArrayList<Subtask> arr = new ArrayList<>(subtasks);
+        for(int i = 0 ; i < arr.size(); ++i) {
+            Long minIndex = Long.MAX_VALUE;
+            int pos = 0;
+            for(int j =i+1 ; j < arr.size();++j)
+                if(arr.get(j).getIndex() < minIndex)
+                {
+                    minIndex = arr.get(j).getId();
+                    pos = j;
+                }
+            var x = arr.get(pos);
+            arr.set(pos, arr.get(i));
+            arr.set(i, x);
+        }
+        return arr;
     }
 
     @Override

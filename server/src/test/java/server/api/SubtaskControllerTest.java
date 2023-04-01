@@ -99,6 +99,21 @@ class SubtaskControllerTest {
     }
 
     @Test
+    void getSubtasksFromCardTest()
+    {
+        Subtask a = new Subtask(2L, 123123L, "n12ame", false, 1L);
+        Subtask b = new Subtask(2L, 123123L, "n12ame", false, 5L);
+        Subtask c = new Subtask(2L, 123123L, "n12ame", false, 2L);
+        repo.save(a);
+        repo.save(b);
+        repo.save(c); ///order matters
+        ArrayList<Subtask> expected = new ArrayList<>();
+        expected.add(a);
+        expected.add(c);
+        expected.add(b);
+        assertEquals(expected, sut.getSubtasksFromCard(123123L).getBody());
+    }
+    @Test
     void updateSubtaskNotFoundTest()
     {
         assertEquals(NOT_FOUND, sut.updateSubtask(1, a).getStatusCode());

@@ -1,10 +1,13 @@
 package server.api;
 
 import commons.Subtask;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.SubtaskRepository;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,5 +112,22 @@ public class SubtaskController {
 
         Subtask saved = repo.save(subtask);
         return ResponseEntity.ok(saved);
+    }
+
+
+    /**
+     * returns all subtasks of specific card
+     * @param cardId - id of the card
+     * @return List with all required subtasks
+     */
+    @GetMapping("getFromCard/{cardId}")
+    public ResponseEntity<List<Subtask>> getSubtasksFromCard(@PathVariable long cardId)
+    {
+        List<Subtask> subtasks = repo.findAll(Sort.by(Sort.Direction.ASC, "indexInCard"));
+        List<Subtask> response = new ArrayList<>();
+        for(Subtask c: subtasks)
+            if(c.getCardId() == cardId)
+                response.add(c);
+        return ResponseEntity.ok(response);
     }
 }
