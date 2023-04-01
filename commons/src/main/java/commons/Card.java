@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 
 
 import javax.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "cards")
@@ -35,6 +37,10 @@ public class Card {
      */
     @Column(name = "index")
     private Long index;
+
+    @OrderColumn(name="indexInCard")
+    @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL)
+    private List<Card> cards = new ArrayList<>();
 
 
     /**
