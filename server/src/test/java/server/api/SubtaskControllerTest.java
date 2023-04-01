@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
+//CHECKSTYLE:OFF
 class SubtaskControllerTest {
 
     private TestSubtaskRepository repo;
