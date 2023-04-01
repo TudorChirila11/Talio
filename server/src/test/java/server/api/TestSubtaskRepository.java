@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-//CHECKSTYLE OFF
+//CHECKSTYLE:OFF
 public class TestSubtaskRepository implements SubtaskRepository {
     private ArrayList<Subtask> subtasks;
 
