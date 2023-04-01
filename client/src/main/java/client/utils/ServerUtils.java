@@ -466,6 +466,20 @@ public class ServerUtils {
     }
 
     /**
+     * gets a list of the subtasks of card 'id'
+     * @param id - the id of the card we want to search the subtasks of
+     * @return the subtasks of card 'id'
+     */
+    public List<Subtask> getSubtasksOfCard(Long id) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/subtasks/getFromCard/"+id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Subtask>>(){
+                });
+    }
+
+    /**
      * returns this card's board object
      * @param cardId - the card we want to search the board of
      * @return board object
@@ -475,6 +489,48 @@ public class ServerUtils {
         Collection collection = getCollectionById(c.getCollectionId());
         Board board = getBoardById(collection.getBoardId());
         return board;
+    }
+
+    /**
+     * store subtask in the database
+     *
+     * @param s - the subtask we want to store
+     * @return - stored Subtask object
+     */
+    public Subtask addSubtask(Subtask s)
+    {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(s, APPLICATION_JSON), Subtask.class);
+    }
+
+    /**
+     * delete subtask from the database
+     *
+     * @param id - id of the Subtask we want to delete
+     * @return - response with deletion operation status
+     */
+    public Response deleteSubtask(Long id)
+    {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks"+id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+    }
+
+    /**
+     * method to store list of subtasks in the database
+     *
+     * @param subtaskList - the subtask list
+     */
+    public void storeSubtasks(List<Subtask> subtaskList) {
+        ////TODO discuss if we should switch to a better solution,
+        //that passes on the list and the cardId and does the storing operation in the api for the whole list
+        for(Subtask s : subtaskList)
+            addSubtask(s);
     }
 
     /**
@@ -545,4 +601,14 @@ public class ServerUtils {
         this.tagCreatorCtrl = tagCreatorCtrl;
     }
 
+    /**
+     * remove the list of a card's subtask
+     * @param cardId the card we want to delete the subtasks from
+     */
+    public void removeSubtasksOf(long cardId) {
+        //TODO discuss if we should change to solution that passes on the list and deletes them in 1 go in the server
+        List<Subtask> subtasks = getSubtasksOfCard(cardId);
+        for(Subtask s: subtasks)
+            deleteSubtask(s.getId());
+    }
 }

@@ -129,4 +129,23 @@ public class SubtaskController {
                 response.add(c);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * stores a list of subtasks in a specific card
+     * @param cardId - the id of the card these subtasks belong to
+     * @param subtasks - subtasks list
+     * @return void response
+     */
+    @PostMapping("storeInCard/{cardId}")
+    public ResponseEntity<Void> storeSubtasksInCard(@PathVariable long cardId, @RequestBody List<Subtask> subtasks)
+    {
+        for(int i = 0 ; i < subtasks.size(); ++i)
+        {
+            subtasks.get(i).setCardId(cardId);
+            subtasks.get(i).setFinished(false); ///TODO to be changed when tick button ready
+            subtasks.get(i).setIndex((long) i);
+            repo.save(subtasks.get(i));
+        }
+        return ResponseEntity.noContent().build();
+    }
 }
