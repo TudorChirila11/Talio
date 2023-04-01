@@ -16,6 +16,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import client.scenes.AdminLogInCtrl;
 import com.google.inject.Inject;
 import commons.Board;
 import jakarta.ws.rs.BadRequestException;
@@ -86,52 +87,58 @@ public class BoardOverviewCtrl implements Initializable {
      * Refreshes the board Overview
      */
     public void refresh() {
-        try {
-            File current = new File(boardFilePath);
-            Scanner scanner = new Scanner(current);
-            // Vbox to contain all boards.
-            VBox boardsBox = new VBox(25);
-            int size = 0;
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                long boardID = Long.parseLong(line.split(" -BOOL- ")[0]);
-                System.out.println(boardID);
-                boolean created = line.split(" -BOOL- ")[1].equals("true");
-                try {
-                    Board b = server.getBoardById(boardID);
-                    size++;
-                    HBox boardContent = new HBox(25);
-                    Label boardLabel = new Label(b.getName());
-                    Button copyKey = new Button();
-                    ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
-                    Button openBoard = new Button("Open Board");
-                    Button delete = new Button("X");
 
-                    prepareContent(boardLabel, copyKey, imageView, openBoard, delete, b, created);
+        if (!AdminLogInCtrl.getAdmin()) {
+            try {
+                File current = new File(boardFilePath);
+                Scanner scanner = new Scanner(current);
+                // Vbox to contain all boards.
+                VBox boardsBox = new VBox(25);
+                int size = 0;
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    long boardID = Long.parseLong(line.split(" -BOOL- ")[0]);
+                    System.out.println(boardID);
+                    boolean created = line.split(" -BOOL- ")[1].equals("true");
+                    try {
+                        Board b = server.getBoardById(boardID);
+                        size++;
+                        HBox boardContent = new HBox(25);
+                        Label boardLabel = new Label(b.getName());
+                        Button copyKey = new Button();
+                        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
+                        Button openBoard = new Button("Open Board");
+                        Button delete = new Button("X");
 
-                    boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
-                    boardsBox.getChildren().add(boardContent);
-                } catch (BadRequestException e) {
-                    current = removeBoardFromClient(boardID, current);
-                    e.printStackTrace();
+                        prepareContent(boardLabel, copyKey, imageView, openBoard, delete, b, created);
+
+                        boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
+                        boardsBox.getChildren().add(boardContent);
+                    } catch (BadRequestException e) {
+                        current = removeBoardFromClient(boardID, current);
+                        e.printStackTrace();
+                    }
                 }
-            }
-            scanner.close();
-            if (!current.getName().equals(boardFilePath)) {
-                if (!current.getName().equals("boardsTemp.txt")) {
-                    new File("boardsTemp.txt").delete();
+                scanner.close();
+                if (!current.getName().equals(boardFilePath)) {
+                    if (!current.getName().equals("boardsTemp.txt")) {
+                        new File("boardsTemp.txt").delete();
+                    }
+                    new File(boardFilePath).delete();
+                    System.out.println(current.getName());
+                    System.out.println(current.renameTo(new File(boardFilePath)));
+                    new File("boardsTest.txt").delete();
                 }
-                new File(boardFilePath).delete();
-                System.out.println(current.getName());
-                System.out.println(current.renameTo(new File(boardFilePath)));
-                new File("boardsTest.txt").delete();
-            }
-            boardsBox.setPrefSize(600, 225 * size);
-            boardContainer.setContent(boardsBox);
+                boardsBox.setPrefSize(600, 225 * size);
+                boardContainer.setContent(boardsBox);
 
-        } catch (FileNotFoundException e) {
-            System.out.println("No boards exist for client.");
+            } catch (FileNotFoundException e) {
+                System.out.println("No boards exist for client.");
+            }
+        } else {
+            addAllBoards();
         }
+
 
     }
 
@@ -385,10 +392,36 @@ public class BoardOverviewCtrl implements Initializable {
         }
     }
 
+    public void addAllBoards() {
+        int size = 0;
+        VBox boardsBox = new VBox(25);
+        for (Board board : server.getBoards()) {
+            size++;
+            HBox boardContent = new HBox(25);
+            Label boardLabel = new Label(board.getName());
+            Button copyKey = new Button();
+            ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
+            Button openBoard = new Button("Open Board");
+            Button delete = new Button("X");
+
+            prepareContent(boardLabel, copyKey, imageView, openBoard, delete, board, true);
+
+            boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
+            boardsBox.getChildren().add(boardContent);
+        }
+    }
+
     /**
      * Switch back to welcome page
      */
     public void showWelcomePage() {
         mainCtrl.showWelcomePage();
+    }
+
+    /**
+     * Switch to the admin login page
+     */
+    public void showAdminLoginPage() {
+        mainCtrl.showAdminLogIn();
     }
 }

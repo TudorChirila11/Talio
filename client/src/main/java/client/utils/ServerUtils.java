@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -48,6 +49,35 @@ public class ServerUtils {
 
     private static String server = "http://localhost:8080/";
     private String ip = "localhost";
+    private String adminKey;
+
+
+    /**
+     * Method used to generate a String of 8 random alphanumeric characters
+     *
+     */
+    private void generateAdminKey() {
+        int leftLimit = 48;
+        int rightLimit = 122;
+        int targetStringLength = 10;
+        Random random = new Random();
+        adminKey = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+    /**
+     * Admin Key getter method
+     * @return String admin key
+     */
+    public String getAdminKey() {
+        generateAdminKey();
+        System.out.println(adminKey);
+        return adminKey;
+    }
+
 
     /**
      * @param ip the ip that the user will be connecting to

@@ -62,7 +62,9 @@ public class Main extends Application {
         var welcomePage = FXML.load(WelcomePageCtrl.class, "client", "scenes", "WelcomePage.fxml");
         var keyboardShortcutPage= FXML.load(KeyboardShortcutFCtrl.class, "client", "scenes", "KeyboardShortcuts.fxml");
         var boardOverview = FXML.load(BoardOverviewCtrl.class, "client", "scenes", "BoardOverview.fxml");
+        var adminLogIn = FXML.load(AdminLogInCtrl.class, "client", "scenes", "AdminLogIn.fxml");
 
-        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection, welcomePage, keyboardShortcutPage, boardOverview);
+        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection, welcomePage,
+                keyboardShortcutPage, boardOverview, adminLogIn);
     }
 }
