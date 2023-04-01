@@ -44,8 +44,6 @@ public class SubtaskController {
             return ResponseEntity.notFound().build();
         }
         Optional<Subtask> subtask = repo.findById(id);
-        if(subtask.isEmpty())
-            return ResponseEntity.notFound().build();
         return ResponseEntity.ok(subtask.get());
     }
 
@@ -102,8 +100,6 @@ public class SubtaskController {
         }
 
         Optional<Subtask> subtaskOpt = repo.findById(id);
-        if(subtaskOpt.isEmpty())
-            return ResponseEntity.notFound().build();
 
         Subtask subtask = subtaskOpt.get();
 
