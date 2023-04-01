@@ -4,6 +4,8 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CardTest {
@@ -17,7 +19,7 @@ class CardTest {
     @Test
     void testConstructor4params()
     {
-        Card b = new Card("t", "c", 2L, 3L);
+        Card b = new Card("t", "c", new Collection(), 3L);
         assertEquals("t", b.getTitle());
         assertEquals("c", b.getDescription());
     }
@@ -35,6 +37,27 @@ class CardTest {
     {
         Card b = new Card();
         assertNotNull(b);
+    }
+
+
+    @Test
+    void getSubtasksTest()
+    {
+        Subtask a = new Subtask();
+        ArrayList<Subtask> sbt = new ArrayList<>();
+        sbt.add(a);
+        Card c = new Card("13", "desc", 132L, 12L, sbt);
+        assertEquals(sbt, c.getSubtasks());
+    }
+
+    @Test
+    void setSubtasksTest()
+    {
+        ArrayList<Subtask> sbt = new ArrayList<>();
+        sbt.add(new Subtask());
+        Card c = new Card("123", "dae", new Collection(), 123L);
+        c.setSubtasks(sbt);
+        assertEquals(sbt, c.getSubtasks());
     }
 
     @Test
