@@ -1,5 +1,6 @@
 package server.api;
 
+import commons.Card;
 import commons.Subtask;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,9 @@ public class SubtaskController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Subtask> getById(@PathVariable("id") long id) {
+        if (!repo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         Optional<Subtask> subtask = repo.findById(id);
         if(subtask.isEmpty())
             return ResponseEntity.notFound().build();
@@ -52,6 +56,10 @@ public class SubtaskController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable("id") long id) {
+        if (!repo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
         repo.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -88,6 +96,11 @@ public class SubtaskController {
     @PutMapping("/{id}")
     public ResponseEntity<Subtask> updateSubtask(@PathVariable long id, @RequestBody Subtask newSubtask)
     {
+        if (!repo.existsById(id))
+        {
+            return ResponseEntity.notFound().build();
+        }
+
         Optional<Subtask> subtaskOpt = repo.findById(id);
         if(subtaskOpt.isEmpty())
             return ResponseEntity.notFound().build();
