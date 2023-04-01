@@ -14,3 +14,23 @@
     -fx-pref-height: 50;
     -fx-background-color: #93BFCF;
 }
+
+.arrows{
+    -fx-font-size: 10px;
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-border-radius: 20;
+    -fx-border-color: #000000;
+    -fx-border-width: 2;
+    -fx-background-radius: 20;
+}
+
+.deleteSubTaskButton{
+    -fx-font-size: 10px;
+    -fx-background-color: #FD3318;
+    -fx-text-fill: black;
+    -fx-border-radius: 20;
+    -fx-border-color: #000000;
+    -fx-border-width: 2;
+    -fx-background-radius: 20;
+}

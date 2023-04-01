@@ -122,3 +122,6 @@ RUN * FROM CARDS [42001-200]
 2023-03-29 02:32:42 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CARD" not found; SQL statement:
 SELECT * FROM CARD [42102-200]
+2023-04-02 01:37:56 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "DELETE *[*] FROM SUBTASK"; expected "identifier"; SQL statement:
+DELETE * FROM SUBTASK [42001-200]
