@@ -13,7 +13,6 @@ public class Board {
     private Long id;
 
     private String name;
-
     @OneToMany(mappedBy = "boardId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Collection> collections = new ArrayList<>();
 
@@ -125,5 +124,13 @@ public class Board {
                 ", name='" + name + '\'' +
                 ", collections=" + collections +
                 '}';
+    }
+
+    /**
+     * set the id of the board
+     * @param l the id
+     */
+    public void setId(Long l) {
+        this.id = l;
     }
 }

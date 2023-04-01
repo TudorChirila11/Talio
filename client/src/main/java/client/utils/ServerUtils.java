@@ -24,16 +24,15 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import commons.Board;
-import commons.Card;
-import commons.Collection;
+import client.scenes.*;
+import commons.*;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
-import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -50,6 +49,17 @@ public class ServerUtils {
     private static String server = "http://localhost:8080/";
     private String ip = "localhost";
     private String adminKey;
+
+    private StompSession session;
+
+    private BoardCtrl boardCtrl;
+
+    private BoardOverviewCtrl boardOverviewCtrl;
+
+    private TagOverviewCtrl tagOverviewCtrl;
+
+    private CardInformationCtrl cardInformationCtrl;
+    private TagCreatorCtrl tagCreatorCtrl;
 
 
     /**
@@ -155,6 +165,20 @@ public class ServerUtils {
                 .post(Entity.entity(card, APPLICATION_JSON), Card.class);
     }
 
+    /**
+     * gets a Card with this ID
+     * @param id - card name
+     * @return - a card object
+     */
+    public Card getCardById(Long id)
+    {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/cards/"+id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Card.class);
+
+    }
     /**
      * deletes a card
      *
@@ -348,6 +372,33 @@ public class ServerUtils {
 
     }
 
+    /***
+     * gets collection by Id
+     * @param collectionId - the Id of the collection
+     * @return requested collection
+     */
+    public Collection getCollectionById(Long collectionId) {
+        List<Collection> collections = getCollections();
+        for(Collection c : collections)
+            if(Long.compare(c.getId(), collectionId) == 0)
+                return c;
+        return null;
+    }
+
+    /**
+     * Retrieves all tags
+     *
+     * @return List of tags
+     */
+    public List<Tag> getTags() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/tags") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Tag>>() {
+                });
+    }
+
     /**
      * deletes card from index, in the Collection col's card array
      * @param col - the collection we want the card deleted from
@@ -377,14 +428,21 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(col, APPLICATION_JSON), Collection.class);
     }
-    private StompSession session = connect("ws://localhost:8080/websocket");
 
     /**
      * This method changes the session to the appropriate url when the user connects to a server
      * @param ip the url of the server to which the stomp client will connect to
      */
-    public void createStompSession(String ip) {
-        session = connect("ws://" + ip + ":8080/websocket");
+    public void createStompSession(String ip) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        StompSessionHandlerAdapter sessionHandler = new MySessionHandler(latch);
+        session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
+        latch.await();
+        boardCtrl.subscriber(session);
+        boardOverviewCtrl.subscriber(session);
+        tagOverviewCtrl.subscriber(session);
+        cardInformationCtrl.subscriber(session);
+        tagCreatorCtrl.subscriber(session);
     }
 
 
@@ -397,13 +455,14 @@ public class ServerUtils {
      * @param indexNew - new id
      * @return new collection
      */
-    public Response changeCardIndex(Collection old, long indexOld, Collection newCol, long indexNew)
+    public Card changeCardIndex(Collection old, long indexOld, Collection newCol, long indexNew)
     {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(server).path("api/collections/"+old.getId() +"/"+indexOld + "/" + newCol.getId() + "/" + indexNew) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get();
+                .get(new GenericType<Card>() {
+                });
     }
 
 
@@ -437,16 +496,28 @@ public class ServerUtils {
     }
 
     /**
+     * returns this card's board object
+     * @param cardId - the card we want to search the board of
+     * @return board object
+     */
+    public Board getBoardOfCard(Long cardId) {
+        Card c = getCardById(cardId);
+        Collection collection = getCollectionById(c.getCollectionId());
+        Board board = getBoardById(collection.getBoardId());
+        return board;
+    }
+
+    /**
      * This method creates a stomp client that connects to the server
      * @param url the url that directs the clients to the server
      * @return a stomp client server instance that lets the user communicate with the server.
      */
-    private StompSession connect(String url) {
+    private StompSession connect(String url, StompSessionHandlerAdapter sessionHandler) {
         var client = new StandardWebSocketClient();
         var stomp = new WebSocketStompClient(client);
         stomp.setMessageConverter(new MappingJackson2MessageConverter());
         try {
-            return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();
+            return stomp.connect(url, sessionHandler).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
@@ -461,8 +532,10 @@ public class ServerUtils {
      * @param type what kind of information is received
      * @param consumer the client that is using the stomp client to receive and send data from and to the server
      * @param <T> the arbitrary type that lets this method receive any type of data and send it to the client.
+     * @param session the session that the register will use to subscribe to a server.
      */
-    public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer) {
+    public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer, StompSession session) {
+        System.out.println(session);
         session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -480,9 +553,26 @@ public class ServerUtils {
      * This method is used to send data to the server using the stomp client
      * @param dest where to send the data to
      * @param o what to send
+     * @param session StompSession to send the info through
      */
-    public void send(String dest, Object o) {
+    public void send(String dest, Object o, StompSession session) {
         session.send(dest, o);
+    }
+
+    /**
+     * This method gets all the controllers that are used in websockets and thus auto-synchronization
+     * @param boardCtrl a controller that uses websockets
+     * @param boardOverviewCtrl a controller that uses websockets
+     * @param tagOverviewCtrl a controller that uses websockets
+     * @param cardInformationCtrl a controller that uses websockets
+     * @param tagCreatorCtrl a controller that uses websockets
+     */
+    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl){
+        this.boardCtrl = boardCtrl;
+        this.boardOverviewCtrl = boardOverviewCtrl;
+        this.tagOverviewCtrl = tagOverviewCtrl;
+        this.cardInformationCtrl = cardInformationCtrl;
+        this.tagCreatorCtrl = tagCreatorCtrl;
     }
 
 }

@@ -1,4 +1,16 @@
+#mainVBox {
+    -fx-border-radius: 10;
+    -fx-border-color: black;
+    -fx-background-radius: 10;
+    -fx-pref-height: 50;
+    -fx-background-color: #93BFCF;
+}
 
-.cardCell > *:hover{
+
+#mainVBox:hover{
+    -fx-border-radius: 10;
     -fx-border-color: yellow;
+    -fx-background-radius: 10;
+    -fx-pref-height: 50;
+    -fx-background-color: #93BFCF;
 }

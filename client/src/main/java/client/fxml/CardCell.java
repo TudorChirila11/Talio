@@ -1,6 +1,8 @@
 package client.fxml;
 
 import client.Main;
+import client.scenes.MainCtrl;
+
 import client.utils.ServerUtils;
 import commons.Card;
 import jakarta.ws.rs.WebApplicationException;
@@ -11,12 +13,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.scene.layout.VBox;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.IOException;
 
 public class CardCell extends ListCell<Card>  {
+
     private final ServerUtils server;
 
+    private final MainCtrl mainCtrl;
     @FXML
     private Label titleLabel;
 
@@ -27,22 +32,31 @@ public class CardCell extends ListCell<Card>  {
     private Button removeButton;
 
     @FXML
+    private Button editButton;
+
     private VBox vBox;
 
     private Long id;
 
+    private StompSession session;
+
     /**
      * Constructor for the Custom Task Cell of type Card
+     * @param mainCtrl - reference for main controller
      * @param server reference for server
+     * @param session current Stompsession for websockets
      */
-    public CardCell(ServerUtils server) {
+    public CardCell(MainCtrl mainCtrl, ServerUtils server, StompSession session) {
+        super();
+        this.mainCtrl = mainCtrl;
         this.server = server;
+        this.session = session;
         loadFXML();
         removeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    server.send("/app/cardsDelete", id);
+                    server.send("/app/cardsDelete", id, session);
 
                 } catch (WebApplicationException e) {
 
@@ -54,16 +68,11 @@ public class CardCell extends ListCell<Card>  {
                 getListView().getItems().remove(getItem());
             }
         });
-
-       /* this.vBox.setOnMouseEntered(event -> {
-            this.vBox.setStyle("-fx-border-color: yellow;-fx-border-radius: 10; -fx-background-radius: 10; " +
-                    "-fx-pref-height: 50; -fx-background-color: #93BFCF");
+        editButton.setOnAction(event -> {
+            mainCtrl.editCard(id);
         });
 
-        this.vBox.setOnMouseExited(event -> {
-            this.vBox.setStyle("-fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; " +
-                    "-fx-pref-height: 50; -fx-background-color: #93BFCF ");
-        });*/
+
     }
 
     /**

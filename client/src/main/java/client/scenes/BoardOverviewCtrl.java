@@ -33,6 +33,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.*;
 import java.net.URL;
@@ -57,6 +58,8 @@ public class BoardOverviewCtrl implements Initializable {
 
     private static String boardFilePath;
 
+    private StompSession session;
+
     /**
      * Constructor for the BoardOverview Ctrl
      *
@@ -79,7 +82,15 @@ public class BoardOverviewCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh));
+    }
+
+    /**
+     * A method for starting to listen to a server once the connection has been established
+     * @param session the session that is connected to a server that the client is connected to
+     */
+    public void subscriber(StompSession session) {
+        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
+        this.session = session;
         boardFilePath = "boards_"+ server.getIp() + ".txt";
     }
 
@@ -87,7 +98,6 @@ public class BoardOverviewCtrl implements Initializable {
      * Refreshes the board Overview
      */
     public void refresh() {
-
         if (!AdminLogInCtrl.getAdmin()) {
             try {
                 File current = new File(boardFilePath);
@@ -106,7 +116,8 @@ public class BoardOverviewCtrl implements Initializable {
                         HBox boardContent = new HBox(25);
                         Label boardLabel = new Label(b.getName());
                         Button copyKey = new Button();
-                        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
+                        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().
+                                getResourceAsStream("/client/assets/key.png"))));
                         Button openBoard = new Button("Open Board");
                         Button delete = new Button("X");
 
@@ -129,8 +140,11 @@ public class BoardOverviewCtrl implements Initializable {
                     System.out.println(current.renameTo(new File(boardFilePath)));
                     new File("boardsTest.txt").delete();
                 }
-                boardsBox.setPrefSize(600, 225 * size);
-                boardContainer.setContent(boardsBox);
+                new File(boardFilePath).delete();
+                current.renameTo(new File(boardFilePath));
+                new File("boardsTest.txt").delete();
+            boardsBox.setPrefSize(600, 225 * size);
+            boardContainer.setContent(boardsBox);
 
             } catch (FileNotFoundException e) {
                 System.out.println("No boards exist for client.");
@@ -138,8 +152,6 @@ public class BoardOverviewCtrl implements Initializable {
         } else {
             addAllBoards();
         }
-
-
     }
 
     /**
@@ -202,7 +214,7 @@ public class BoardOverviewCtrl implements Initializable {
         delete.setOnAction(event -> {
             if (created) {
                 try {
-                    server.send("/app/boardsDelete", board);
+                    server.send("/app/boardsDelete", board, session);
                 } catch (WebApplicationException e) {
                     var alert = new Alert(Alert.AlertType.ERROR);
                     alert.initModality(Modality.APPLICATION_MODAL);
@@ -216,8 +228,7 @@ public class BoardOverviewCtrl implements Initializable {
                         new File("boardsTemp.txt").delete();
                     }
                     new File(boardFilePath).delete();
-                    System.out.println(current.getName());
-                    System.out.println(current.renameTo(new File(boardFilePath)));
+                    current.renameTo(new File(boardFilePath));
                     new File("boardsTest.txt").delete();
                 }
                 show("Left " + board.getName() + "!");
@@ -246,12 +257,35 @@ public class BoardOverviewCtrl implements Initializable {
      * Joins a board
      */
     public void joinBoardMethod() {
+        if (boardKey.getText().equals("")) {
+            show("Please enter a key!");
+            return;
+        }
         String[] tokens = boardKey.getText().split("-ID-");
-        Board b = server.getBoardById(Long.parseLong(tokens[1]));
-        boolean joined = checkBoard(b.getId(), new File(boardFilePath));
-        if(!joined){
+        if (tokens.length != 2) {
+            show("Invalid Key!");
+            return;
+        }
+        Board b;
+        try {
+            b = server.getBoardById(Long.parseLong(tokens[1]));
+        } catch (BadRequestException e) {
+            show("Invalid Key!");
+            return;
+        }
+
+        File f = new File(boardFilePath);
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        boolean joined = checkBoard(b.getId(), f);
+        if (!joined) {
             writeClientBoard(b, false);
-        }else{
+        } else {
             show("Board has already been joined!");
         }
 
@@ -277,7 +311,7 @@ public class BoardOverviewCtrl implements Initializable {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
                         board.setName(newName);
-                        server.send("/app/boards", board);
+                        server.send("/app/boards", board, session);
 
                     }
                 }
@@ -301,7 +335,7 @@ public class BoardOverviewCtrl implements Initializable {
                 Board boardN = new Board(newName);
                 try {
                     Board b = server.addBoard(boardN);
-                    server.send("/app/boards", b);
+                    server.send("/app/boards", b, session);
                     writeClientBoard(b, true);
                 } catch (WebApplicationException e) {
                     var alert = new Alert(Alert.AlertType.ERROR);
@@ -379,9 +413,9 @@ public class BoardOverviewCtrl implements Initializable {
     /**
      * Resets the overview of all Boards!
      */
-    public void resetOverview(){
+    public void resetOverview() {
         try {
-            server.send("/app/allBoardsDelete", new Board());
+            server.send("/app/allBoardsDelete", new Board(), session);
 
         } catch (WebApplicationException e) {
 

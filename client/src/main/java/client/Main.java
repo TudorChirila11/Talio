@@ -60,11 +60,14 @@ public class Main extends Application {
         var board = FXML.load(BoardCtrl.class, "client", "scenes", "Board.fxml");
         var collection = FXML.load(CollectionOverviewCtrl.class, "client", "scenes", "Collection.fxml");
         var welcomePage = FXML.load(WelcomePageCtrl.class, "client", "scenes", "WelcomePage.fxml");
-        var keyboardShortcutPage= FXML.load(KeyboardShortcutFCtrl.class, "client", "scenes", "KeyboardShortcuts.fxml");
+        var keyboardShortcutPage = FXML.load(KeyboardShortcutFCtrl.class, "client", "scenes", "KeyboardShortcuts.fxml");
+        var tagCreator = FXML.load(TagCreatorCtrl.class, "client", "scenes", "TagCreator.fxml");
+        var tagOverview = FXML.load(TagOverviewCtrl.class, "client", "scenes", "TagOverview.fxml");
         var boardOverview = FXML.load(BoardOverviewCtrl.class, "client", "scenes", "BoardOverview.fxml");
         var adminLogIn = FXML.load(AdminLogInCtrl.class, "client", "scenes", "AdminLogIn.fxml");
 
-        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection, welcomePage,
-                keyboardShortcutPage, boardOverview, adminLogIn);
+        mainCtrl.initialize(primaryStage, overview, add, board, cardInformation, collection, welcomePage, keyboardShortcutPage,
+                tagCreator, tagOverview, boardOverview, adminLogIn);
+
     }
 }

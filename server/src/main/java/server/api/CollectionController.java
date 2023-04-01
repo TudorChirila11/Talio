@@ -65,7 +65,7 @@ public class CollectionController {
     @MessageMapping("/collectionsDeleteAll") // /app/collectionsDelete
     @SendTo("/topic/update")
     public Board deleteAllCollections(Board board){
-        System.out.println("Hi, I am receiving a signal!");
+
         deleteCollectionsByBoardId(board.getId());
         return board;
     }
@@ -128,12 +128,11 @@ public class CollectionController {
 
         Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
 
-        System.out.println("collection found?");
         // the collection is not found
         if (collectionOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        System.out.println("yes, remove");
+
         Collection collection = collectionOpt.get();
         List<Card> cards = collection.getCards();
 
@@ -142,7 +141,7 @@ public class CollectionController {
         assert (index >= 0 && index < cards.size());
 
         Card c = cards.get(index);
-        c.setIndex(null); ///TODO makes index null, you have to be careful
+        c.setIndex(null); // makes index null, you have to be careful
         cards.remove(index);
         for(int i = index; i <cards.size(); ++i)
         {
@@ -164,16 +163,16 @@ public class CollectionController {
      * @return new collection
      */
     @GetMapping("{collectionId}/{index}/{newCollection}/{newIndex}")
-    public ResponseEntity<Collection> switchCardPosition
+    public ResponseEntity<Card> switchCardPosition
     (@PathVariable long collectionId, @PathVariable int index, @PathVariable long newCollection, @PathVariable int newIndex) {
         Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
         Optional<Collection> collectionOpt2 = repoCollection.findById(newCollection);
-        System.out.println("collection found?");
+
         // the collection is not found
         if (collectionOpt.isEmpty() || collectionOpt2.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        System.out.println("yes, remove");
+
         Collection collection = collectionOpt.get();
         List<Card> cardsOld = collection.getCards();
 
@@ -204,7 +203,7 @@ public class CollectionController {
         Collection updatedCollection1 = repoCollection.save(collection);
         Collection updatedCollection2 = repoCollection.save(collection2);
         Card updatedCard = repoCard.save(c);
-        return ResponseEntity.ok(updatedCollection2);
+        return ResponseEntity.ok(updatedCard);
     }
 
 //    /{collectionId}/{cardId}/{position}
@@ -343,9 +342,9 @@ public class CollectionController {
      */
     @DeleteMapping("/{id}/ofBoard")
     public ResponseEntity<Void> deleteCollectionsByBoardId(@PathVariable long id) {
-        List<Collection> allCards = repoCollection.findAll();
+        List<Collection> allCollections = repoCollection.findAll();
         List<Collection> res = new ArrayList<>();
-        for (Collection c : allCards) {
+        for (Collection c : allCollections) {
             if (c.getId() != null && c.getBoardId() == id) {
                 res.add(c);
             }
@@ -404,7 +403,7 @@ public class CollectionController {
             return ResponseEntity.notFound().build();
         }
         // removing the card from the old collection
-        if(card.getCollectionId() !=null ) {
+        if(card.getCollectionId() != null ) {
             Collection oldCollection = repoCollection.getById(card.getCollectionId());
             oldCollection.removeCard(card);
             repoCollection.save(oldCollection);
