@@ -12,7 +12,7 @@ public class Subtask {
     @Column(name = "card_id")
     private Long cardId;
 
-    @Column(name = "index")
+    @Column(name = "indexInCard")
     private Long index;
 
     @Column(name = "name")

@@ -39,8 +39,8 @@ public class Card {
     private Long index;
 
     @OrderColumn(name="indexInCard")
-    @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL)
-    private List<Card> cards = new ArrayList<>();
+    @OneToMany(mappedBy = "cardId", cascade = CascadeType.ALL)
+    private List<Card> subtasks = new ArrayList<>();
 
 
     /**
