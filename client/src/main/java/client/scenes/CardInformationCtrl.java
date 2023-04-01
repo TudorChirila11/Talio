@@ -162,7 +162,6 @@ public class CardInformationCtrl implements Initializable {
                 else {
                     HBox hb = new HBox();
                     TextField tf2 = new TextField(tf.getText());
-                    tf2.setEditable(false);
                     Button btn2 = new Button("Rmv");
                     hb.getChildren().addAll(tf2, btn2);
 
