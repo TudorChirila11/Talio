@@ -10,6 +10,7 @@ import static org.springframework.http.HttpStatus.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//CHECKSTYLE:OFF
 class CardControllerTest {
 
     private TestCardRepository cardRepo;

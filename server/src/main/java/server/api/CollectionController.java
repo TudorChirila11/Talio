@@ -342,9 +342,9 @@ public class CollectionController {
      */
     @DeleteMapping("/{id}/ofBoard")
     public ResponseEntity<Void> deleteCollectionsByBoardId(@PathVariable long id) {
-        List<Collection> allCards = repoCollection.findAll();
+        List<Collection> allCollections = repoCollection.findAll();
         List<Collection> res = new ArrayList<>();
-        for (Collection c : allCards) {
+        for (Collection c : allCollections) {
             if (c.getId() != null && c.getBoardId() == id) {
                 res.add(c);
             }
@@ -403,7 +403,7 @@ public class CollectionController {
             return ResponseEntity.notFound().build();
         }
         // removing the card from the old collection
-        if(card.getCollectionId() !=null ) {
+        if(card.getCollectionId() != null ) {
             Collection oldCollection = repoCollection.getById(card.getCollectionId());
             oldCollection.removeCard(card);
             repoCollection.save(oldCollection);
