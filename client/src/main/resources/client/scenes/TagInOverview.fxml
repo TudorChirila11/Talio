@@ -8,9 +8,9 @@
       stylesheets="@/client/stylesheets/Global.css"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="client.scenes.TagInOverviewCtrl" prefWidth="300">
-    <HBox fx:id="tagContain" HBox.hgrow="ALWAYS">
+    <HBox HBox.hgrow="ALWAYS">
         <Label fx:id="tagText" text="test" wrapText="true" />
     </HBox>
     <Button fx:id="editTagButton" text="edit" minWidth="60" />
-    <Button fx:id="deleteTagButton" text="delete" minWidth="70" />
+    <Button fx:id="deleteTagButton" onAction="#deleteTag" text="delete" minWidth="70" />
 </HBox>

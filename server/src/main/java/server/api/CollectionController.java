@@ -163,7 +163,7 @@ public class CollectionController {
      * @return new collection
      */
     @GetMapping("{collectionId}/{index}/{newCollection}/{newIndex}")
-    public ResponseEntity<Collection> switchCardPosition
+    public ResponseEntity<Card> switchCardPosition
     (@PathVariable long collectionId, @PathVariable int index, @PathVariable long newCollection, @PathVariable int newIndex) {
         Optional<Collection> collectionOpt = repoCollection.findById(collectionId);
         Optional<Collection> collectionOpt2 = repoCollection.findById(newCollection);
@@ -203,7 +203,7 @@ public class CollectionController {
         Collection updatedCollection1 = repoCollection.save(collection);
         Collection updatedCollection2 = repoCollection.save(collection2);
         Card updatedCard = repoCard.save(c);
-        return ResponseEntity.ok(updatedCollection2);
+        return ResponseEntity.ok(updatedCard);
     }
 
 //    /{collectionId}/{cardId}/{position}
@@ -342,9 +342,9 @@ public class CollectionController {
      */
     @DeleteMapping("/{id}/ofBoard")
     public ResponseEntity<Void> deleteCollectionsByBoardId(@PathVariable long id) {
-        List<Collection> allCards = repoCollection.findAll();
+        List<Collection> allCollections = repoCollection.findAll();
         List<Collection> res = new ArrayList<>();
-        for (Collection c : allCards) {
+        for (Collection c : allCollections) {
             if (c.getId() != null && c.getBoardId() == id) {
                 res.add(c);
             }
@@ -403,7 +403,7 @@ public class CollectionController {
             return ResponseEntity.notFound().build();
         }
         // removing the card from the old collection
-        if(card.getCollectionId() !=null ) {
+        if(card.getCollectionId() != null ) {
             Collection oldCollection = repoCollection.getById(card.getCollectionId());
             oldCollection.removeCard(card);
             repoCollection.save(oldCollection);

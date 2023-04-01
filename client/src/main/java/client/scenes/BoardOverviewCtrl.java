@@ -57,6 +57,8 @@ public class BoardOverviewCtrl implements Initializable {
 
     private static String boardFilePath;
 
+    private StompSession session;
+
     /**
      * Constructor for the BoardOverview Ctrl
      *
@@ -87,6 +89,7 @@ public class BoardOverviewCtrl implements Initializable {
      */
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
+        this.session = session;
         boardFilePath = "boards_"+ server.getIp() + ".txt";
     }
 
@@ -202,7 +205,7 @@ public class BoardOverviewCtrl implements Initializable {
         delete.setOnAction(event -> {
             if (created) {
                 try {
-                    server.send("/app/boardsDelete", board);
+                    server.send("/app/boardsDelete", board, session);
                 } catch (WebApplicationException e) {
                     var alert = new Alert(Alert.AlertType.ERROR);
                     alert.initModality(Modality.APPLICATION_MODAL);
@@ -245,20 +248,35 @@ public class BoardOverviewCtrl implements Initializable {
      * Joins a board
      */
     public void joinBoardMethod() {
+        if (boardKey.getText().equals("")) {
+            show("Please enter a key!");
+            return;
+        }
         String[] tokens = boardKey.getText().split("-ID-");
-        Board b = server.getBoardById(Long.parseLong(tokens[1]));
+        if (tokens.length != 2) {
+            show("Invalid Key!");
+            return;
+        }
+        Board b;
+        try {
+            b = server.getBoardById(Long.parseLong(tokens[1]));
+        } catch (BadRequestException e) {
+            show("Invalid Key!");
+            return;
+        }
+
         File f = new File(boardFilePath);
-        if(!f.exists()){
+        if (!f.exists()) {
             try {
                 f.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        boolean joined = checkBoard(b.getId(),f);
-        if(!joined){
+        boolean joined = checkBoard(b.getId(), f);
+        if (!joined) {
             writeClientBoard(b, false);
-        }else{
+        } else {
             show("Board has already been joined!");
         }
 
@@ -284,7 +302,7 @@ public class BoardOverviewCtrl implements Initializable {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
                         board.setName(newName);
-                        server.send("/app/boards", board);
+                        server.send("/app/boards", board, session);
 
                     }
                 }
@@ -308,7 +326,7 @@ public class BoardOverviewCtrl implements Initializable {
                 Board boardN = new Board(newName);
                 try {
                     Board b = server.addBoard(boardN);
-                    server.send("/app/boards", b);
+                    server.send("/app/boards", b, session);
                     writeClientBoard(b, true);
                 } catch (WebApplicationException e) {
                     var alert = new Alert(Alert.AlertType.ERROR);
@@ -386,9 +404,9 @@ public class BoardOverviewCtrl implements Initializable {
     /**
      * Resets the overview of all Boards!
      */
-    public void resetOverview(){
+    public void resetOverview() {
         try {
-            server.send("/app/allBoardsDelete", new Board());
+            server.send("/app/allBoardsDelete", new Board(), session);
 
         } catch (WebApplicationException e) {
 

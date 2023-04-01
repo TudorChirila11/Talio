@@ -1,16 +1,27 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
+import commons.Tag;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-
+import org.springframework.messaging.simp.stomp.StompSession;
 import java.util.List;
 
 public class TagInOverviewCtrl {
 
+    private ServerUtils server;
+
+    private Tag tag;
+
 
     public Label tagText;
     public HBox mainTagBody;
+    public Button editTagButton;
+    public Button deleteTagButton;
+
+    private StompSession session;
 
     /**
      * The method is used to set the text of the tag
@@ -18,6 +29,25 @@ public class TagInOverviewCtrl {
      */
     public void setTagText(String tagText) {
         this.tagText.setText(tagText);
+    }
+
+    /**
+     * A method for starting to listen to a server once the connection has been established
+     * @param session the session that is connected to a server that the client is connected to
+     * @param server the client side server that'll be used to send data to the actual server
+     * @param tag the tag that this controller represents
+     */
+    public void subscriber(StompSession session, ServerUtils server, Tag tag) {
+        this.session = session;
+        this.server = server;
+        this.tag = tag;
+    }
+
+    /**
+     * This method lets the user delete exactly one tag from the overview
+     */
+    public void deleteTag(){
+        server.send("/app/tagsDelete", tag, session);
     }
 
     /**

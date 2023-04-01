@@ -27,9 +27,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import client.scenes.BoardCtrl;
-import client.scenes.BoardOverviewCtrl;
-import client.scenes.TagOverviewCtrl;
+import client.scenes.*;
 import commons.*;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
@@ -57,6 +55,9 @@ public class ServerUtils {
     private BoardOverviewCtrl boardOverviewCtrl;
 
     private TagOverviewCtrl tagOverviewCtrl;
+
+    private CardInformationCtrl cardInformationCtrl;
+    private TagCreatorCtrl tagCreatorCtrl;
 
     /**
      * @param ip the ip that the user will be connecting to
@@ -410,6 +411,8 @@ public class ServerUtils {
         boardCtrl.subscriber(session);
         boardOverviewCtrl.subscriber(session);
         tagOverviewCtrl.subscriber(session);
+        cardInformationCtrl.subscriber(session);
+        tagCreatorCtrl.subscriber(session);
     }
 
 
@@ -422,13 +425,14 @@ public class ServerUtils {
      * @param indexNew - new id
      * @return new collection
      */
-    public Response changeCardIndex(Collection old, long indexOld, Collection newCol, long indexNew)
+    public Card changeCardIndex(Collection old, long indexOld, Collection newCol, long indexNew)
     {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(server).path("api/collections/"+old.getId() +"/"+indexOld + "/" + newCol.getId() + "/" + indexNew) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get();
+                .get(new GenericType<Card>() {
+                });
     }
 
 
@@ -519,9 +523,9 @@ public class ServerUtils {
      * This method is used to send data to the server using the stomp client
      * @param dest where to send the data to
      * @param o what to send
+     * @param session StompSession to send the info through
      */
-    public void send(String dest, Object o) {
-        System.out.println(session);
+    public void send(String dest, Object o, StompSession session) {
         session.send(dest, o);
     }
 
@@ -530,11 +534,15 @@ public class ServerUtils {
      * @param boardCtrl a controller that uses websockets
      * @param boardOverviewCtrl a controller that uses websockets
      * @param tagOverviewCtrl a controller that uses websockets
+     * @param cardInformationCtrl a controller that uses websockets
+     * @param tagCreatorCtrl a controller that uses websockets
      */
-    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl){
+    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl){
         this.boardCtrl = boardCtrl;
         this.boardOverviewCtrl = boardOverviewCtrl;
         this.tagOverviewCtrl = tagOverviewCtrl;
+        this.cardInformationCtrl = cardInformationCtrl;
+        this.tagCreatorCtrl = tagCreatorCtrl;
     }
 
 }
