@@ -54,6 +54,12 @@ public class MainCtrl {
 
     private Scene keyboardShortcut;
 
+    private AdminLogInCtrl adminLogInCtrl;
+
+    private Scene adminLogIn;
+
+    private String admin;
+
     private TagCreatorCtrl tagCreatorCtrl;
 
     private Scene tagCreator;
@@ -61,6 +67,7 @@ public class MainCtrl {
     private TagOverviewCtrl tagOverviewCtrl;
 
     private Scene tagOverview;
+
 
 
     /**
@@ -76,12 +83,15 @@ public class MainCtrl {
      * @param tagCreator tagCreator scene
      * @param tagOverview tagCreator scene
      * @param boardOverview  boardOverview scene
+     * @param adminLogIn adminLogIn scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
                            Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
-                           Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview) {
+                           Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview,
+                            Pair<AdminLogInCtrl, Parent> adminLogIn) {
+
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -113,10 +123,24 @@ public class MainCtrl {
         this.boardOverviewCtrl = boardOverview.getKey();
         this.boardOverview = new Scene(boardOverview.getValue());
 
+        this.adminLogInCtrl = adminLogIn.getKey();
+        this.adminLogIn = new Scene(adminLogIn.getValue());
+
+        admin = adminLogInCtrl.getServer().getAdminKey();
+
         welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
+
 
         showWelcomePage();
         primaryStage.show();
+    }
+
+    /**
+     * Admin key getter
+     * @return String admin
+     */
+    public String getAdmin() {
+        return admin;
     }
 
     /**
@@ -202,6 +226,15 @@ public class MainCtrl {
     public void showCollection(){
         primaryStage.setTitle("Collection Overview: Collection");
         primaryStage.setScene(collection);
+    }
+
+    /**
+     * Displays the Admin Log In Scene
+     * and enables the controller
+     */
+    public void showAdminLogIn() {
+        primaryStage.setTitle("Admin Log In: Admin");
+        primaryStage.setScene(adminLogIn);
     }
 
     /**
