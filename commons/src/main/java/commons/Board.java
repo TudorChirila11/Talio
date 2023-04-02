@@ -24,6 +24,16 @@ public class Board {
     }
 
     /**
+     * board constructor with id and name
+     * @param id the id of the board
+     * @param name the name of the board
+     */
+    public Board(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    /**
      * board constructor with name
      * @param name the name of the board
      */

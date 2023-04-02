@@ -12,9 +12,12 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 //CHECKSTYLE:OFF
 
@@ -190,47 +193,61 @@ public class CollectionControllerTest {
 
     }
 
-//    /**
-//     * add a card to a collection methode
-//     * @param idCard the id of the card
-//     * @param idCollection the id of the collection
-//     * @return responseEntity
-//     */
-//    @PostMapping(path = {"/CardAddTo/{id_card}/{id_collection}"})
-//    public ResponseEntity<Collection> add(@PathVariable("id_card") long idCard,
-//                                          @PathVariable("id_collection") long idCollection) {
-//
-//        // checking if both card and collection exist
-//        if (!repoCollection.existsById(idCollection) || !repoCard.existsById(idCard)) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//
-//        // getting the card and collection
-//        Collection collection = repoCollection.findById(idCollection).orElse(null);
-//        Card card = repoCard.findById(idCard).orElse(null);
-//
-//        // not sure why but this check is important (if you know tell me -Teun)
-//        if (collection == null || card == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        // removing the card from the old collection
-//        if(card.getCollectionId() !=null ) {
-//            Collection oldCollection = repoCollection.getById(card.getCollectionId());
-//            oldCollection.removeCard(card);
-//            repoCollection.save(oldCollection);
-//        }
-//
-//        // adding the card to the collection
-//        collection.addCard(card);
-//        card.setCollectionId(collection.getId());
-//        card.setIndex((long) collection.getCards().size() - 1);
-//
-//        // saving the changes to the database
-//        repoCard.save(card);
-//        Collection updatedCollection = repoCollection.save(collection);
-//
-//        return ResponseEntity.ok(updatedCollection);
-//    }
+    @Test
+    void getCollectionById() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(fred, sut.getById(fred.getId()).getBody());
+    }
+
+    @Test
+    void getCollectionByIdNotFound() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(BAD_REQUEST, sut.getById(100L).getStatusCode());
+    }
+
+    @Test
+    void getCardsByCollectionId() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(1, sut.getCardsByCollectionId(fred.getId()).getBody().size());
+    }
+
+    @Test
+    void deleteCardsAtIndexBiggerCollection() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(bob, sut.deleteCardAtPosition(bob.getId(), 0).getBody());
+    }
+    @Test
+    void getCardsByCollectionIdNotFound() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(NOT_FOUND, sut.getCardsByCollectionId(100L).getStatusCode());
+    }
+
+    @Test
+    void deleteCardAtPositionCollectionNotFound() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(NOT_FOUND, sut.deleteCardAtPosition(100L, 0).getStatusCode());
+    }
+
+    @Test
+    void deleteCardAtPosition() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(fred, sut.deleteCardAtPosition(fred.getId(), 0).getBody());
+    }
+
 
     @Test
     void testAddCardToCollectionCardAndCollectionExist() {
@@ -266,16 +283,6 @@ public class CollectionControllerTest {
     }
 
 
-
-//    /**
-//     * Hardcoded mapping all collections
-//     * @return List of collections objectss
-//     */
-//    @GetMapping(path = { "", "/" })
-//    public List<Collection> getAll() {
-//        return repoCollection.findAll();
-//    }
-
     @Test
     void testFindAll() {
         repoCollection.save(fred);
@@ -287,7 +294,87 @@ public class CollectionControllerTest {
         assertEquals(ar, sut.getAll());
 
     }
-}
 
+    @Test
+    void updateCollectionNotFound() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(NOT_FOUND, sut.updateCollection(100L, fred).getStatusCode());
+    }
+
+    @Test
+    void updateCollection() {
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(fred, sut.updateCollection(fred.getId(), fred).getBody());
+    }
+
+    @Test
+    void switchCardPositionBetweenCollections() {
+        fred.addCard(new Card());
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        Card c = sut.switchCardPosition(fred.getId(), 0, bob.getId(), 0).getBody();
+        Card test = sut.getById(bob.getId()).getBody().getCards().get(0);
+
+        assertEquals(c, test);
+    }
+
+    @Test
+    void switchCardPositionBetweenCollectionsNotFound() {
+        fred.addCard(new Card());
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+
+        assertEquals(NOT_FOUND, sut.switchCardPosition(fred.getId(), 0, 100L, 0).getStatusCode());
+    }
+
+    @Test
+    void insertCardIntoCollection(){
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+        repoCard.save(a);
+        repoCard.save(b);
+        repoCard.save(c);
+        assertEquals(fred, sut.insert(fred.getId(), a.getId(), 0).getBody());
+    }
+
+    @Test
+    void insertCardIntoCollectionNotFound(){
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+        repoCard.save(a);
+        repoCard.save(b);
+        repoCard.save(c);
+        assertEquals(NOT_FOUND, sut.insert(fred.getId(), 100L, 0).getStatusCode());
+    }
+
+    @Test
+    void storeTheCards(){
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+        repoCard.save(a);
+        repoCard.save(b);
+        repoCard.save(c);
+        Collection temp = new Collection();
+        temp.addCard(a);
+        temp.addCard(b);
+        temp.addCard(c);
+        temp.addCard(new Card());
+        sut.storeTheCards(fred.getId(),temp, fred);
+        assertEquals(fred, sut.getById(fred.getId()).getBody());
+    }
+
+    @Test
+    void deleteNotFound(){
+        repoCollection.save(fred);
+        repoCollection.save(bob);
+        assertEquals(NOT_FOUND, sut.delete(100L).getStatusCode());
+    }
+
+}
 
 //CHECKSTYLE:ON

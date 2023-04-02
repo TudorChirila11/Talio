@@ -290,7 +290,7 @@ public class CollectionController {
      * @param newCollection the new collection
      * @param collectionInDatabase the old collection
      */
-    private void storeTheCards(long collectionId, Collection newCollection, Collection collectionInDatabase) {
+    public void storeTheCards(long collectionId, Collection newCollection, Collection collectionInDatabase) {
         // loop over the new cards
         for (Card newCard : newCollection.getCards()) {
             // set the right collection collectionId
@@ -397,11 +397,7 @@ public class CollectionController {
         // getting the card and collection
         Collection collection = repoCollection.findById(idCollection).orElse(null);
         Card card = repoCard.findById(idCard).orElse(null);
-
-        // not sure why but this check is important (if you know tell me -Teun)
-        if (collection == null || card == null) {
-            return ResponseEntity.notFound().build();
-        }
+        
         // removing the card from the old collection
         if(card.getCollectionId() != null ) {
             Collection oldCollection = repoCollection.getById(card.getCollectionId());

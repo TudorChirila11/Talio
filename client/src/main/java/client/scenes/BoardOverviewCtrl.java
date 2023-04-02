@@ -125,7 +125,6 @@ public class BoardOverviewCtrl implements Initializable {
                     boardsBox.getChildren().add(boardContent);
                 } catch (BadRequestException e) {
                     current = removeBoardFromClient(boardID, current);
-                    e.printStackTrace();
                 }
             }
             scanner.close();
@@ -304,7 +303,6 @@ public class BoardOverviewCtrl implements Initializable {
                     if (!newName.isEmpty()) {
                         board.setName(newName);
                         server.send("/app/boards", board, session);
-
                     }
                 }
             }
