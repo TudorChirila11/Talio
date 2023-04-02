@@ -139,7 +139,7 @@ public class CardInformationCtrl implements Initializable {
             collectionMenu.setText("Select...");
         else collectionMenu.setText(collectionCurrent.getName());
 
-        if (currentBoard != null && currentBoard.getId() != null) {
+        if (currentBoard != null) {
             for (Collection c : server.getCollectionsFromBoard(currentBoard)) {
 
                 MenuItem i = new MenuItem(c.getName());
@@ -165,8 +165,8 @@ public class CardInformationCtrl implements Initializable {
                 subtask.setName(subtaskName.getText());
                 subtask.setCardId(card.getId());
                 subtask.setFinished(false);
-                subtask = server.addSubTask(subtask);
-                server.send("/app/subtasks", subtask, session);
+//                subtask = server.addSubTask(subtask);
+//                server.send("/app/subtasks", subtask, session);
 
                 HBox hb = new HBox(10);
                 TextField tf = new TextField();
@@ -213,7 +213,7 @@ public class CardInformationCtrl implements Initializable {
                 tf.setDisable(false);
                 tf.setOpacity(1);
             }
-            server.send("/app/subtasks", subtask, session);
+//            server.send("/app/subtasks", subtask, session);
             refresh();
         });
         up.getStyleClass().add("arrows");
@@ -225,8 +225,8 @@ public class CardInformationCtrl implements Initializable {
                 subtaskHBoxes.add(index - 1, hb);
                 subtask.setIndex((long) index - 1);
                 swap.setIndex((long) index);
-                server.send("/app/subtasks", swap, session);
-                server.send("/app/subtasks", subtask, session);
+//                server.send("/app/subtasks", swap, session);
+//                server.send("/app/subtasks", subtask, session);
                 refresh();
             }
         });
@@ -238,14 +238,14 @@ public class CardInformationCtrl implements Initializable {
                 subtaskHBoxes.remove(hb);
                 subtaskHBoxes.add(index + 1, hb);
                 subtask.setIndex((long) index + 1);
-                server.send("/app/subtasks", swap, session);
-                server.send("/app/subtasks", subtask, session);
+//                server.send("/app/subtasks", swap, session);
+//                server.send("/app/subtasks", subtask, session);
                 refresh();
             }
         });
         down.getStyleClass().add("arrows");
         deleteButton.setOnAction(event -> {
-            server.send("/app/subtasksDelete", subtask.getId(), session);
+//            server.send("/app/subtasksDelete", subtask.getId(), session);
             refresh();
         });
     }
@@ -255,7 +255,7 @@ public class CardInformationCtrl implements Initializable {
      */
     public void deleteCard() {
         try {
-            server.send("/app/cardsDelete", card.getId(), session);
+//            server.send("/app/cardsDelete", card.getId(), session);
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -275,11 +275,11 @@ public class CardInformationCtrl implements Initializable {
      * Method to return to the board
      */
     public void goBack() {
-        // If a card is created, but not saved, it will be deleted.
-        // We always create a card before editing it, so we need to delete it if we don't save it.
-        // Also we are able to add subtasks to the card.
-        if (state == State.CREATE)
-            server.deleteCard(card.getId());
+//        // If a card is created, but not saved, it will be deleted.
+//        // We always create a card before editing it, so we need to delete it if we don't save it.
+//        // Also we are able to add subtasks to the card.
+//        if (state == State.CREATE)
+//            server.deleteCard(card.getId());
         mainCtrl.showBoard(currentBoard);
     }
 
@@ -484,7 +484,7 @@ public class CardInformationCtrl implements Initializable {
     public void setCreateMode(Board board) {
         setState(CardInformationCtrl.State.CREATE);
         // Create a new card that will be deleted if the user clicks close.
-        setCard(server.addCard(new Card()));
+        setCard(new Card());
         setBoard(board);
         refresh();
     }
