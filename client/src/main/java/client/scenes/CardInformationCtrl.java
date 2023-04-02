@@ -6,6 +6,7 @@ import commons.Card;
 import commons.Collection;
 import commons.Board;
 import commons.Subtask;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -305,7 +306,13 @@ public class CardInformationCtrl implements Initializable {
 
         if (subtasksList == null)
             subtasksList = new ArrayList<>();
-        else subtasksList = server.getSubtasksForCard(card);
+        else {
+            try {
+                subtasksList = server.getSubtasksForCard(card);
+            } catch (BadRequestException e) {
+                showError(e.getMessage());
+            }
+        }
 
         subtasksList.sort(Comparator.comparing(Subtask::getIndex));
         for (Subtask s : subtasksList) {
@@ -356,6 +363,7 @@ public class CardInformationCtrl implements Initializable {
             Card c = server.addCard(card);
             server.send("/app/cards", c, session);
         } else {
+            card.setSubtasks(subtasksList);
             Card c = server.updateCard(card.getId(), card);
             server.send("/app/cards", c, session);
             try {

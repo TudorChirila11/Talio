@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Subtask;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -159,7 +160,7 @@ public class SubtaskController {
     @GetMapping("/getFromCard/{cardId}")
     public ResponseEntity<List<Subtask>> getSubtasksFromCard(@PathVariable long cardId)
     {
-        List<Subtask> subtasks = repo.findAll();
+        List<Subtask> subtasks = repo.findAll(Sort.sort(Subtask.class).by(Subtask::getIndex));
         List<Subtask> response = new ArrayList<>();
         for(Subtask c: subtasks)
             if(c.getCardId() == cardId)
