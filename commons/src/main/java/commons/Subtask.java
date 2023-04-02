@@ -38,8 +38,10 @@ public class Subtask {
     }
 
     /**
-     * constructor that defines a subtask only by name
+     * constructor that defines a subtask only by name, cardId and index
+     * @param cardId - name of the subtask
      * @param name - name of the subtask
+     * @param index - name of the subtask
      */
     public Subtask(Long cardId, String name, Long index)
     {
