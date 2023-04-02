@@ -26,15 +26,9 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl overviewCtrl;
-    private Scene overview;
-
     private BoardOverviewCtrl boardOverviewCtrl;
     private Scene boardOverview;
 
-    private AddQuoteCtrl addCtrl;
-
-    private Scene add;
     private Scene cardInformation;
     private CardInformationCtrl cardInformationCtrl;
 
@@ -66,8 +60,6 @@ public class MainCtrl {
     /**
      * Initializes the mainCtrl method with all the active controllers
      * @param primaryStage primary stage (active)
-     * @param overview overview of quotes
-     * @param add add of quote
      * @param board board scene
      * @param cardInfo cardInfo scene
      * @param collection collection scene
@@ -77,17 +69,11 @@ public class MainCtrl {
      * @param tagOverview tagCreator scene
      * @param boardOverview  boardOverview scene
      */
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
+    public void initialize(Stage primaryStage, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
                            Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
                            Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview) {
         this.primaryStage = primaryStage;
-        this.overviewCtrl = overview.getKey();
-        this.overview = new Scene(overview.getValue());
-
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
 
         this.cardInformationCtrl = cardInfo.getKey();
         this.cardInformation = new Scene(cardInfo.getValue());
@@ -123,31 +109,12 @@ public class MainCtrl {
      * Displays the overview Scene
      * and enables the controller
      */
-    public void showOverview() {
-        primaryStage.setTitle("Quotes: Overview");
-        primaryStage.setScene(overview);
-        overviewCtrl.refresh();
-    }
-
-    /**
-     * Displays the overview Scene
-     * and enables the controller
-     */
     public void showBoardOverview() {
         primaryStage.setTitle("Boards: Overview");
         primaryStage.setScene(boardOverview);
         boardOverviewCtrl.refresh();
     }
 
-    /**
-     * Displays the quote add Scene
-     * and enables the controller
-     */
-    public void showAdd() {
-        primaryStage.setTitle("Quotes: Adding Quote");
-        primaryStage.setScene(add);
-        add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
-    }
 
     /**
      * Displays the cardInformation Scene when adding card
@@ -222,21 +189,6 @@ public class MainCtrl {
         return board;
     }
 
-    /**
-     * Getter for the overview field
-     * @return Scene - the overview scene
-     */
-    public Scene getOverview() {
-        return overview;
-    }
-
-    /**
-     * Getter for the add field
-     * @return Scene - the add scene
-     */
-    public Scene getAdd() {
-        return add;
-    }
 
     /**
      * Getter for the cardInformation field

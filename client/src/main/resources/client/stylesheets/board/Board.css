@@ -72,5 +72,15 @@
      -fx-padding: 0 0 0 60;
 }
 
+.simpleAddTaskButton{
+    -fx-font-size: 10px;
+    -fx-background-color: #00ff2b;
+    -fx-text-fill: black;
+    -fx-border-radius: 20;
+    -fx-border-color: #000000;
+    -fx-border-width: 2;
+    -fx-background-radius: 20;
+}
+
 
 
