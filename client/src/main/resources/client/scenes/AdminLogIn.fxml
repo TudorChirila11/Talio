@@ -8,14 +8,19 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
-<AnchorPane id="adminPaneView" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminLogInCtrl">
+<AnchorPane id="adminPaneView" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminLogInCtrl">
    <children>
-      <Text layoutX="133.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PLease enter the admin identification code:" wrappingWidth="334.1171875" />
-      <Text layoutX="133.0" layoutY="135.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(can be found in the server's log)" wrappingWidth="206.13671875" />
-      <TextField fx:id="adminKey" layoutX="133.0" layoutY="157.0" prefHeight="25.0" prefWidth="237.0" />
-      <Button layoutX="391.0" layoutY="157.0" mnemonicParsing="false" text="Log in" onAction="#makeAdmin"/>
-      <Button id="backButton" layoutX="20.0" layoutY="20.0" minWidth="41.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton" onAction="#showBoardOverviewPage">
+      <Text layoutX="170.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PLease enter the admin identification code:" wrappingWidth="334.1171875">
+         <font>
+            <Font size="17.0" />
+         </font></Text>
+      <Text layoutX="170.0" layoutY="218.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(can be found in the client's log)" wrappingWidth="287.13671875">
+         <font>
+            <Font size="17.0" />
+         </font></Text>
+      <TextField fx:id="adminKey" layoutX="196.0" layoutY="256.0" prefHeight="25.0" prefWidth="237.0" />
+      <Button layoutX="480.0" layoutY="256.0" mnemonicParsing="false" onAction="#makeAdmin" text="Log in" />
+      <Button id="backButton" layoutX="20.0" layoutY="20.0" minWidth="41.0" mnemonicParsing="false" onAction="#showBoardOverviewPage" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
          <graphic>
             <ImageView fitHeight="65.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -24,9 +29,9 @@
             </ImageView>
          </graphic>
       </Button>
-      <Text layoutX="216.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Admin Log in" textAlignment="CENTER" wrappingWidth="133.13671875">
+      <Text layoutX="314.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Admin Log in" textAlignment="CENTER" wrappingWidth="172.13671875">
          <font>
-            <Font size="20.0" />
+            <Font size="26.0" />
          </font>
       </Text>
    </children>
