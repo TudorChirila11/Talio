@@ -300,7 +300,7 @@ public class ServerUtils {
      * @param id id of the board
      * @return returns the board object
      */
-    public Board getBoardById(long id){
+    public Board getBoardById(Long id){
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(server).path("api/boards/" + id) //
                 .request(APPLICATION_JSON) //

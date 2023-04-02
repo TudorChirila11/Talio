@@ -139,7 +139,7 @@ public class CardInformationCtrl implements Initializable {
             collectionMenu.setText("Select...");
         else collectionMenu.setText(collectionCurrent.getName());
 
-        if (currentBoard != null) {
+        if (currentBoard != null && currentBoard.getId() != null) {
             for (Collection c : server.getCollectionsFromBoard(currentBoard)) {
 
                 MenuItem i = new MenuItem(c.getName());
@@ -304,7 +304,7 @@ public class CardInformationCtrl implements Initializable {
 
         ArrayList<HBox> subtaskBoxes = new ArrayList<>();
 
-        if (subtasksList == null)
+        if (subtasksList == null || card.getId() == null)
             subtasksList = new ArrayList<>();
         else {
             try {

@@ -78,7 +78,7 @@ public class BoardController {
      * @return a response Entity
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Board> getById(@PathVariable("id") long id) {
+    public ResponseEntity<Board> getById(@PathVariable("id") Long id) {
         if (!repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
@@ -93,7 +93,7 @@ public class BoardController {
      * @return the response entity
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
