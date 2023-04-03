@@ -352,6 +352,20 @@ public class ServerUtils {
     }
 
     /**
+     * Retrieves tags that are connected to a card
+     * @param card get only the tags that belong to this card
+     * @return List of tags
+     */
+    public List<Tag> getTagsByCard(Card card) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/tags/" + card) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Tag>>() {
+                });
+    }
+
+    /**
      * deletes card from index, in the Collection col's card array
      * @param col - the collection we want the card deleted from
      * @param index - the index
@@ -393,22 +407,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(col, APPLICATION_JSON), Collection.class);
-    }
-
-    /**
-     * This method changes the session to the appropriate url when the user connects to a server
-     * @param ip the url of the server to which the stomp client will connect to
-     */
-    public void createStompSession(String ip) throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        StompSessionHandlerAdapter sessionHandler = new MySessionHandler(latch);
-        session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
-        latch.await();
-        boardCtrl.subscriber(session);
-        boardOverviewCtrl.subscriber(session);
-        tagOverviewCtrl.subscriber(session);
-        cardInformationCtrl.subscriber(session);
-        tagCreatorCtrl.subscriber(session);
     }
 
 
@@ -474,6 +472,22 @@ public class ServerUtils {
     }
 
     /**
+     * This method changes the session to the appropriate url when the user connects to a server
+     * @param ip the url of the server to which the stomp client will connect to
+     */
+    public void createStompSession(String ip) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        StompSessionHandlerAdapter sessionHandler = new MySessionHandler(latch);
+        session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
+        latch.await();
+        boardCtrl.subscriber(session);
+        boardOverviewCtrl.subscriber(session);
+        tagOverviewCtrl.subscriber(session);
+        cardInformationCtrl.subscriber(session);
+        tagCreatorCtrl.subscriber(session);
+    }
+
+    /**
      * This method creates a stomp client that connects to the server
      * @param url the url that directs the clients to the server
      * @return a stomp client server instance that lets the user communicate with the server.
@@ -501,7 +515,6 @@ public class ServerUtils {
      * @param session the session that the register will use to subscribe to a server.
      */
     public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer, StompSession session) {
-        System.out.println(session);
         session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
