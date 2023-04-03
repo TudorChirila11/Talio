@@ -112,17 +112,18 @@ public class MainCtrl {
         this.adminLogInCtrl = adminLogIn.getKey();
         this.adminLogIn = new Scene(adminLogIn.getValue());
 
-        admin = adminLogInCtrl.getServer().getAdminKey();
-
         adminLogInCtrl.setAdmin(false);
 
         welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
-
 
         showWelcomePage();
         primaryStage.show();
     }
 
+    /**
+     * Displays the BoardOverviewAdmin Scene
+     * @param admin the admin keyboolean
+     */
     public void showBoardOverviewAdmin(boolean admin) {
         boardOverviewCtrl.setAdmin(admin);
         primaryStage.setTitle("Board Overview");
@@ -276,6 +277,7 @@ public class MainCtrl {
      * and enables the controller
      */
     public void showWelcomePage(){
+        admin = welcomePageCtrl.generateKey();
         primaryStage.setTitle("Welcome page Overview: Welcome page");
         primaryStage.setScene(welcomePage);
     }

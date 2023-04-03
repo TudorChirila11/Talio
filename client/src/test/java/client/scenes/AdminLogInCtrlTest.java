@@ -19,7 +19,7 @@ public class AdminLogInCtrlTest {
         serverUtils = new ServerUtils();
         mainCtrl = new MainCtrl();
         boardOverviewCtrl = new BoardOverviewCtrl(serverUtils, mainCtrl, adminLogInCtrl);
-        adminLogInCtrl = new AdminLogInCtrl(serverUtils, mainCtrl, boardOverviewCtrl);
+        adminLogInCtrl = new AdminLogInCtrl(serverUtils, mainCtrl);
     }
 
     @Test

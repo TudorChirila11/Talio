@@ -67,8 +67,8 @@ public class BoardOverviewCtrl implements Initializable {
     /**
      * Constructor for the BoardOverview Ctrl
      *
-     * @param server   serverUtils ref
-     * @param mainCtrl main controller ref
+     * @param server         serverUtils ref
+     * @param mainCtrl       main controller ref
      * @param adminLogInCtrl admin controller ref
      */
     @Inject
@@ -92,13 +92,14 @@ public class BoardOverviewCtrl implements Initializable {
 
     /**
      * A method for starting to listen to a server once the connection has been established
+     *
      * @param session the session that is connected to a server that the client is connected to
      */
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
         this.session = session;
         String path = server.getServer().replaceAll("[^a-zA-Z0-9]", "_");
-        boardFilePath = "boards_"+ path + ".txt";
+        boardFilePath = "boards_" + path + ".txt";
     }
 
     /**
@@ -131,20 +132,18 @@ public class BoardOverviewCtrl implements Initializable {
                         boardsBox.getChildren().add(boardContent);
                     } catch (BadRequestException e) {
                         current = removeBoardFromClient(boardID, current);
-                        e.printStackTrace(); }}
+                        e.printStackTrace();
+                    }
+                }
                 scanner.close();
                 if (!current.getName().equals(boardFilePath)) {
                     if (!current.getName().equals("boardsTemp.txt")) {
                         new File("boardsTemp.txt").delete();
                     }
                     new File(boardFilePath).delete();
-                    System.out.println(current.getName());
-                    System.out.println(current.renameTo(new File(boardFilePath)));
+                    current.renameTo(new File(boardFilePath));
                     new File("boardsTest.txt").delete();
                 }
-                new File(boardFilePath).delete();
-                current.renameTo(new File(boardFilePath));
-                new File("boardsTest.txt").delete();
                 boardsBox.setPrefSize(600, 225 * size);
                 boardContainer.setContent(boardsBox);
             } catch (FileNotFoundException e) {
@@ -447,6 +446,8 @@ public class BoardOverviewCtrl implements Initializable {
 
             boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
             boardsBox.getChildren().add(boardContent);
+            boardsBox.setPrefSize(600, 225 * size);
+            boardContainer.setContent(boardsBox);
         }
     }
 
@@ -466,6 +467,7 @@ public class BoardOverviewCtrl implements Initializable {
 
     /**
      * Admin setter
+     *
      * @param admin - new value for isAdmin
      */
     public void setAdmin(boolean admin) {
