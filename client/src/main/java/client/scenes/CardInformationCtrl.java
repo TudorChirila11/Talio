@@ -170,6 +170,7 @@ public class CardInformationCtrl implements Initializable {
 
                 HBox hb = new HBox(10);
                 TextField tf = new TextField();
+                tf.setBackground(Background.EMPTY);
                 Button deleteButton = new Button("x");
                 deleteButton.getStyleClass().add("deleteSubTaskButton");
                 Button up = new Button("^");
@@ -200,7 +201,6 @@ public class CardInformationCtrl implements Initializable {
      */
     private void setUpSubTaskControls(Subtask subtask, TextField tf, HBox hb, Button up, Button down, CheckBox cb, Button deleteButton) {
         tf.setPrefWidth(80);
-        tf.setBackground(Background.EMPTY);
         tf.setText(subtask.getName());
         renameSubtask(subtask, tf);
         cb.setOnAction(event1 -> {
@@ -225,8 +225,6 @@ public class CardInformationCtrl implements Initializable {
                 subtaskHBoxes.add(index - 1, hb);
                 subtask.setIndex((long) index - 1);
                 swap.setIndex((long) index);
-                System.out.println(swap);
-                System.out.println(subtask);
                 populateSubtasksScreen(card.getSubtasks());
                 loadSubtasksPane();
             }
@@ -357,6 +355,7 @@ public class CardInformationCtrl implements Initializable {
         for (Subtask s : subtaskList) {
             HBox hb = new HBox(10);
             TextField tf = new TextField();
+            tf.setBackground(Background.EMPTY);
             Button deleteButton = new Button("x");
             deleteButton.getStyleClass().add("deleteSubTaskButton");
             Button up = new Button("^");
@@ -402,39 +401,29 @@ public class CardInformationCtrl implements Initializable {
         Collection oldCol = null;
         if(card.getCollectionId()!=null)
             oldCol = server.getCollectionById(card.getCollectionId());
-        if(state == State.CREATE)
-        {
+        if(state == State.CREATE) {
             card.setCollectionId(collectionCurrent.getId());
             card.setIndex((long) collectionCurrent.getCards().size());
             Card c = server.addCard(card);
             server.send("/app/cards", c, session);
         }
-        else
-        {
+        else {
             System.out.println("card id: " + card.getId());
             Card c = server.updateCard(card.getId(), card);
             System.out.println(c);
             server.send("/app/cards", c, session);
             try {
-
                 Collection newCol = collectionCurrent;
                 Long index = card.getIndex();
                 Long newIndex = (long) collectionCurrent.getCards().size();
-
                 if(oldCol!= null && (long) newCol.getId()!= (long) oldCol.getId() && state == State.EDIT) {
                     Card d = server.changeCardIndex(oldCol, index, newCol, newIndex);
                     server.send("/app/collections", oldCol, session);
                     server.send("/app/collections", newCol, session);
                     server.send("/app/cards", d, session);
                 }
-
             } catch (WebApplicationException e) {
-
-                var alert = new Alert(Alert.AlertType.ERROR);
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
-                return;
+                showError(e.getMessage());
             }
         }
         clearFields(); ///security measure
