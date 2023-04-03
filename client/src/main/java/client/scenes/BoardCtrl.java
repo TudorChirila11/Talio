@@ -18,6 +18,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -25,6 +27,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import org.springframework.messaging.simp.stomp.StompSession;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -48,7 +53,12 @@ public class BoardCtrl implements Initializable {
     private Label boardLabel;
 
     @FXML
+    private Button lockButton;
+
+    @FXML
     private ScrollPane collectionsContainer;
+
+    private boolean isLocked;
 
 
     HashMap<ListView<Card>, Collection> mapper;
@@ -92,12 +102,58 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
-
         tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard));
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
 
-
         refresh(currentBoard);
+    }
+
+    /**
+     * Removes the lock of a board.
+     */
+    private void removeLock() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Remove lock");
+        dialog.setHeaderText("Remove lock");
+        dialog.setContentText("Please enter the password:");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            if (result.get().equals(currentBoard.getPassword())) {
+                currentBoard.setLocked(false);
+                currentBoard.setPassword(null);
+                server.send("/app/boards", currentBoard, session);
+                isLocked = false;
+                addCollectionButton.setDisable(false);
+                addCardButton.setDisable(false);
+            }
+        }
+    }
+
+    /**
+     * Checks a file containing board id, password
+     * to see if the board id and password match the current board
+     *
+     * @return true if the board id and password match the current board
+     */
+    private boolean passwordCheck() {
+        File file = new File("password.txt");
+        if (file.exists()) {
+            try {
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    String boardId = line.split("-PASSWORD-")[0];
+                    String password = line.split("-PASSWORD-")[1];
+                    if (boardId.equals(currentBoard.getId().toString()) && password.equals(currentBoard.getPassword())) {
+                        return true;
+                    }
+                }
+                scanner.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     /**
@@ -141,6 +197,80 @@ public class BoardCtrl implements Initializable {
         mainCtrl.showBoardOverview();
     }
 
+    /**
+     * Unlocks a board
+     */
+    private void unlockBoard() {
+        try {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Password");
+            dialog.setHeaderText("Enter the password for the board");
+            dialog.setContentText("Password:");
+            Optional<String> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                if (!result.get().equals(currentBoard.getPassword())) {
+                    showAlert("Wrong password");
+                    return;
+                }
+            }
+            // Writes board id and password to a file
+            File file = new File("password.txt");
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            try {
+                FileWriter writer = new FileWriter(file, true);
+                writer.write(currentBoard.getId().toString() + "-PASSWORD-" + currentBoard.getPassword() + "\n");
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            isLocked = false;
+            addCollectionButton.setDisable(false);
+            addCardButton.setDisable(false);
+            refresh(currentBoard);
+        } catch (WebApplicationException e) {
+            showAlert(e.toString());
+        }
+    }
+
+    /**
+     * Locks a board
+     */
+    private void lockBoard() {
+        try {
+            if (currentBoard.getPassword() == null || currentBoard.getPassword().equals("")) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Password");
+                dialog.setHeaderText("Enter a password for the board");
+                dialog.setContentText("Password:");
+                Optional<String> result = dialog.showAndWait();
+                if (result.isPresent()) {
+                    currentBoard.setPassword(result.get());
+                }
+            } else {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Password");
+                dialog.setHeaderText("Enter the password for the board");
+                dialog.setContentText("Password:");
+                Optional<String> result = dialog.showAndWait();
+                if (result.isPresent()) {
+                    if (!result.get().equals(currentBoard.getPassword())) {
+                        showAlert("Wrong password");
+                        return;
+                    }
+                }
+            }
+            currentBoard.setLocked(true);
+            server.send("/app/boards", currentBoard, session);
+        } catch (WebApplicationException e) {
+            showAlert(e.toString());
+        }
+    }
 
     /**
      * Sets the state of board
@@ -150,6 +280,7 @@ public class BoardCtrl implements Initializable {
     public void refresh(Board board) {
         currentBoard = board;
         if (currentBoard != null) {
+            lockSetup();
             boardLabel.setText(board.getName());
             boardLabel.setMaxWidth(Double.MAX_VALUE);
             AnchorPane.setLeftAnchor(boardLabel, 0.0);
@@ -180,6 +311,10 @@ public class BoardCtrl implements Initializable {
                 // Creating a vertical stacked box with the label -> collection -> simple add task add button
                 Button simpleAddTaskButton = new Button("+");
 
+                if (isLocked && !passwordCheck()) {
+                    simpleAddTaskButton.setDisable(true);
+                }
+
                 VBox collectionVBox = new VBox(10);
                 collectionVBox.getChildren().addAll(collectionLabel, collection, simpleAddTaskButton);
 
@@ -190,6 +325,35 @@ public class BoardCtrl implements Initializable {
 
             // Finally updating all the values in the pane with the current HBox
             collectionsContainer.setContent(taskListsBox);
+        }
+    }
+
+    /**
+     * Set up lock button
+     */
+    private void lockSetup() {
+        isLocked = currentBoard.isLocked();
+        lockButton.setOnMouseClicked(event -> {
+            if(event.getButton().equals(MouseButton.SECONDARY)){
+                removeLock();
+            }else{
+                if (isLocked) {
+                    System.out.println("Lock button clicked");
+                    unlockBoard();
+                } else {
+                    System.out.println("Lock button clicked");
+                    lockBoard();
+                }
+            }
+        });
+        if (isLocked && !passwordCheck()) {
+            lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
+            addCollectionButton.setDisable(true);
+            addCardButton.setDisable(true);
+        }else{
+            lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
+            addCollectionButton.setDisable(false);
+            addCardButton.setDisable(false);
         }
     }
 
@@ -232,12 +396,9 @@ public class BoardCtrl implements Initializable {
             while (sourceNode != null && !(sourceNode instanceof ListView)) {
                 sourceNode = sourceNode.getParent();
             }
-            //TODO Fix the warning here...
             if (sourceNode != null) {
                 ListView<Card> sourceList = (ListView<Card>) sourceNode;
                 int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
-                //    Card sourceCard = sourceList.getItems().get(sourceIndex);
-                //  sourceList.getItems().remove(sourceCard);
 
                 Collection oldCollection = mapper.get(sourceList);
                 Collection newCollection = mapper.get(listView);
@@ -344,11 +505,16 @@ public class BoardCtrl implements Initializable {
      */
     private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
+        if (isLocked && !passwordCheck()) {
+            delete.setDisable(true);
+        }
         delete.getStyleClass().add("delete_button");
         delete.setOnAction(event -> {
             try {
                 server.send("/app/collectionsDelete", collection, session);
-            } catch (WebApplicationException e) {showAlert(e.getMessage());}
+            } catch (WebApplicationException e) {
+                showAlert(e.getMessage());
+            }
         });
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);

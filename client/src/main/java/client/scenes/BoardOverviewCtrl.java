@@ -119,9 +119,18 @@ public class BoardOverviewCtrl implements Initializable {
                     Button openBoard = new Button("Open Board");
                     Button delete = new Button("X");
 
+                    String lock = "unlock";
+                    if(b.isLocked()){
+                        lock = "lock";
+                    }
+                    ImageView locked = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/" + lock + ".png"))));
+                    locked.setPreserveRatio(true);
+                    locked.setPickOnBounds(true);
+                    locked.setFitHeight(40);
+
                     prepareContent(boardLabel, copyKey, imageView, openBoard, delete, b, created);
 
-                    boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
+                    boardContent.getChildren().addAll(boardLabel, copyKey, locked, openBoard, delete);
                     boardsBox.getChildren().add(boardContent);
                 } catch (BadRequestException e) {
                     current = removeBoardFromClient(boardID, current);

@@ -13,6 +13,12 @@ public class Board {
     private Long id;
 
     private String name;
+
+
+    private boolean isLocked;
+
+    private String password;
+
     @OneToMany(mappedBy = "boardId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Collection> collections = new ArrayList<>();
 
@@ -31,6 +37,7 @@ public class Board {
     public Board(Long id, String name) {
         this.id = id;
         this.name = name;
+        this.isLocked = false;
     }
 
     /**
@@ -102,17 +109,51 @@ public class Board {
     }
 
     /**
-     * An equals method for the board data class
-     * @param o the object that'll be compared to this
-     * @return a boolean representing whether the 2 objects are equal or not
+     * get the locked status of the board
+     * @return isLocked
+     */
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    /**
+     * set the locked status of the board
+     * @param locked the new locked status
+     */
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
+    /**
+     * get the password of the board
+     * @return password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * set the password of the board
+     * @param password the new password
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+    /**
+     * A equals method for the board data class
+     * @param o the object to be compared
+     * @return true if the objects are equal, false otherwise
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return Objects.equals(id, board.id) && Objects.equals(name, board.name) && Objects.equals(collections, board.collections);
+        return isLocked == board.isLocked && Objects.equals(id, board.id) && Objects.equals(name, board.name) && Objects.equals(password, board.password) && Objects.equals(collections, board.collections);
     }
+
 
     /**
      * A hashcode method for the board data class
@@ -120,21 +161,10 @@ public class Board {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, collections);
+        return Objects.hash(id, name, collections, isLocked, password);
     }
 
-    /**
-     * A toString method for the subtask data class
-     * @return A string representing the whole data class
-     */
-    @Override
-    public String toString() {
-        return "Board{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", collections=" + collections +
-                '}';
-    }
+
 
     /**
      * set the id of the board
@@ -142,5 +172,20 @@ public class Board {
      */
     public void setId(Long l) {
         this.id = l;
+    }
+
+    /**
+     * A toString method for the board data class
+     * @return a string representation of the board
+     */
+    @Override
+    public String toString() {
+        return "Board{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", isLocked=" + isLocked +
+                ", password='" + password + '\'' +
+                ", collections=" + collections +
+                '}';
     }
 }

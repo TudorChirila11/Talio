@@ -72,6 +72,11 @@ public class CardCell extends ListCell<Card>  {
             mainCtrl.editCard(id);
         });
 
+        if(server.getBoardOfCard(id).isLocked()){
+            removeButton.setDisable(true);
+            editButton.setDisable(true);
+        }
+
 
     }
 
