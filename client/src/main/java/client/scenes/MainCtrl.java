@@ -165,7 +165,6 @@ public class MainCtrl {
         primaryStage.setScene(tagOverview);
         tagOverviewCtrl.initialize(currentBoard);
         tagOverviewCtrl.refresh();
-        System.out.println(currentBoard.getName());
     }
 
     /**
