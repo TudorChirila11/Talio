@@ -531,6 +531,19 @@ public class ServerUtils {
                 .delete();
     }
 
+    /**
+     * returns string with how many done subtasks does card 'id' have
+     * @param id - card id
+     * @return string with format 'doneSubtasks/totalSubtasks'
+     */
+    public String getDoneSubtasksForCard(Long id) {
+        List<Subtask> subtasks = getSubtasksOfCard(id);
+        int nr =0 ;
+        for(Subtask s : subtasks)
+            if(s.getFinished())
+                nr++;
+        return nr+"/"+subtasks.size();
+    }
 
     /**
      * This method creates a stomp client that connects to the server
@@ -625,4 +638,6 @@ public class ServerUtils {
             send("app/subtasks/subtasksDelete/", s.getId(), session);
         }
     }
+
+
 }
