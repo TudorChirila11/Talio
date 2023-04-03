@@ -339,7 +339,7 @@ public class ServerUtils {
 
     /**
      * Retrieves all tags
-     *
+     * @param boardId get only the tags that belong to this board
      * @return List of tags
      */
     public List<Tag> getTags(Long boardId) {

@@ -409,8 +409,4 @@ public class BoardCtrl implements Initializable {
 
         return pos;
     }
-
-    public Board getCurrentBoard() {
-        return currentBoard;
-    }
 }
