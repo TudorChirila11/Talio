@@ -97,7 +97,7 @@ public class TagController {
 
     /**
      * Hardcoded mapping all tags
-     *
+     * @param boardId the id which will be used to get only the tags that the client needs
      * @return List of tags objects
      */
     @GetMapping(path = {"/{id}"})
