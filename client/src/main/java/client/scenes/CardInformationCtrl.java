@@ -24,7 +24,7 @@ public class CardInformationCtrl implements Initializable {
 
 
     enum State {
-        EDIT, CREATE
+        EDIT, CREATE, INACTIVE
     }
 
     private final ServerUtils server;
@@ -296,16 +296,17 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * stores these subtasks into the database
-     * @param cardId - the id we want to store the list of subtasks in
+     * @param c - the id we want to store the list of subtasks in
      */
     private void saveSubtasksCardId(Card c) {
         List<Subtask> subtasks = c.getSubtasks();
         for(Subtask s : subtasks)
-        {
-            s.setCardId(c.getId());
-            Subtask newS = server.updateSubtask(s.getId(), s);
-            server.send("app/subtasks", newS, session);//TODO send subtask through server
-        }
+            if(s.getCardId() == null)
+            {
+                s.setCardId(c.getId());
+                Subtask newS = server.updateSubtask(s.getId(), s);
+                server.send("app/subtasks", newS, session);//TODO send subtask through server
+            }
     }
 
     /**
@@ -313,6 +314,7 @@ public class CardInformationCtrl implements Initializable {
      */
     public void goBack() {
         clearFields();
+        state = State.INACTIVE;
         mainCtrl.showBoard(currentBoard);
     }
 
@@ -321,6 +323,8 @@ public class CardInformationCtrl implements Initializable {
      * Refresh method
      */
     public void refresh() {
+        if(state == State.INACTIVE || state == null)
+            return;
         setupCollectionMenu();
         if (state == State.EDIT) {
             ///Delete all subtasks from the database
@@ -394,11 +398,7 @@ public class CardInformationCtrl implements Initializable {
         }
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
-        /*for(Subtask s : toDelete) {
-            if(s.getId()!=null){
-                server.send("/app/subtasksDelete", s.getId(), session);
-            }
-        }*/
+
         Collection oldCol = null;
         if(card.getCollectionId()!=null)
             oldCol = server.getCollectionById(card.getCollectionId());
@@ -409,7 +409,7 @@ public class CardInformationCtrl implements Initializable {
             saveSubtasksCardId(c);
             server.send("/app/cards", c, session);
         }
-        else {
+        else if (state==State.EDIT){
             System.out.println("card id: " + card.getId());
             Card c = server.updateCard(card.getId(), card);
             saveSubtasksCardId(c);
