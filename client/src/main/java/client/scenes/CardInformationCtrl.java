@@ -279,8 +279,7 @@ public class CardInformationCtrl implements Initializable {
      * stores these subtasks into the database
      * @param cardId - the id we want to store the list of subtasks in
      */
-    private void saveSubtasks(long cardId)
-    {
+    private void saveSubtasks(long cardId) {
         List<Subtask> subtaskList = new ArrayList<>();
         server.removeSubtasksOf(cardId);
         for(int i =0; i < subtaskHBoxes.size() ;++i)
@@ -359,8 +358,7 @@ public class CardInformationCtrl implements Initializable {
      * populates the subtask screen with a list of subtasks
      * @param subtaskList - the subtask list we want to populate the screen with
      */
-    public void populateSubtasksScreen(List<Subtask> subtaskList)
-    {
+    public void populateSubtasksScreen(List<Subtask> subtaskList) {
         subtaskHBoxes = new ArrayList<>();
         for(Subtask c : subtaskList)
         {
@@ -372,8 +370,7 @@ public class CardInformationCtrl implements Initializable {
     /**
      * Function to reload only the subtasks pane visually, not the whole card information
      */
-    public void loadSubtasksPane()
-    {
+    public void loadSubtasksPane() {
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtaskHBoxes);
@@ -506,8 +503,7 @@ public class CardInformationCtrl implements Initializable {
      * configures this controller to enter in 'Edit Card' Mode
      * @param cardId - the Id of the card we want to edit
      */
-    public void setEditMode(Long cardId)
-    {
+    public void setEditMode(Long cardId) {
         setCard(getCardById(cardId));
         collectionCurrent = server.getCollectionById(card.getCollectionId());
         setState(CardInformationCtrl.State.EDIT);
@@ -520,8 +516,7 @@ public class CardInformationCtrl implements Initializable {
      * configures this controller to enter in 'Create Card' Mode
      * @param board - the id of the board we are currently in
      */
-    public void setCreateMode(Board board)
-    {
+    public void setCreateMode(Board board) {
         setState(CardInformationCtrl.State.CREATE);
         setCard(new Card());
         setBoard(board);

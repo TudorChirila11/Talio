@@ -125,3 +125,6 @@ SELECT * FROM CARD [42102-200]
 2023-04-02 01:37:56 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "DELETE *[*] FROM SUBTASK"; expected "identifier"; SQL statement:
 DELETE * FROM SUBTASK [42001-200]
+2023-04-03 04:48:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "COLLECTIONS" not found; SQL statement:
+select collection0_.id as id1_2_, collection0_.board_id as board_id2_2_, collection0_.name as name3_2_ from collections collection0_ [42102-200]
