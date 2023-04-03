@@ -405,7 +405,7 @@ public class CardInformationCtrl implements Initializable {
             saveSubtasksCardId(c);
             server.send("/app/cards", c, session);
         }
-        else if (state==State.EDIT){
+        else{
             System.out.println("card id: " + card.getId());
             Card c = server.updateCard(card.getId(), card);
             saveSubtasksCardId(c);
@@ -417,6 +417,8 @@ public class CardInformationCtrl implements Initializable {
                 Long newIndex = (long) collectionCurrent.getCards().size();
                 if(oldCol!= null && (long) newCol.getId()!= (long) oldCol.getId() && state == State.EDIT) {
                     Card d = server.changeCardIndex(oldCol, index, newCol, newIndex);
+                    oldCol = server.getCollectionById(oldCol.getId());
+                    newCol = server.getCollectionById(newCol.getId());
                     server.send("/app/collections", oldCol, session);
                     server.send("/app/collections", newCol, session);
                     server.send("/app/cards", d, session);
