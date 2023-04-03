@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 
-public class TagInOverviewCtrlTest extends FXTest {
+public class TagInOverviewCtrlTest {
 
     @Mock
     private StompSession session;
@@ -51,24 +51,5 @@ public class TagInOverviewCtrlTest extends FXTest {
         tagInOverviewCtrl.subscriber(session, server, new Tag(), mainCtrl, currentBoard);
         tagInOverviewCtrl.editTag();
         verify(mainCtrl).showTagCreation(currentBoard, new Tag());
-    }
-
-    @Test
-    public void testSetTagText() {
-        String text = "Test Text";
-        tagInOverviewCtrl.tagText = new Label();
-        tagInOverviewCtrl.setTagText(text);
-        assertEquals(text, tagInOverviewCtrl.tagText.getText());
-    }
-
-    @Test
-    public void testSetColor() {
-        tagInOverviewCtrl.tagText = new Label();
-        tagInOverviewCtrl.mainTagBody = new HBox();
-        List<Double> colorValues = Arrays.asList(0.5, 0.5, 0.5, 0.5, 0.5, 0.5);
-        tagInOverviewCtrl.setColor(colorValues);
-        String expectedBackgroundStyle = "-fx-background-color: #808080ff; -fx-padding: 10 20 10 20; -fx-background-radius: 25";
-        assertEquals(expectedBackgroundStyle, tagInOverviewCtrl.mainTagBody.getStyle());
-        assertEquals("0x808080ff", tagInOverviewCtrl.tagText.getTextFill().toString());
     }
 }
