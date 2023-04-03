@@ -15,9 +15,11 @@ import javafx.stage.Modality;
 import javafx.scene.layout.VBox;
 import org.springframework.messaging.simp.stomp.StompSession;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
-public class CardCell extends ListCell<Card>  {
+public class CardCell extends ListCell<Card> {
 
     private final ServerUtils server;
 
@@ -42,9 +44,10 @@ public class CardCell extends ListCell<Card>  {
 
     /**
      * Constructor for the Custom Task Cell of type Card
+     *
      * @param mainCtrl - reference for main controller
-     * @param server reference for server
-     * @param session current Stompsession for websockets
+     * @param server   reference for server
+     * @param session  current Stompsession for websockets
      */
     public CardCell(MainCtrl mainCtrl, ServerUtils server, StompSession session) {
         super();
@@ -72,11 +75,6 @@ public class CardCell extends ListCell<Card>  {
             mainCtrl.editCard(id);
         });
 
-        if(server.getBoardOfCard(id).isLocked()){
-            removeButton.setDisable(true);
-            editButton.setDisable(true);
-        }
-
 
     }
 
@@ -89,8 +87,7 @@ public class CardCell extends ListCell<Card>  {
             load.setController(this);
             load.setRoot(this);
             load.load();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -98,26 +95,64 @@ public class CardCell extends ListCell<Card>  {
 
     /**
      * Overriding the defined update Item for Custom Card Cell
-     * @param card The new item for the cell.
+     *
+     * @param card  The new item for the cell.
      * @param empty whether or not this cell represents data from the list. If it
-     *        is empty, then it does not represent any domain data, but is a cell
-     *        being used to render an "empty" row.
+     *              is empty, then it does not represent any domain data, but is a cell
+     *              being used to render an "empty" row.
      */
     @Override
     protected void updateItem(Card card, boolean empty) {
         super.updateItem(card, empty);
 
-        if(empty || card == null) {
+        if (empty || card == null) {
             setText(null);
             setContentDisplay(ContentDisplay.TEXT_ONLY);
-        }
-        else {
+        } else {
             titleLabel.setText(card.getTitle());
             id = card.getId();
             descriptionLabel.setWrapText(true);
             descriptionLabel.setText(card.getDescription());
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+
+
+            if (server.getBoardOfCard(id).isLocked() && !passwordCheck()) {
+                removeButton.setDisable(true);
+                editButton.setOnAction(event -> {
+                    var alert = new Alert(Alert.AlertType.ERROR);
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.setContentText("This board is locked, you can't edit cards");
+                    alert.showAndWait();
+                });
+            } else {
+                System.out.println("id is null");
+            }
         }
+    }
+    /**
+     * Checks if the password of the board is correct
+     *
+     * @return true if the password is correct
+     */
+    private boolean passwordCheck() {
+        File file = new File("password.txt");
+        if (file.exists()) {
+            try {
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    String boardId = line.split("-PASSWORD-")[0];
+                    String password = line.split("-PASSWORD-")[1];
+                    if (boardId.equals(server.getBoardOfCard(id).getId().toString()) && password.equals(server.getBoardOfCard(id).getPassword())) {
+                        return true;
+                    }
+                }
+                scanner.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
 

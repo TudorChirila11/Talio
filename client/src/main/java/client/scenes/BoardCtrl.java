@@ -445,7 +445,11 @@ public class BoardCtrl implements Initializable {
             CardCell cell = new CardCell(mainCtrl, server, session);
             cell.onMouseClickedProperty().set(event -> {
                 if (event.getClickCount() == 2) {
-                    mainCtrl.editCard(cell.getItem().getId());
+                    if(isLocked && !passwordCheck()){
+                        mainCtrl.viewCard(cell.getItem().getId());
+                    }else{
+                        mainCtrl.editCard(cell.getItem().getId());
+                    }
                 }
             });
             cell.setOnDragDetected(event -> {
@@ -507,6 +511,7 @@ public class BoardCtrl implements Initializable {
         Button delete = new Button("X");
         if (isLocked && !passwordCheck()) {
             delete.setDisable(true);
+            label.setDisable(true);
         }
         delete.getStyleClass().add("delete_button");
         delete.setOnAction(event -> {
@@ -518,10 +523,8 @@ public class BoardCtrl implements Initializable {
         });
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);
-
         label.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                // Rename collection
                 TextInputDialog interact = new TextInputDialog(listName);
                 interact.setHeaderText("Rename Collection");
                 interact.setContentText("Enter new name:");
@@ -535,7 +538,6 @@ public class BoardCtrl implements Initializable {
                 }
             }
         });
-
         simpleAddTaskButton.getStyleClass().add("simpleAddTaskButton");
         simpleAddTaskButton.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -551,9 +553,7 @@ public class BoardCtrl implements Initializable {
                 if (!input.getText().equals("")) {
                     Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()));
                     server.send("/app/cards", newCard, session);
-                } else {
-                    showAlert("Please enter a title for the card");
-                }
+                } else showAlert("Please enter a title for the card");
             }
         });
     }

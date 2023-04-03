@@ -116,7 +116,7 @@ public class BoardOverviewCtrl implements Initializable {
                     Label boardLabel = new Label(b.getName());
                     Button copyKey = new Button();
                     ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
-                    Button openBoard = new Button("Open Board");
+                    Button openBoard = new Button("Open");
                     Button delete = new Button("X");
 
                     String lock = "unlock";

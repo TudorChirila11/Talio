@@ -23,8 +23,9 @@ import java.util.List;
 public class CardInformationCtrl implements Initializable {
 
 
+
     enum State {
-        EDIT, CREATE
+        EDIT, CREATE, VIEW
     }
 
     private final ServerUtils server;
@@ -36,13 +37,15 @@ public class CardInformationCtrl implements Initializable {
 
     private List<Subtask> toDelete;
 
-
     private State state;
 
     private Card card;
 
     @FXML
     private TextField cardName;
+
+    @FXML
+    private Button removeButton;
 
     @FXML
     private TextArea cardDescription;
@@ -296,7 +299,7 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * stores these subtasks into the database
-     * @param cardId - the id we want to store the list of subtasks in
+     * @param c  - the id we want to store the list of subtasks in
      */
     private void saveSubtasksCardId(Card c) {
         List<Subtask> subtasks = c.getSubtasks();
@@ -322,6 +325,27 @@ public class CardInformationCtrl implements Initializable {
      */
     public void refresh() {
         setupCollectionMenu();
+        if(state == State.VIEW){
+            title.setText("View card");
+            scrollPane.setDisable(true);
+            cardName.setDisable(true);
+            cardDescription.setDisable(true);
+            subtaskName.setDisable(true);
+            addSubtaskButton.setDisable(true);
+            collectionMenu.setDisable(true);
+            collectionCurrent = server.getCollectionById(card.getCollectionId());
+            cardName.setText(card.getTitle());
+            cardDescription.setText(card.getDescription());
+            removeButton.setDisable(true);
+        }else{
+            scrollPane.setDisable(false);
+            cardName.setDisable(false);
+            cardDescription.setDisable(false);
+            subtaskName.setDisable(false);
+            addSubtaskButton.setDisable(false);
+            collectionMenu.setDisable(false);
+            removeButton.setDisable(false);
+        }
         if (state == State.EDIT) {
             ///Delete all subtasks from the database
             title.setText("Edit card");
@@ -507,6 +531,19 @@ public class CardInformationCtrl implements Initializable {
         setCard(getCardById(cardId));
         collectionCurrent = server.getCollectionById(card.getCollectionId());
         setState(CardInformationCtrl.State.EDIT);
+        Board board = server.getBoardOfCard(cardId);
+        setBoard(board);
+        refresh();
+    }
+
+
+    /**
+     * configures this controller to enter in 'View Card' Mode
+     * @param cardId - the Id of the card we want to view
+     */
+    public void setViewMode(Long cardId) {
+        setCard(getCardById(cardId));
+        setState(CardInformationCtrl.State.VIEW);
         Board board = server.getBoardOfCard(cardId);
         setBoard(board);
         refresh();
