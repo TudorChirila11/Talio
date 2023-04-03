@@ -18,9 +18,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -39,6 +38,10 @@ public class BoardCtrl implements Initializable {
     @FXML
     private Button addCollectionButton;
 
+    @FXML
+    private Button addCardButton;
+
+
     private Board currentBoard;
 
     @FXML
@@ -47,22 +50,18 @@ public class BoardCtrl implements Initializable {
     @FXML
     private ScrollPane collectionsContainer;
 
-    @FXML
-    private ComboBox<String> boardChoiceBox;
 
     HashMap<ListView<Card>, Collection> mapper;
-
 
 
     private final MainCtrl mainCtrl;
 
     private StompSession session;
 
-    //TODO fix checkstyle code refactoing, make a bit more readable...
-
     /**
      * Board Ctrl constructor
-     * @param server serverUtils ref
+     *
+     * @param server   serverUtils ref
      * @param mainCtrl mainCtrl controller ref
      */
     @Inject
@@ -75,7 +74,7 @@ public class BoardCtrl implements Initializable {
     /**
      * Adding a card from the + button
      */
-    public void addCard(){
+    public void addCard() {
         mainCtrl.showCardInformation(currentBoard);
     }
 
@@ -97,11 +96,13 @@ public class BoardCtrl implements Initializable {
         tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard));
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
 
+
         refresh(currentBoard);
     }
 
     /**
      * A method for starting to listen to a server once the connection has been established
+     *
      * @param session the session that is connected to a server that the client is connected to
      */
     public void subscriber(StompSession session) {
@@ -112,55 +113,48 @@ public class BoardCtrl implements Initializable {
     /**
      * Resets all stuff on the board.
      */
-    public void resetBoard(){
+    public void resetBoard() {
         try {
             server.send("/app/collectionsDeleteAll", currentBoard, session);
 
         } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            showAlert(e.toString());
         }
         try {
             server.send("/app/cardsDeleteAll", new Card(), session);
 
         } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            showAlert(e.toString());
         }
         try {
             server.send("/app/tagsDeleteAll", new Tag(), session);
 
         } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            showAlert(e.toString());
         }
     }
 
     /**
      * Goes back to boardOverview
      */
-    public void boardOverview(){
+    public void boardOverview() {
         mainCtrl.showBoardOverview();
     }
 
 
     /**
      * Sets the state of board
+     *
      * @param board the current Board
      */
     public void refresh(Board board) {
         currentBoard = board;
-        if(currentBoard != null) {
+        if (currentBoard != null) {
             boardLabel.setText(board.getName());
+            boardLabel.setMaxWidth(Double.MAX_VALUE);
+            AnchorPane.setLeftAnchor(boardLabel, 0.0);
+            AnchorPane.setRightAnchor(boardLabel, 0.0);
+            boardLabel.setAlignment(javafx.geometry.Pos.CENTER);
             List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
             // Create a horizontal box to hold the task lists
             HBox taskListsBox = new HBox(25);
@@ -183,23 +177,15 @@ public class BoardCtrl implements Initializable {
 
                 // Set up drag and drop for the individual collections...
                 setupDragAndDrop(collection);
+                // Creating a vertical stacked box with the label -> collection -> simple add task add button
+                Button simpleAddTaskButton = new Button("+");
 
-                // Create the button that allows a user to add to a collection
-                Button addButton = new Button();
-                addButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/add.png")))));
-                // Custom css
-                addButton.getStyleClass().add("addButton");
-                addButton.setOnAction(event -> addCard());
-
-                // Creating a vertical stacked box with the label -> collection -> addButton
                 VBox collectionVBox = new VBox(10);
-                collectionVBox.getChildren().addAll(collectionLabel, collection, addButton);
+                collectionVBox.getChildren().addAll(collectionLabel, collection, simpleAddTaskButton);
 
                 // Adding this to Hbox which contains each collection object + controls.
                 taskListsBox.getChildren().add(collectionVBox);
-
-                // Adding the relevant collectionLabel controls
-                addTaskListControls(collectionLabel, collectionName, current);
+                addTaskListControls(collectionLabel, collectionName, current, simpleAddTaskButton);
             }
 
             // Finally updating all the values in the pane with the current HBox
@@ -208,14 +194,28 @@ public class BoardCtrl implements Initializable {
     }
 
     /**
+     * Shows an alert for the user
+     *
+     * @param s the string to be shown
+     */
+    private void showAlert(String s) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Error");
+        alert.setContentText(s);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.showAndWait();
+    }
+
+    /**
      * sets up what happens in case of drop
-     * @param event - the drag event
+     *
+     * @param event    - the drag event
      * @param listView - the listView in which this operation happens
      * @param newIndex - the new index this cell will be on
-     * @param om - object mapper to efficiently handle card data
+     * @param om       - object mapper to efficiently handle card data
      */
-    private void configDropped(DragEvent event, ListView<Card> listView, long newIndex, ObjectMapper om)
-    {
+    private void configDropped(DragEvent event, ListView<Card> listView, long newIndex, ObjectMapper om) {
         Dragboard dragboard = event.getDragboard();
         boolean success = false;
 
@@ -226,8 +226,7 @@ public class BoardCtrl implements Initializable {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-            //listView.getItems().add(card);
-            //success = true;
+
             // Find the source ListView by traversing up the scene graph
             Node sourceNode = (Node) event.getGestureSource();
             while (sourceNode != null && !(sourceNode instanceof ListView)) {
@@ -258,10 +257,10 @@ public class BoardCtrl implements Initializable {
 
     /**
      * configures what happens on drag over, during the drag-and-drop process
+     *
      * @param handler - object you drag over on - can be a ListView<Card> or a CardCell
      */
-    public void configOnDragOver(Node handler)
-    {
+    public void configOnDragOver(Node handler) {
         handler.setOnDragOver(event -> {
             if (event.getGestureSource() instanceof CardCell && event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.MOVE);
@@ -272,18 +271,26 @@ public class BoardCtrl implements Initializable {
 
     /**
      * Sets up the drag and Drop for all listviews stored
+     *
      * @param listView list view from the scroll view.
      */
     private void setupDragAndDrop(ListView<Card> listView) {
         ObjectMapper om = new ObjectMapper();
-        if(listView.getItems().size()<4) {
+        if (listView.getItems().size() < 4) {
             configOnDragOver(listView);
-            listView.setOnDragDropped( event -> configDropped(event, listView, getIndex(listView, event.getY()), om));
+            listView.setOnDragDropped(event -> configDropped(event, listView, getIndex(listView, event.getY()), om));
         }
         listView.setCellFactory(param -> {
             CardCell cell = new CardCell(mainCtrl, server, session);
+            cell.onMouseClickedProperty().set(event -> {
+                if (event.getClickCount() == 2) {
+                    mainCtrl.editCard(cell.getItem().getId());
+                }
+            });
             cell.setOnDragDetected(event -> {
-                if (cell.getItem() == null) {return;}
+                if (cell.getItem() == null) {
+                    return;
+                }
                 Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
                 try {
@@ -294,7 +301,7 @@ public class BoardCtrl implements Initializable {
                 dragboard.setContent(content);
                 event.consume();
             });
-            if(listView.getItems().size()>=4) {
+            if (listView.getItems().size() >= 4) {
                 configOnDragOver(cell);
                 cell.setOnDragDropped(event -> configDropped(event, listView, server.getCard(cell.getItem().getId()).getIndex(), om));
             }
@@ -303,12 +310,11 @@ public class BoardCtrl implements Initializable {
     }
 
 
-
     /**
      * This will be changed to the actual addCollection Method
      * and Scene
      */
-    public void addCollection(){
+    public void addCollection() {
         // Add Collection
         TextInputDialog interact = new TextInputDialog("New Collection");
         interact.setHeaderText("New Collection");
@@ -322,12 +328,7 @@ public class BoardCtrl implements Initializable {
                 try {
                     server.send("/app/collections", randomC, session);
                 } catch (WebApplicationException e) {
-                    e.printStackTrace();
-                    e.getCause();
-                    var alert = new Alert(Alert.AlertType.ERROR);
-                    alert.initModality(Modality.APPLICATION_MODAL);
-                    alert.setContentText(e.getMessage());
-                    alert.showAndWait();
+                    showAlert(e.getMessage());
                 }
             }
         }
@@ -335,30 +336,23 @@ public class BoardCtrl implements Initializable {
 
     /**
      * Controller for Label interactions.
-     * @param label the label of the collection
-     * @param listName collection / list of cards name
-     * @param collection the collection
+     *
+     * @param label               the label of the collection
+     * @param listName            collection / list of cards name
+     * @param collection          the collection
+     * @param simpleAddTaskButton the button to add a cards
      */
-    private void addTaskListControls(Label label, String listName, Collection collection) {
-        // Creates a button that has a delete function respective to the source collection
+    private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
-        delete.setStyle("-fx-font-size: 10px; -fx-background-color: #FF0000; -fx-text-fill: white;");
+        delete.getStyleClass().add("delete_button");
         delete.setOnAction(event -> {
             try {
                 server.send("/app/collectionsDelete", collection, session);
-
-            } catch (WebApplicationException e) {
-
-                var alert = new Alert(Alert.AlertType.ERROR);
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
-            }
+            } catch (WebApplicationException e) {showAlert(e.getMessage());}
         });
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);
 
-        // TODO Change this to the correct method from another team member.
         label.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 // Rename collection
@@ -366,7 +360,6 @@ public class BoardCtrl implements Initializable {
                 interact.setHeaderText("Rename Collection");
                 interact.setContentText("Enter new name:");
                 Optional<String> result = interact.showAndWait();
-                // Check for valid input
                 if (result.isPresent()) {
                     String newName = result.get();
                     if (!newName.isEmpty()) {
@@ -376,22 +369,43 @@ public class BoardCtrl implements Initializable {
                 }
             }
         });
+
+        simpleAddTaskButton.getStyleClass().add("simpleAddTaskButton");
+        simpleAddTaskButton.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Add Card");
+            alert.setHeaderText("Add a new card to " + collection.getName());
+            alert.setContentText("Please enter the title of the card:");
+            alert.initModality(Modality.APPLICATION_MODAL);
+            TextField input = new TextField();
+            input.setPromptText("Card Title");
+            alert.getDialogPane().setContent(input);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                if (!input.getText().equals("")) {
+                    Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()));
+                    server.send("/app/cards", newCard, session);
+                } else {
+                    showAlert("Please enter a title for the card");
+                }
+            }
+        });
     }
 
     /**
      * returns this card's future index inside listview lv
+     *
      * @param lv - current listview
-     * @param y - y position
+     * @param y  - y position
      * @return this card's new index
      */
-    public int getIndex(ListView<Card> lv, double y)
-    {
+    public int getIndex(ListView<Card> lv, double y) {
         int sz = lv.getItems().size();
-        if(sz == 0)
+        if (sz == 0)
             return 0;
         int pos = 0;
         double cardSize = 100, error = 0;
-        pos = (int) Math.min(y/(cardSize + error), sz);
+        pos = (int) Math.min(y / (cardSize + error), sz);
 
         return pos;
     }

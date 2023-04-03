@@ -30,12 +30,13 @@ public class MyModule implements Module {
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(AddQuoteCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(CardInformationCtrl.class).in(Scopes.SINGLETON);
         binder.bind(CollectionOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(BoardCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(BoardOverviewCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(WelcomePageCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(TagCreatorCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(TagOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(KeyboardShortcutFCtrl.class).in(Scopes.SINGLETON);
-        ///TODO add CardInformationCtrl?
     }
 }

@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 
 
 import javax.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "cards")
@@ -36,6 +38,10 @@ public class Card {
     @Column(name = "index")
     private Long index;
 
+    @OrderColumn(name="indexInCard")
+    @OneToMany(mappedBy = "cardId", cascade = CascadeType.ALL)
+    private List<Subtask> subtasks = new ArrayList<>();
+
 
     /**
      * the constructor of the card class
@@ -43,12 +49,14 @@ public class Card {
      * @param description the description for the card
      * @param collectionId the id of collection
      * @param index the index of this card inside its collection
+     * @param subtasks - list of subtasks
      */
-    public Card(String title, String description, Long collectionId, Long index) {
+    public Card(String title, String description, Long collectionId, Long index, List<Subtask> subtasks) {
         this.title = title;
         this.description = description;
         this.collectionId = collectionId;
         this.index = index;
+        this.subtasks = subtasks;
     }
 
     /**
@@ -63,7 +71,7 @@ public class Card {
         this.description = description;
         this.collectionId = collection.getId();
         this.index = index;
-
+        this.subtasks = new ArrayList<>();
     }
 
     /**
@@ -80,6 +88,7 @@ public class Card {
         this.description = description;
         this.collectionId = collectionId;
         this.index = index;
+        this.subtasks = new ArrayList<>();
     }
 
     /**
@@ -144,6 +153,21 @@ public class Card {
     }
 
     /**
+     * @return this object's subtasks value
+     */
+    public List<Subtask> getSubtasks() {
+        return subtasks;
+    }
+
+    /**
+     * sets this object's subtask list
+     * @param subtasks - new subtasks list
+     */
+    public void setSubtasks(List<Subtask> subtasks) {
+        this.subtasks = subtasks;
+    }
+
+    /**
      * returns the title of a card
      * @return String
      */
@@ -182,6 +206,7 @@ public class Card {
         this.index = index;
     }
 
+
     /**
      * Equals method for the card class
      * @param obj potentially another card
@@ -209,6 +234,5 @@ public class Card {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
-
 
 }

@@ -129,6 +129,7 @@ public class CardController {
         cardInDatabase.setDescription(updatedCard.getDescription());
         cardInDatabase.setTitle(updatedCard.getTitle());
         cardInDatabase.setCollectionId(updatedCard.getCollectionId());
+        cardInDatabase.setSubtasks(updatedCard.getSubtasks());
 
         // save the card
         Card theSavedCard = repo.save(cardInDatabase);
