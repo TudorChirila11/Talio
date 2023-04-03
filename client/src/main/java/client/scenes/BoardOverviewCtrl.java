@@ -95,7 +95,8 @@ public class BoardOverviewCtrl implements Initializable {
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
         this.session = session;
-        boardFilePath = "boards_"+ server.getIp() + ".txt";
+        String path = server.getServer().replaceAll("[^a-zA-Z0-9]", "_");
+        boardFilePath = "boards_"+ path + ".txt";
     }
 
     /**
@@ -310,7 +311,6 @@ public class BoardOverviewCtrl implements Initializable {
                     if (!newName.isEmpty()) {
                         board.setName(newName);
                         server.send("/app/boards", board, session);
-
                     }
                 }
             }
