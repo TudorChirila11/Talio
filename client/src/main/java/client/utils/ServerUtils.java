@@ -488,6 +488,20 @@ public class ServerUtils {
     }
 
     /**
+     * update subtask with id 'id'
+     * @param id - the id of the subtask we want to update
+     * @param s - the new subtask info
+     * @return - the new subtask object
+     */
+    public Subtask updateSubtask(Long id, Subtask s) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks/"+id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .put(Entity.entity(s, APPLICATION_JSON), Subtask.class);
+    }
+
+    /**
      * store subtask in the database
      *
      * @param s - the subtask we want to store
@@ -517,17 +531,6 @@ public class ServerUtils {
                 .delete();
     }
 
-    /**
-     * method to store list of subtasks in the database
-     *
-     * @param subtaskList - the subtask list
-     */
-    public void storeSubtasks(List<Subtask> subtaskList) {
-        ////TODO discuss if we should switch to a better solution,
-        //that passes on the list and the cardId and does the storing operation in the api for the whole list
-        for(Subtask s : subtaskList)
-            addSubtask(s);
-    }
 
     /**
      * This method creates a stomp client that connects to the server
@@ -606,5 +609,20 @@ public class ServerUtils {
         List<Subtask> subtasks = getSubtasksOfCard(cardId);
         for(Subtask s: subtasks)
             deleteSubtask(s.getId());
+    }
+
+    /**
+     * deletes subtasks of card id
+     *
+     * @param id      - the id of the card we want to delete the subtasks of
+     * @param session
+     */
+    public void deleteSubtasksOfCard(Long id, StompSession session) {
+        List<Subtask> subtasks = getSubtasksOfCard(id);
+        for(Subtask s : subtasks)
+        {
+            //deleteSubtask(s.getId());
+            send("app/subtasks/subtasksDelete/", s.getId(), session);
+        }
     }
 }

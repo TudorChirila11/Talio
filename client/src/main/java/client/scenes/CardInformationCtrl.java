@@ -246,7 +246,7 @@ public class CardInformationCtrl implements Initializable {
             card.getSubtasks().remove(subtask);
             populateSubtasksScreen(card.getSubtasks());
             loadSubtasksPane();
-            toDelete.add(subtask);
+           // toDelete.add(subtask);
         });
     }
 
@@ -298,15 +298,14 @@ public class CardInformationCtrl implements Initializable {
      * stores these subtasks into the database
      * @param cardId - the id we want to store the list of subtasks in
      */
-    private void saveSubtasks(long cardId) {
-        List<Subtask> subtaskList = new ArrayList<>();
-        server.removeSubtasksOf(cardId);
-        for(int i =0; i < subtaskHBoxes.size() ;++i)
+    private void saveSubtasksCardId(Card c) {
+        List<Subtask> subtasks = c.getSubtasks();
+        for(Subtask s : subtasks)
         {
-            TextField tf = (TextField) subtaskHBoxes.get(i).getChildren().get(0);
-            subtaskList.add(new Subtask(cardId, tf.getText(), (long) i)); ///TODO also pass on finished status when tick button ready
+            s.setCardId(c.getId());
+            Subtask newS = server.updateSubtask(s.getId(), s);
+            server.send("app/subtasks", newS, session);//TODO send subtask through server
         }
-        server.storeSubtasks(subtaskList);
     }
 
     /**
@@ -324,6 +323,7 @@ public class CardInformationCtrl implements Initializable {
     public void refresh() {
         setupCollectionMenu();
         if (state == State.EDIT) {
+            ///Delete all subtasks from the database
             title.setText("Edit card");
             collectionCurrent = server.getCollectionById(card.getCollectionId());
             cardName.setText(card.getTitle());
@@ -340,7 +340,8 @@ public class CardInformationCtrl implements Initializable {
             card.setSubtasks(new ArrayList<>());
 
         populateSubtasksScreen(card.getSubtasks());
-
+        if(card.getId()!=null)
+            server.deleteSubtasksOfCard(card.getId(), session);
         loadSubtasksPane();
     }
 
@@ -393,11 +394,11 @@ public class CardInformationCtrl implements Initializable {
         }
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
-        for(Subtask s : toDelete) {
+        /*for(Subtask s : toDelete) {
             if(s.getId()!=null){
                 server.send("/app/subtasksDelete", s.getId(), session);
             }
-        }
+        }*/
         Collection oldCol = null;
         if(card.getCollectionId()!=null)
             oldCol = server.getCollectionById(card.getCollectionId());
@@ -405,12 +406,14 @@ public class CardInformationCtrl implements Initializable {
             card.setCollectionId(collectionCurrent.getId());
             card.setIndex((long) collectionCurrent.getCards().size());
             Card c = server.addCard(card);
+            saveSubtasksCardId(c);
             server.send("/app/cards", c, session);
         }
         else {
             System.out.println("card id: " + card.getId());
             Card c = server.updateCard(card.getId(), card);
-            System.out.println(c);
+            saveSubtasksCardId(c);
+            //System.out.println(c);
             server.send("/app/cards", c, session);
             try {
                 Collection newCol = collectionCurrent;
