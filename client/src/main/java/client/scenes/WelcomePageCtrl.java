@@ -105,4 +105,12 @@ public class WelcomePageCtrl implements Initializable {
     public ServerUtils getServer() {
         return server;
     }
+
+    /**
+     * Generates a key for the admin
+     * @return the key for the admin
+     */
+    public String generateKey() {
+        return server.getAdminKey();
+    }
 }

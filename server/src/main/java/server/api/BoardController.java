@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/boards")
@@ -71,6 +72,24 @@ public class BoardController {
         return repo.findAll();
     }
 
+    /**
+     * This method generates a random admin key
+     * @return a response entity
+     */
+    @GetMapping("/adminKey")
+    public ResponseEntity<String> getAdminKey() {
+        int leftLimit = 48;
+        int rightLimit = 122;
+        int targetStringLength = 10;
+        Random random = new Random();
+        String adminKey = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        System.out.println(adminKey);
+        return ResponseEntity.ok(adminKey);
+    }
     /**
      * getById method for a Board with path var
      *

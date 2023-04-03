@@ -41,8 +41,9 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 public class ServerUtils {
 
-    private static String server;
-    private String ip;
+    private static String server = "http://localhost:8080/";
+    private String ip = "localhost";
+    private String adminKey;
 
     private StompSession session;
 
@@ -54,6 +55,27 @@ public class ServerUtils {
 
     private CardInformationCtrl cardInformationCtrl;
     private TagCreatorCtrl tagCreatorCtrl;
+
+
+    /**
+     * Method used to generate a String of 8 random alphanumeric characters
+     * @return String of 8 random alphanumeric characters
+     */
+    private String generateAdminKey() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/boards/adminKey") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(String.class);
+    }
+
+    /**
+     * Admin Key getter method
+     * @return String admin key
+     */
+    public String getAdminKey() {
+        return generateAdminKey();
+    }
 
     /**
      * @param ip the ip that the user will be connecting to
@@ -71,9 +93,6 @@ public class ServerUtils {
     public String getServer(){
         return server;
     }
-
-
-
 
     /**
      * Adding a new Card to the server DB
@@ -339,12 +358,12 @@ public class ServerUtils {
 
     /**
      * Retrieves all tags
-     *
+     * @param boardId get only the tags that belong to this board
      * @return List of tags
      */
-    public List<Tag> getTags() {
+    public List<Tag> getTags(Long boardId) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/tags") //
+                .target(server).path("api/tags/"+boardId) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Tag>>() {
