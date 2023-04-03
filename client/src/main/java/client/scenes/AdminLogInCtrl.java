@@ -99,4 +99,12 @@ public class AdminLogInCtrl implements Initializable {
     public ServerUtils getServer() {
         return server;
     }
+
+    /**
+     * Getter for the adminKey TextField
+     * @return TextField the admin key
+     */
+    public TextField getAdminKey() {
+        return adminKey;
+    }
 }
