@@ -145,6 +145,7 @@ public class MainCtrl {
      * Displays the tag creation Scene
      * and enables the controller
      * @param currentBoard the board that the tag creation window is related to
+     * @param tag the tag that is to indicate whether a tag will be created or updated
      */
     public void showTagCreation(Board currentBoard, Tag tag){
         primaryStage.setTitle("Tag Creation Window");

@@ -4,7 +4,6 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.Tag;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -100,24 +99,24 @@ public class TagCreatorCtrl implements Initializable {
         if(!tagDescription.getText().equals("")) {
             if(tag.equals(new Tag())) {
                 Tag newTag = new Tag(tagDescription.getText(), currentBoard.getId(), new ArrayList<Double>(){{
-                    add(color.getRed());
-                    add(color.getGreen());
-                    add(color.getBlue());
-                    add(textColor.getRed());
-                    add(textColor.getGreen());
-                    add(textColor.getBlue());
-                }});
+                        add(color.getRed());
+                        add(color.getGreen());
+                        add(color.getBlue());
+                        add(textColor.getRed());
+                        add(textColor.getGreen());
+                        add(textColor.getBlue());
+                    }});
                 server.send("/app/tags", newTag, session);
             } else {
                 Tag newTag = new Tag(tag.getId(), tagDescription.getText(), currentBoard.getId(),
-                        tag.getCards(), new ArrayList<Double>(){{
-                    add(color.getRed());
-                    add(color.getGreen());
-                    add(color.getBlue());
-                    add(textColor.getRed());
-                    add(textColor.getGreen());
-                    add(textColor.getBlue());
-                }});
+                    tag.getCards(), new ArrayList<Double>(){{
+                            add(color.getRed());
+                            add(color.getGreen());
+                            add(color.getBlue());
+                            add(textColor.getRed());
+                            add(textColor.getGreen());
+                            add(textColor.getBlue());
+                        }});
                 tag = newTag;
                 server.send("/app/tagsUpdate", newTag, session);
             }
@@ -143,6 +142,7 @@ public class TagCreatorCtrl implements Initializable {
     /**
      * Used to initialize the tagCreator with a board
      * @param board the current board
+     * @param tag will indicate whether a tag is being created or updated
      */
     public void initialize(Board board, Tag tag) {
         currentBoard = board;

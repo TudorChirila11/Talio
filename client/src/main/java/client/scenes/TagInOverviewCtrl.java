@@ -41,6 +41,8 @@ public class TagInOverviewCtrl {
      * @param session the session that is connected to a server that the client is connected to
      * @param server the client side server that'll be used to send data to the actual server
      * @param tag the tag that this controller represents
+     * @param mainCtrl this controller will be used in case a tag needs to get updated
+     * @param currentBoard the board that this tag is related to
      */
     public void subscriber(StompSession session, ServerUtils server, Tag tag, MainCtrl mainCtrl, Board currentBoard) {
         this.session = session;
@@ -57,6 +59,9 @@ public class TagInOverviewCtrl {
         server.send("/app/tagsDelete", tag, session);
     }
 
+    /**
+     * this method will send the tag that is to be edited to the tagCreation controller
+     */
     public void editTag(){
         mainCtrl.showTagCreation(currentBoard, tag);
     }
