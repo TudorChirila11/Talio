@@ -407,6 +407,7 @@ public class CardInformationCtrl implements Initializable {
         }
         else{
             System.out.println("card id: " + card.getId());
+            deleteSubtasksOfCard(card.getId());
             Card c = server.updateCard(card.getId(), card);
             saveSubtasksCardId(c);
             //System.out.println(c);
@@ -535,8 +536,6 @@ public class CardInformationCtrl implements Initializable {
         List<Subtask> subtasks = server.getSubtasksOfCard(id);
         for(Subtask s : subtasks)
         {
-            //TODO websocket
-            //server.deleteSubtask(s.getId());
             server.send("/app/subtasksDelete", s.getId(), session);
         }
     }

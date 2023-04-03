@@ -46,7 +46,6 @@ public class SubtaskController {
     @MessageMapping("/subtasksDelete") // /app/subtasks
     @SendTo("/topic/update")
     public Long delete(Long id){
-        System.out.println("i got here!");
         deleteById(id);
         return id;
     }
