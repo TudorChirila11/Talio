@@ -151,6 +151,7 @@ public class MainCtrl {
         primaryStage.setScene(tagCreator);
         tagCreatorCtrl.initialize(currentBoard, tag);
         tagCreatorCtrl.refresh();
+        tagCreatorCtrl.removeText();
     }
 
     /**

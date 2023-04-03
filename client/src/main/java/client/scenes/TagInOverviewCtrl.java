@@ -69,5 +69,6 @@ public class TagInOverviewCtrl {
         mainTagBody.setStyle("-fx-background-color: " +
                 new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") +
                 "; -fx-padding: 10 20 10 20; -fx-background-radius: 25");
+        tagText.setTextFill(new Color(colour.get(3), colour.get(4), colour.get(5), 1.0));
     }
 }
