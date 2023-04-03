@@ -18,7 +18,7 @@ public class AdminLogInCtrl implements Initializable {
 
     private final MainCtrl mainCtrl;
 
-    private boolean isAdmin;
+    private boolean isAdmin = false;
 
     @FXML
     private TextField adminKey;
@@ -48,7 +48,7 @@ public class AdminLogInCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        isAdmin = false;
+
     }
 
 
