@@ -17,11 +17,7 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -72,53 +68,11 @@ public class ServerUtils {
      * Returns the current ip the client is connected too.
      * @return the ip
      */
-    public String getIp(){
-        return ip;
+    public String getServer(){
+        return server;
     }
 
 
-    /**
-     * Manual logger of all the active quates
-     *
-     * @throws IOException no ref
-     */
-    public void getQuotesTheHardWay() throws IOException {
-        var url = new URL("http://localhost:8080/api/quotes");
-        var is = url.openConnection().getInputStream();
-        var br = new BufferedReader(new InputStreamReader(is));
-        String line;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
-    }
-
-    /**
-     * Retrieving all quotes from server by making GET req
-     *
-     * @return a list of quotes
-     */
-    public List<Quote> getQuotes() {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/quotes") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Quote>>() {
-                });
-    }
-
-    /**
-     * Adding a new quote to the server DB
-     *
-     * @param quote a Quote object
-     * @return returns a Quote
-     */
-    public Quote addQuote(Quote quote) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/quotes") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
-    }
 
 
     /**
@@ -133,6 +87,34 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(card, APPLICATION_JSON), Card.class);
+    }
+
+    /**
+     * Adding a new Subtask to the server DB
+     *
+     * @param subtask a Subtask object
+     * @return returns a Subtask
+     */
+    public Subtask addSubTask(Subtask subtask){
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
+    }
+
+    /**
+     * Deleting a Subtask from the server DB
+     * @param id the id of the subtask
+     *
+     * @return returns a response
+     */
+    public Response deleteSubTask(long id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
     }
 
     /**
@@ -382,6 +364,20 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .delete();
+    }
+
+    /**
+     * gets all the subtasks for a specific card
+     * @param card
+     * @return list of subtasks
+     */
+    public List<Subtask> getSubtasksForCard(Card card) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks/getFromCard/" + card.getId()) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Subtask>>() {
+                });
     }
 
     /**

@@ -6,6 +6,12 @@
 #boardContainer{
     -fx-background-color: transparent;
 }
+#boardContainer .scroll-bar:horizontal .increment-arrow,
+#boardContainer .scroll-bar:horizontal .decrement-arrow,
+#boardContainer .scroll-bar:horizontal .increment-button,
+#boardContainer .scroll-bar:horizontal .decrement-button {
+    -fx-padding:0;
+}
 
 #boardContainer .viewport {
     -fx-background-color: transparent;
@@ -13,4 +19,15 @@
 
 #headingBoard {
     -fx-font-size: 36;
+}
+
+.boardOverviewButton{
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 15;
+    -fx-padding: 10 10 10 10;
+    -fx-border-radius: 15;
+    -fx-border-color: #000000;
+    -fx-border-insets: -.25;
+    -fx-background-color: #93BFCF;
 }

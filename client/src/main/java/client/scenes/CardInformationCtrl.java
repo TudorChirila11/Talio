@@ -6,10 +6,9 @@ import commons.Card;
 import commons.Collection;
 import commons.Board;
 import commons.Subtask;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -20,14 +19,15 @@ import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class CardInformationCtrl implements Initializable {
 
 
-
-    enum State{
+    enum State {
         EDIT, CREATE
     }
 
@@ -36,7 +36,9 @@ public class CardInformationCtrl implements Initializable {
 
     private Board currentBoard;
 
-    private ArrayList<HBox> subtasks;
+    private ArrayList<HBox> subtaskHBoxes;
+
+    private List<Subtask> subtasksList;
 
     private State state;
 
@@ -54,23 +56,31 @@ public class CardInformationCtrl implements Initializable {
     private MenuButton collectionMenu;
 
     @FXML
+    private Button addSubtaskButton;
+
+    @FXML
+    private TextField subtaskName;
+
+    @FXML
     private Text title;
 
     private StompSession session;
 
     /**
      * sets the CardInformationCtrl's state field
+     *
      * @param value the new State value of this class's state field
      */
-    public void setState(State value)
-    {
+    public void setState(State value) {
         this.state = value;
     }
+
     private Collection collectionCurrent;
 
     /**
      * Card Information Ctrl Constructor
-     * @param server serverUtils ref
+     *
+     * @param server   serverUtils ref
      * @param mainCtrl mainCtrl controller ref
      */
     @Inject
@@ -83,18 +93,16 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * Initializes this controller
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
      *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object, or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        subtasks = new ArrayList<>();
-        subtasks.add(buildAddSubtask());
+        subtaskHBoxes = new ArrayList<>();
+        buildAddSubtask();
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
@@ -103,6 +111,7 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * A method for starting to listen to a server once the connection has been established
+     *
      * @param session the session that is connected to a server that the client is connected to
      */
     public void subscriber(StompSession session) {
@@ -112,21 +121,22 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * receive a card object from external sources, to populate this scene's fields with its data
+     *
      * @param card - a card object
      */
-    public void setCard(Card card)
-    {
+    public void setCard(Card card) {
         this.card = card;
-        if(card.getCollectionId() != null)
+        if (card.getCollectionId() != null)
             this.collectionCurrent = server.getCollectionById(card.getCollectionId());
     }
+
     /**
      * sets up the MenuButton for choosing a Collection for the current Card
      */
 
     private void setupCollectionMenu() {
         collectionMenu.getItems().clear();
-        if(collectionCurrent == null)
+        if (collectionCurrent == null)
             collectionMenu.setText("Select...");
         else collectionMenu.setText(collectionCurrent.getName());
 
@@ -134,12 +144,9 @@ public class CardInformationCtrl implements Initializable {
             for (Collection c : server.getCollectionsFromBoard(currentBoard)) {
 
                 MenuItem i = new MenuItem(c.getName());
-                i.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        collectionMenu.setText(i.getText());
-                        collectionCurrent = c;
-                    }
+                i.setOnAction(event -> {
+                    collectionMenu.setText(i.getText());
+                    collectionCurrent = c;
                 });
                 collectionMenu.getItems().add(i);
             }
@@ -148,61 +155,125 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * creates the 'Add subtask' option
+     *
      * @return a Hbox containing the 'Add subtask' option
      */
-    private HBox buildAddSubtask()
-    {
-        TextField tf = new TextField();
-        tf.setPromptText("Add subtask...");
-        tf.setText("");
-        Button btn = new Button("Add");
-        btn.setOnAction(event -> executeAddSubtask(tf));
-        HBox hbox = new HBox();
-        hbox.getChildren().addAll(tf, btn);
-        loadSubtasksPane();
-        return hbox;
+    private void buildAddSubtask() {
+        addSubtaskButton.setOnAction(event -> {
+            if (subtaskName.getText().equals("")) {
+                showError("Subtask name cannot be empty");
+            } else {
+                Subtask subtask = new Subtask();
+                subtask.setIndex((long) subtaskHBoxes.size());
+                subtask.setName(subtaskName.getText());
+                subtask.setCardId(card.getId());
+                subtask.setFinished(false);
+//                subtask = server.addSubTask(subtask);
+//                server.send("/app/subtasks", subtask, session);
+
+                HBox hb = new HBox(10);
+                TextField tf = new TextField();
+                Button deleteButton = new Button("x");
+                deleteButton.getStyleClass().add("deleteSubTaskButton");
+                Button up = new Button("^");
+                Button down = new Button("v");
+                CheckBox cb = new CheckBox();
+
+                setUpSubTaskControls(subtask, tf, hb, up, down, cb, deleteButton);
+                hb.getChildren().addAll(tf, cb, up, down, deleteButton);
+
+
+                subtaskHBoxes.add(hb);
+                subtaskName.clear();
+                refresh();
+            }
+
+        });
     }
 
     /**
-     * execute add button
-     * @param tf - text field of the newly added subtask
+     * Creates the subtask controls
+     *
+     * @param subtask      the subtask to add the controls to
+     * @param tf           the TextField to add the subtask name to
+     * @param hb           the HBox to add the controls to
+     * @param up           the up button
+     * @param down         the down button
+     * @param cb           the checkbox
+     * @param deleteButton the delete button
      */
-    public void executeAddSubtask(TextField tf) {
-        if (tf.getText().equals(""))
-            tf.setPromptText("I can't be empty!");
-        else {
-            HBox hb = new HBox();
-            TextField tf2 = new TextField(tf.getText());
-            Button btn2 = new Button("Rmv");
-            hb.getChildren().addAll(tf2, btn2);
+    private void setUpSubTaskControls(Subtask subtask, TextField tf, HBox hb, Button up, Button down, CheckBox cb, Button deleteButton) {
+        tf.setPrefWidth(80);
+        tf.setBackground(Background.EMPTY);
+        tf.setText(subtask.getName());
+        cb.setOnAction(event1 -> {
+            if (cb.isSelected()) {
+                subtask.setFinished(true);
+                tf.setDisable(true);
+                tf.setOpacity(0.5);
+            } else {
+                subtask.setFinished(false);
+                tf.setDisable(false);
+                tf.setOpacity(1);
+            }
+//            server.send("/app/subtasks", subtask, session);
+            refresh();
+        });
+        up.getStyleClass().add("arrows");
+        up.setOnAction(event13 -> {
+            int index = subtaskHBoxes.indexOf(hb);
+            if (index > 0) {
+                Subtask swap = server.getSubtasksForCard(card).get(index - 1);
+                subtaskHBoxes.remove(hb);
+                subtaskHBoxes.add(index - 1, hb);
+                subtask.setIndex((long) index - 1);
+                swap.setIndex((long) index);
+//                server.send("/app/subtasks", swap, session);
+//                server.send("/app/subtasks", subtask, session);
+                refresh();
+            }
+        });
+        down.setOnAction(event12 -> {
+            int index = subtaskHBoxes.indexOf(hb);
+            if (index < subtaskHBoxes.size() - 1) {
+                Subtask swap = server.getSubtasksForCard(card).get(index + 1);
+                swap.setIndex((long) index);
+                subtaskHBoxes.remove(hb);
+                subtaskHBoxes.add(index + 1, hb);
+                subtask.setIndex((long) index + 1);
+//                server.send("/app/subtasks", swap, session);
+//                server.send("/app/subtasks", subtask, session);
+                refresh();
+            }
+        });
+        down.getStyleClass().add("arrows");
+        deleteButton.setOnAction(event -> {
+//            server.send("/app/subtasksDelete", subtask.getId(), session);
+            refresh();
+        });
+    }
 
-            HBox last = subtasks.get(subtasks.size() - 1);
-            subtasks.set(subtasks.size() - 1, hb);
-            subtasks.add(last);
-            btn2.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    removeFromSubtasks(hb);
-                    loadSubtasksPane();
-                }
-            });
-            tf.setPromptText("Add subtask...");
-            tf.setText("");
-            loadSubtasksPane();
+    /**
+     * Deletes the current card.
+     */
+    public void deleteCard() {
+        try {
+//            server.send("/app/cardsDelete", card.getId(), session);
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
         }
+        var alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText("Card Deleted!");
+        alert.showAndWait();
+        clearFields();
+        goBack();
     }
-    /**
-     * method to remove a specific hb from the subtasks array
-     * @param hb - the hbox we want to remove
-     */
-    private void removeFromSubtasks(HBox hb) {
-        int pos = -1;
-        for(int i =0 ;i < subtasks.size() ; ++i)
-            if(subtasks.get(i) == hb)
-                pos = i;
-        if(pos!=-1)
-            subtasks.remove(pos);
-    }
+
 
     /**
      * stores these subtasks into the database
@@ -212,9 +283,9 @@ public class CardInformationCtrl implements Initializable {
     {
         List<Subtask> subtaskList = new ArrayList<>();
         server.removeSubtasksOf(cardId);
-        for(int i =0; i < subtasks.size() ;++i)
+        for(int i =0; i < subtaskHBoxes.size() ;++i)
         {
-            TextField tf = (TextField) subtasks.get(i).getChildren().get(0);
+            TextField tf = (TextField) subtaskHBoxes.get(i).getChildren().get(0);
             subtaskList.add(new Subtask(cardId, tf.getText(), (long) i)); ///TODO also pass on finished status when tick button ready
         }
         server.storeSubtasks(subtaskList);
@@ -223,8 +294,12 @@ public class CardInformationCtrl implements Initializable {
     /**
      * Method to return to the board
      */
-    public void goBack()
-    {
+    public void goBack() {
+//        // If a card is created, but not saved, it will be deleted.
+//        // We always create a card before editing it, so we need to delete it if we don't save it.
+//        // Also we are able to add subtasks to the card.
+//        if (state == State.CREATE)
+//            server.deleteCard(card.getId());
         mainCtrl.showBoard(currentBoard);
     }
 
@@ -232,28 +307,50 @@ public class CardInformationCtrl implements Initializable {
     /**
      * Refresh method
      */
-    public void refresh()
-    {
+    public void refresh() {
         setupCollectionMenu();
-        if(state == State.EDIT)
-        {
+        if (state == State.EDIT) {
             title.setText("Edit card");
             collectionCurrent = server.getCollectionById(card.getCollectionId());
             populateSubtasksScreen(server.getSubtasksOfCard(card.getId()));
-        }
-        else
-        {
+
+        } else {
             title.setText("Add card");
-            subtasks = new ArrayList<>();
             collectionCurrent = null;
         }
-        if(collectionCurrent == null)
+        if (collectionCurrent == null)
             collectionMenu.setText("Select...");
         else collectionMenu.setText(collectionCurrent.getName());
-        cardName.setText(card.getTitle());
-        cardDescription.setText(card.getDescription());
 
-        ///TODO Retrieve subtasks from the database and put them inside the "subtasks" arraylist
+        ArrayList<HBox> subtaskBoxes = new ArrayList<>();
+
+        if (subtasksList == null || card.getId() == null)
+            subtasksList = new ArrayList<>();
+        else {
+            try {
+                subtasksList = server.getSubtasksForCard(card);
+            } catch (BadRequestException e) {
+                showError(e.getMessage());
+            }
+        }
+
+        subtasksList.sort(Comparator.comparing(Subtask::getIndex));
+        for (Subtask s : subtasksList) {
+            HBox hb = new HBox(10);
+            TextField tf = new TextField();
+            Button deleteButton = new Button("x");
+            deleteButton.getStyleClass().add("deleteSubTaskButton");
+            Button up = new Button("^");
+            Button down = new Button("v");
+            CheckBox cb = new CheckBox();
+            cb.setSelected(s.getFinished());
+
+            setUpSubTaskControls(s, tf, hb, up, down, cb, deleteButton);
+            hb.getChildren().addAll(tf, cb, up, down, deleteButton);
+            subtaskBoxes.add(hb);
+        }
+        subtaskHBoxes = subtaskBoxes;
+
 
         loadSubtasksPane();
     }
@@ -264,12 +361,12 @@ public class CardInformationCtrl implements Initializable {
      */
     public void populateSubtasksScreen(List<Subtask> subtaskList)
     {
-        subtasks = new ArrayList<>();
+        subtaskHBoxes = new ArrayList<>();
         for(Subtask c : subtaskList)
         {
             TextField tf = new TextField();
             tf.setText(c.getName());
-            executeAddSubtask(tf);
+          //  executeAddSubtask(tf);
         }
     }
     /**
@@ -279,8 +376,9 @@ public class CardInformationCtrl implements Initializable {
     {
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
-        vbox.getChildren().addAll(subtasks);
+        vbox.getChildren().addAll(subtaskHBoxes);
         scrollPane.setContent(vbox);
+
     }
 
     /**
@@ -360,8 +458,8 @@ public class CardInformationCtrl implements Initializable {
     public void clearFields(){
         cardName.clear();
         cardDescription.clear();
-        subtasks.clear();
-        subtasks.add(buildAddSubtask());
+        subtaskHBoxes.clear();
+        subtaskName.clear();
     }
 
     /**

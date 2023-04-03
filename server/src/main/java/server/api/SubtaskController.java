@@ -3,6 +3,8 @@ package server.api;
 import commons.Subtask;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.SubtaskRepository;
 
@@ -22,6 +24,42 @@ public class SubtaskController {
     SubtaskController(SubtaskRepository repo)
     {
         this.repo = repo;
+    }
+
+    /**
+     * This method receives and distributes subtasks between clients
+     * @param subtask the subtask that the server has received and will send to all the clients on the network
+     * @return a subtask
+     */
+    @MessageMapping("/subtasks") // /app/subtasks
+    @SendTo("/topic/update")
+    public Subtask add(Subtask subtask){
+        addSubtask(subtask);
+        return subtask;
+    }
+
+    /**
+     * This method receives and distributes subtasks between clients
+     * @param id the subtask's id that the server has received and will send to all the clients on the network
+     * @return a subtask
+     */
+    @MessageMapping("/subtasksDelete") // /app/subtasks
+    @SendTo("/topic/update")
+    public Long delete(Long id){
+        deleteById(id);
+        return id;
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param s a string that is needed for the method to work
+     * @return a collection
+     */
+    @MessageMapping("/subtasksDeleteAll") // /app/collectionsDelete
+    @SendTo("/topic/update")
+    public Subtask deleteAll(Subtask s){
+        deleteAll();
+        return s;
     }
 
     /**
@@ -119,10 +157,10 @@ public class SubtaskController {
      * @param cardId - id of the card
      * @return List with all required subtasks
      */
-    @GetMapping("getFromCard/{cardId}")
+    @GetMapping("/getFromCard/{cardId}")
     public ResponseEntity<List<Subtask>> getSubtasksFromCard(@PathVariable long cardId)
     {
-        List<Subtask> subtasks = repo.findAll(Sort.by(Sort.Direction.ASC, "indexInCard"));
+        List<Subtask> subtasks = repo.findAll(Sort.sort(Subtask.class).by(Subtask::getIndex));
         List<Subtask> response = new ArrayList<>();
         for(Subtask c: subtasks)
             if(c.getCardId() == cardId)

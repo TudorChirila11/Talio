@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.Bloom?>
-<?import javafx.scene.effect.Glow?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Line?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: #6096B4;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardInformationCtrl">
+<AnchorPane prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: #6096B4;" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardInformationCtrl">
    <children>
       <Text fx:id="title" layoutX="34.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Information">
          <font>
@@ -29,8 +22,27 @@
             <Font name="Gill Sans MT" size="16.0" />
          </font>
       </Text>
-      <Pane layoutX="52.0" layoutY="104.0" prefHeight="294.0" prefWidth="500.0" style="-fx-background-color: #BDCDD6; -fx-background-radius: 30; -fx-border-radius: 30; -fx-border-color: black;">
+      <Button id="removeButton" layoutX="488.0" layoutY="55.0" mnemonicParsing="false" onAction="#deleteCard" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
+         <graphic>
+            <ImageView fitHeight="30.0" fitWidth="20.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/client/assets/delete.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <Pane layoutX="52.0" layoutY="104.0" prefHeight="294.0" prefWidth="500.0" style="-fx-background-color: #BDCDD6; -fx-background-radius: 30; -fx-border-radius: 30; -fx-border-color: black;" stylesheets="@/client/stylesheets/Global.css">
          <children>
+            <TextField id="subtaskName" fx:id="subtaskName" layoutX="350.0" layoutY="15.0" prefWidth="80" promptText="Enter Name" />
+            <Button id="addSubtaskButton" fx:id="addSubtaskButton" layoutX="430.0" layoutY="15.0" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="20.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/client/assets/add.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
             <Text layoutX="29.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card name:" wrappingWidth="90.40000000000009">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
@@ -59,24 +71,23 @@
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Text>
-            <Button layoutX="338.0" layoutY="242.0" mnemonicParsing="false" onAction="#goBack" style="-fx-border-color: black; -fx-border-radius: 5px;" text="Close" textFill="RED">
+            <Button layoutX="338.0" layoutY="250.0" mnemonicParsing="false" onAction="#goBack" style="-fx-border-color: black; -fx-border-radius: 5px;" text="Close" textFill="RED">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Button>
-            <Button layoutX="419.0" layoutY="242.0" mnemonicParsing="false" onAction="#addCard" style="-fx-border-radius: 5px; -fx-border-color: black;" text="Save" textFill="#0ea147">
+            <Button layoutX="419.0" layoutY="250.0" mnemonicParsing="false" onAction="#addCard" style="-fx-border-radius: 5px; -fx-border-color: black;" text="Save" textFill="#0ea147">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Button>
-            <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="263.0" layoutY="38.0" prefHeight="200.0" prefWidth="202.0">
+            <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="270.0" layoutY="45.0" prefHeight="200.0" prefWidth="220.0">
               <content>
                 <AnchorPane id="subtaskPane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="218.0" />
               </content>
             </ScrollPane>
          </children>
       </Pane>
-      <Button layoutX="488.0" layoutY="51.0" mnemonicParsing="false" onAction="#goBack" text="Back" />
       <MenuButton fx:id="collectionMenu" layoutX="114.0" layoutY="61.0" mnemonicParsing="false" text="Collection" />
    </children>
    <effect>
