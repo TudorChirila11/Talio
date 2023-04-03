@@ -11,6 +11,6 @@
     <HBox HBox.hgrow="ALWAYS">
         <Label fx:id="tagText" text="test" wrapText="true" />
     </HBox>
-    <Button fx:id="editTagButton" text="edit" minWidth="60" />
+    <Button fx:id="editTagButton" onAction="#editTag" text="edit" minWidth="60" />
     <Button fx:id="deleteTagButton" onAction="#deleteTag" text="delete" minWidth="70" />
 </HBox>

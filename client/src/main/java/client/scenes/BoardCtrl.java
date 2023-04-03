@@ -93,7 +93,7 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         // Sets up the content of the Scroll Pane
 
-        tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard));
+        tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard, new Tag()));
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
 
 

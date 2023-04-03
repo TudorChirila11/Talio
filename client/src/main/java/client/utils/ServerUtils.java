@@ -339,12 +339,12 @@ public class ServerUtils {
 
     /**
      * Retrieves all tags
-     *
+     * @param boardId get only the tags that belong to this board
      * @return List of tags
      */
-    public List<Tag> getTags() {
+    public List<Tag> getTags(Long boardId) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/tags") //
+                .target(server).path("api/tags/"+boardId) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Tag>>() {

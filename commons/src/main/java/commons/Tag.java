@@ -30,7 +30,7 @@ public class Tag {
      * @param name the text of the tag
      * @param boardId the board that the tag belongs to
      * @param cards the cards that use this tag
-     * @param colour the colour of the tag
+     * @param colour the colour of the tag and the tag's text
      */
     public Tag(Long id, String name, Long boardId, List<Card> cards, List<Double> colour){
         this.id = id;
@@ -45,7 +45,7 @@ public class Tag {
      * @param name the text of the tag
      * @param boardId the board that the tag belongs to
      * @param cards the cards that use this tag
-     * @param colour the colour of the tag
+     * @param colour the colour of the tag and the tag's text
      */
     public Tag(String name, Long boardId, List<Card> cards, List<Double> colour){
         this.name = name;
@@ -58,7 +58,7 @@ public class Tag {
      * Default constructor to be used in most places
      * @param name the text of the tag
      * @param boardId the board that the tag belongs to
-     * @param colour the colour of the tag
+     * @param colour the colour of the tag and the tag's text
      */
     public Tag(String name, Long boardId, List<Double> colour){
         this.name = name;
@@ -97,7 +97,7 @@ public class Tag {
     }
 
     /**
-     * a getter for the tag colour
+     * a getter for the tag and the tag's text colour
      * @return the colour of the tag
      */
     public List<Double> getColour() {
@@ -120,7 +120,7 @@ public class Tag {
     }
 
     /**
-     * a setter for the tag colour
+     * a setter for the tag colour and the tag's text colour
      * @param colour the new colour of the tag
      */
     public void setColour(List<Double> colour) {
