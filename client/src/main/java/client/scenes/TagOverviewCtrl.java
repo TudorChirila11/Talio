@@ -85,7 +85,6 @@ public class TagOverviewCtrl implements Initializable{
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
         this.session = session;
-        refresh();
     }
 
     /**
@@ -93,7 +92,7 @@ public class TagOverviewCtrl implements Initializable{
      */
     public void refresh() {
         ListView<HBox> tagListView = new ListView<>();
-        tagsList = server.getTags();
+        tagsList = server.getTags(currentBoard.getId());
         FXMLLoader loader;
         for(Tag tag : tagsList) {
             loader = new FXMLLoader(getClass().getResource("/client/scenes/TagInOverview.fxml"));
