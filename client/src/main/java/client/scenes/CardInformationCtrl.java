@@ -104,7 +104,7 @@ public class CardInformationCtrl implements Initializable {
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
-        refresh();
+        //refresh();
     }
 
     /**
@@ -342,10 +342,6 @@ public class CardInformationCtrl implements Initializable {
 
         if (card.getSubtasks() == null || card.getId() == null)
             card.setSubtasks(new ArrayList<>());
-
-        populateSubtasksScreen(card.getSubtasks());
-        if(card.getId()!=null)
-            server.deleteSubtasksOfCard(card.getId(), session);
         loadSubtasksPane();
     }
 
@@ -430,6 +426,7 @@ public class CardInformationCtrl implements Initializable {
             }
         }
         clearFields(); ///security measure
+        state = State.INACTIVE;
         mainCtrl.showBoard(currentBoard);
     }
 
@@ -509,6 +506,10 @@ public class CardInformationCtrl implements Initializable {
         setState(CardInformationCtrl.State.EDIT);
         Board board = server.getBoardOfCard(cardId);
         setBoard(board);
+        card.setSubtasks(server.getSubtasksOfCard(card.getId()));
+        populateSubtasksScreen(card.getSubtasks());
+        if (card.getId() != null)
+            deleteSubtasksOfCard(card.getId());
         refresh();
     }
 
@@ -521,5 +522,20 @@ public class CardInformationCtrl implements Initializable {
         setCard(new Card());
         setBoard(board);
         refresh();
+    }
+
+    /**
+     * deletes subtasks of card id
+     *
+     * @param id - the id of the card we want to delete the subtasks of
+     */
+    public void deleteSubtasksOfCard(Long id) {
+        List<Subtask> subtasks = server.getSubtasksOfCard(id);
+        for(Subtask s : subtasks)
+        {
+            //TODO websocket
+            //server.deleteSubtask(s.getId());
+            server.send("/app/subtasksDelete", s.getId(), session);
+        }
     }
 }

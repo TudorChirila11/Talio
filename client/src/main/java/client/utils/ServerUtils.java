@@ -525,7 +525,7 @@ public class ServerUtils {
     public Response deleteSubtask(Long id)
     {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/subtasks"+id) //
+                .target(server).path("api/subtasks/"+id) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .delete();
@@ -613,31 +613,8 @@ public class ServerUtils {
         this.tagCreatorCtrl = tagCreatorCtrl;
     }
 
-    /**
-     * remove the list of a card's subtask
-     * @param cardId the card we want to delete the subtasks from
-     */
-    public void removeSubtasksOf(long cardId) {
-        //TODO discuss if we should change to solution that passes on the list and deletes them in 1 go in the server
-        List<Subtask> subtasks = getSubtasksOfCard(cardId);
-        for(Subtask s: subtasks)
-            deleteSubtask(s.getId());
-    }
 
-    /**
-     * deletes subtasks of card id
-     *
-     * @param id      - the id of the card we want to delete the subtasks of
-     * @param session
-     */
-    public void deleteSubtasksOfCard(Long id, StompSession session) {
-        List<Subtask> subtasks = getSubtasksOfCard(id);
-        for(Subtask s : subtasks)
-        {
-            //deleteSubtask(s.getId());
-            send("app/subtasks/subtasksDelete/", s.getId(), session);
-        }
-    }
+
 
 
 }
