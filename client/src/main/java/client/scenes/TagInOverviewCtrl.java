@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import commons.Board;
 import commons.Tag;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,6 +24,10 @@ public class TagInOverviewCtrl {
 
     private StompSession session;
 
+    private MainCtrl mainCtrl;
+
+    private Board currentBoard;
+
     /**
      * The method is used to set the text of the tag
      * @param tagText the text that will replace the current text
@@ -37,10 +42,12 @@ public class TagInOverviewCtrl {
      * @param server the client side server that'll be used to send data to the actual server
      * @param tag the tag that this controller represents
      */
-    public void subscriber(StompSession session, ServerUtils server, Tag tag) {
+    public void subscriber(StompSession session, ServerUtils server, Tag tag, MainCtrl mainCtrl, Board currentBoard) {
         this.session = session;
         this.server = server;
         this.tag = tag;
+        this.mainCtrl = mainCtrl;
+        this.currentBoard = currentBoard;
     }
 
     /**
@@ -48,6 +55,10 @@ public class TagInOverviewCtrl {
      */
     public void deleteTag(){
         server.send("/app/tagsDelete", tag, session);
+    }
+
+    public void editTag(){
+        mainCtrl.showTagCreation(currentBoard, tag);
     }
 
     /**

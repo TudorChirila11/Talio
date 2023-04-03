@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import commons.Tag;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -145,10 +146,11 @@ public class MainCtrl {
      * and enables the controller
      * @param currentBoard the board that the tag creation window is related to
      */
-    public void showTagCreation(Board currentBoard){
+    public void showTagCreation(Board currentBoard, Tag tag){
         primaryStage.setTitle("Tag Creation Window");
         primaryStage.setScene(tagCreator);
-        tagCreatorCtrl.initialize(currentBoard);
+        tagCreatorCtrl.initialize(currentBoard, tag);
+        tagCreatorCtrl.refresh();
     }
 
     /**
@@ -160,6 +162,7 @@ public class MainCtrl {
         primaryStage.setTitle("Tag Overview Window");
         primaryStage.setScene(tagOverview);
         tagOverviewCtrl.initialize(currentBoard);
+        tagOverviewCtrl.refresh();
     }
 
     /**

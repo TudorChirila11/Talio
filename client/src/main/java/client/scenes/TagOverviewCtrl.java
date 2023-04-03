@@ -51,7 +51,7 @@ public class TagOverviewCtrl implements Initializable{
      * this method redirects the user to the tag creation window
      */
     public void createTag() {
-        mainCtrl.showTagCreation(currentBoard);
+        mainCtrl.showTagCreation(currentBoard, new Tag());
     }
 
     /**
@@ -85,6 +85,7 @@ public class TagOverviewCtrl implements Initializable{
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
         this.session = session;
+        refresh();
     }
 
     /**
@@ -105,7 +106,7 @@ public class TagOverviewCtrl implements Initializable{
             TagInOverviewCtrl tagController = loader.getController();
             tagController.setTagText(tag.getName());
             tagController.setColor(tag.getColour());
-            tagController.subscriber(session, server, tag);
+            tagController.subscriber(session, server, tag, mainCtrl, currentBoard);
             tagListView.getItems().add(newTag);
         }
         tagContainer.getChildren().set(0, tagListView);

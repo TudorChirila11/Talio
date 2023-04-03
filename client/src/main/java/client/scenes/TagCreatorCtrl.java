@@ -37,6 +37,8 @@ public class TagCreatorCtrl implements Initializable {
 
     private StompSession session;
 
+    private Tag tag;
+
     /**
      * Constructor for the CollectionOverview Ctrl
      * @param server serverUtils ref
@@ -52,14 +54,21 @@ public class TagCreatorCtrl implements Initializable {
      * @param session the session that is connected to a server that the client is connected to
      */
     public void subscriber(StompSession session) {
-        server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
         this.session = session;
     }
 
     /**
      * referesh method so that line 55 works
      */
-    private void refresh() {
+    public void refresh() {
+        if (tag.equals(new Tag())) {
+            tagDescription.setText("");
+            tagColour.setValue(Color.WHITE);
+        } else {
+            tagDescription.setText(tag.getName());
+            tagColour.setValue(new Color(tag.getColour().get(0),tag.getColour().get(1),
+                    tag.getColour().get(2), 1.0));
+        }
     }
 
     /**
@@ -68,13 +77,24 @@ public class TagCreatorCtrl implements Initializable {
     public void createTag() {
         Color color = tagColour.getValue();
         if(!tagDescription.getText().equals("")) {
-            Tag newTag = new Tag(tagDescription.getText(), currentBoard.getId(), new ArrayList<Double>(){{
+            if(tag.equals(new Tag())) {
+                Tag newTag = new Tag(tagDescription.getText(), currentBoard.getId(), new ArrayList<Double>(){{
                     add(color.getRed());
                     add(color.getGreen());
                     add(color.getBlue());
                 }});
-            server.send("/app/tags", newTag, session);
-            mainCtrl.showBoard(currentBoard);
+                server.send("/app/tags", newTag, session);
+            } else {
+                Tag newTag = new Tag(tag.getId(), tagDescription.getText(), currentBoard.getId(),
+                        tag.getCards(), new ArrayList<Double>(){{
+                    add(color.getRed());
+                    add(color.getGreen());
+                    add(color.getBlue());
+                }});
+                tag = newTag;
+                server.send("/app/tagsUpdate", newTag, session);
+            }
+            refresh();
         }
     }
 
@@ -95,8 +115,9 @@ public class TagCreatorCtrl implements Initializable {
      * Used to initialize the tagCreator with a board
      * @param board the current board
      */
-    public void initialize(Board board) {
+    public void initialize(Board board, Tag tag) {
         currentBoard = board;
+        this.tag = tag;
     }
 
     /**
