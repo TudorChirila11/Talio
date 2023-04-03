@@ -49,6 +49,12 @@ public class MainCtrl {
 
     private Scene keyboardShortcut;
 
+    private AdminLogInCtrl adminLogInCtrl;
+
+    private Scene adminLogIn;
+
+    private String admin;
+
     private TagCreatorCtrl tagCreatorCtrl;
 
     private Scene tagCreator;
@@ -56,6 +62,7 @@ public class MainCtrl {
     private TagOverviewCtrl tagOverviewCtrl;
 
     private Scene tagOverview;
+
 
 
     /**
@@ -69,11 +76,14 @@ public class MainCtrl {
      * @param tagCreator tagCreator scene
      * @param tagOverview tagCreator scene
      * @param boardOverview  boardOverview scene
+     * @param adminLogIn adminLogIn scene
      */
     public void initialize(Stage primaryStage, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
                            Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
-                           Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview) {
+                           Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview,
+                            Pair<AdminLogInCtrl, Parent> adminLogIn) {
+
         this.primaryStage = primaryStage;
 
         this.cardInformationCtrl = cardInfo.getKey();
@@ -100,10 +110,33 @@ public class MainCtrl {
         this.boardOverviewCtrl = boardOverview.getKey();
         this.boardOverview = new Scene(boardOverview.getValue());
 
+        this.adminLogInCtrl = adminLogIn.getKey();
+        this.adminLogIn = new Scene(adminLogIn.getValue());
+
+        adminLogInCtrl.setAdmin(false);
+
         welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
 
         showWelcomePage();
         primaryStage.show();
+    }
+
+    /**
+     * Displays the BoardOverviewAdmin Scene
+     * @param admin the admin keyboolean
+     */
+    public void showBoardOverviewAdmin(boolean admin) {
+        boardOverviewCtrl.setAdmin(admin);
+        primaryStage.setTitle("Board Overview");
+        primaryStage.setScene(boardOverview);
+    }
+
+    /**
+     * Admin key getter
+     * @return String admin
+     */
+    public String getAdmin() {
+        return admin;
     }
 
     /**
@@ -177,6 +210,15 @@ public class MainCtrl {
     }
 
     /**
+     * Displays the Admin Log In Scene
+     * and enables the controller
+     */
+    public void showAdminLogIn() {
+        primaryStage.setTitle("Admin Log In: Admin");
+        primaryStage.setScene(adminLogIn);
+    }
+
+    /**
      * edit card method
      * @param cardId - id of the card we want to edit
      */
@@ -240,6 +282,7 @@ public class MainCtrl {
      * and enables the controller
      */
     public void showWelcomePage(){
+        admin = welcomePageCtrl.generateKey();
         primaryStage.setTitle("Welcome page Overview: Welcome page");
         primaryStage.setScene(welcomePage);
     }
