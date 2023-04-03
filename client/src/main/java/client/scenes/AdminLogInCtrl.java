@@ -18,7 +18,7 @@ public class AdminLogInCtrl implements Initializable {
 
     private final MainCtrl mainCtrl;
 
-    private boolean isAdmin = false;
+    private boolean isAdmin;
 
     @FXML
     private TextField adminKey;
@@ -57,10 +57,10 @@ public class AdminLogInCtrl implements Initializable {
      */
     public void makeAdmin() {
         if (adminKey.getText().equals(mainCtrl.getAdmin())) {
-            isAdmin = true;
+            this.isAdmin = true;
             show("Welcome admin!");
         }
-        mainCtrl.showBoardOverview();
+        showBoardOverviewPage();
     }
 
 
@@ -89,7 +89,7 @@ public class AdminLogInCtrl implements Initializable {
      * Displays the board overview Scene
      */
     public void showBoardOverviewPage() {
-        mainCtrl.showBoardOverview();
+        mainCtrl.showBoardOverviewAdmin(isAdmin);
     }
 
     /**
@@ -106,5 +106,13 @@ public class AdminLogInCtrl implements Initializable {
      */
     public TextField getAdminKey() {
         return adminKey;
+    }
+
+    /**
+     * Setter for the isAdmin boolean
+     * @param admin - boolean for the admin
+     */
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 }

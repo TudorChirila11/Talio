@@ -114,11 +114,19 @@ public class MainCtrl {
 
         admin = adminLogInCtrl.getServer().getAdminKey();
 
+        adminLogInCtrl.setAdmin(false);
+
         welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
 
 
         showWelcomePage();
         primaryStage.show();
+    }
+
+    public void showBoardOverviewAdmin(boolean admin) {
+        boardOverviewCtrl.setAdmin(admin);
+        primaryStage.setTitle("Board Overview");
+        primaryStage.setScene(boardOverview);
     }
 
     /**

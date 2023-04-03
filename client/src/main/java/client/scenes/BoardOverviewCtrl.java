@@ -62,6 +62,8 @@ public class BoardOverviewCtrl implements Initializable {
 
     private StompSession session;
 
+    private boolean isAdmin;
+
     /**
      * Constructor for the BoardOverview Ctrl
      *
@@ -103,7 +105,7 @@ public class BoardOverviewCtrl implements Initializable {
      * Refreshes the board Overview
      */
     public void refresh() {
-        if (!adminLogInCtrl.getAdmin()) {
+        if (!isAdmin) {
             try {
                 File current = new File(boardFilePath);
                 Scanner scanner = new Scanner(current);
@@ -429,6 +431,7 @@ public class BoardOverviewCtrl implements Initializable {
      * used if a user is an admin
      */
     public void addAllBoards() {
+        System.out.println("Added all boards");
         int size = 0;
         VBox boardsBox = new VBox(25);
         for (Board board : server.getBoards()) {
@@ -459,5 +462,14 @@ public class BoardOverviewCtrl implements Initializable {
      */
     public void showAdminLoginPage() {
         mainCtrl.showAdminLogIn();
+    }
+
+    /**
+     * Admin setter
+     * @param admin - new value for isAdmin
+     */
+    public void setAdmin(boolean admin) {
+        this.isAdmin = admin;
+        refresh();
     }
 }
