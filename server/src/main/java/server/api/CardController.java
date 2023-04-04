@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import commons.Card;
@@ -182,7 +183,7 @@ public class CardController {
         return ResponseEntity.noContent().build();
     }
 
-    private Map<Object, Consumer<Long>> listeners = new HashMap<>();
+    private Map<Object, Consumer<Long>> listeners = new ConcurrentHashMap<>();
 
 
     /**

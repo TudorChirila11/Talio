@@ -101,7 +101,7 @@ public class CardInformationCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         toDelete = new ArrayList<>();
         subtaskHBoxes = new ArrayList<>();
-        data = new ArrayList<>();
+        data = Collections.synchronizedList(new ArrayList<>());
         buildAddSubtask();
         setupCollectionMenu();
         card = new Card();
