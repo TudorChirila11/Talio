@@ -22,7 +22,6 @@ import java.util.List;
 
 public class CardInformationCtrl implements Initializable {
 
-
     enum State {
         EDIT, CREATE, INACTIVE
     }
@@ -57,6 +56,8 @@ public class CardInformationCtrl implements Initializable {
 
     @FXML
     private TextField subtaskName;
+
+    private List<Long> data;
 
     @FXML
     private Text title;
@@ -100,12 +101,39 @@ public class CardInformationCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         toDelete = new ArrayList<>();
         subtaskHBoxes = new ArrayList<>();
+        data = new ArrayList<>();
         buildAddSubtask();
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
+        server.registerForUpdates(l ->{
+            System.out.println("Caught data!");
+            System.out.println(l);
+            data.add(l);
+            if(state == State.EDIT){
+                Platform.runLater(() -> checkDeleted());
+            }
+        });
         //refresh();
     }
+
+    /**
+     * Checks if a card has been deleted with long polling
+     */
+    private void checkDeleted() {
+        showError("This card has been deleted by another user!");
+        if(data.contains(card.getId())){
+            goBack();
+        }
+    }
+
+    /**
+     * stops the polling
+     */
+    public void stop() {
+        server.stop();
+    }
+
 
     /**
      * A method for starting to listen to a server once the connection has been established

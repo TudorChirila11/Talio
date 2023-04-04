@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import client.scenes.*;
@@ -398,6 +400,41 @@ public class ServerUtils {
                 .get(new GenericType<List<Subtask>>() {
                 });
     }
+
+
+    public static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+
+    /**
+     * Registers updates for deleted cards in the delete by Id method
+     * @param consumer the id of the card
+     */
+    public void registerForUpdates(Consumer<Long> consumer){
+        EXEC.submit(() ->{
+            while(!Thread.interrupted()){
+                var res = ClientBuilder.newClient(new ClientConfig())
+                        .target(server).path("api/cards/updates")
+                        .request(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .get(Response.class);
+
+                if(res.getStatus() == 204){
+                    continue;
+                }
+
+                var l = res.readEntity(Long.class);
+                consumer.accept(l);
+            }
+
+        });
+    }
+
+    /**
+     * stops the Thread executor doing the long polling
+     */
+    public void stop(){
+        EXEC.shutdownNow();
+    }
+
 
     /**
      * adds card to specific index inside a specific collection's card array
