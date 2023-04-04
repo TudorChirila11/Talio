@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import commons.Tag;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -126,16 +127,13 @@ public class MainCtrl {
 
         welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
 
-
         showWelcomePage();
         primaryStage.show();
     }
 
     /**
-     * Displays the admin log in Scene
-     * and enables the controller
-     * @param admin boolean which represents
-     *              whether the client is an admin
+     * Displays the BoardOverviewAdmin Scene
+     * @param admin the admin key boolean
      */
     public void showBoardOverviewAdmin(boolean admin) {
         boardOverviewCtrl.setAdmin(admin);
@@ -201,11 +199,14 @@ public class MainCtrl {
      * Displays the tag creation Scene
      * and enables the controller
      * @param currentBoard the board that the tag creation window is related to
+     * @param tag the tag that is to indicate whether a tag will be created or updated
      */
-    public void showTagCreation(Board currentBoard){
+    public void showTagCreation(Board currentBoard, Tag tag){
         primaryStage.setTitle("Tag Creation Window");
         primaryStage.setScene(tagCreator);
-        tagCreatorCtrl.initialize(currentBoard);
+        tagCreatorCtrl.initialize(currentBoard, tag);
+        tagCreatorCtrl.refresh();
+        tagCreatorCtrl.removeText();
     }
 
     /**
@@ -217,6 +218,7 @@ public class MainCtrl {
         primaryStage.setTitle("Tag Overview Window");
         primaryStage.setScene(tagOverview);
         tagOverviewCtrl.initialize(currentBoard);
+        tagOverviewCtrl.refresh();
     }
 
     /**
@@ -301,6 +303,7 @@ public class MainCtrl {
      * and enables the controller
      */
     public void showWelcomePage(){
+        admin = welcomePageCtrl.generateKey();
         primaryStage.setTitle("Welcome page Overview: Welcome page");
         primaryStage.setScene(welcomePage);
     }

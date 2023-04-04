@@ -19,7 +19,6 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -60,18 +59,14 @@ public class ServerUtils {
 
     /**
      * Method used to generate a String of 8 random alphanumeric characters
-     *
+     * @return String of 8 random alphanumeric characters
      */
-    private void generateAdminKey() {
-        int leftLimit = 48;
-        int rightLimit = 122;
-        int targetStringLength = 10;
-        Random random = new Random();
-        adminKey = random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
+    private String generateAdminKey() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/boards/adminKey") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(String.class);
     }
 
     /**
@@ -79,11 +74,8 @@ public class ServerUtils {
      * @return String admin key
      */
     public String getAdminKey() {
-        generateAdminKey();
-        System.out.println(adminKey);
-        return adminKey;
+        return generateAdminKey();
     }
-
 
     /**
      * @param ip the ip that the user will be connecting to
@@ -101,9 +93,6 @@ public class ServerUtils {
     public String getServer(){
         return server;
     }
-
-
-
 
     /**
      * Adding a new Card to the server DB
@@ -369,12 +358,12 @@ public class ServerUtils {
 
     /**
      * Retrieves all tags
-     *
+     * @param boardId get only the tags that belong to this board
      * @return List of tags
      */
-    public List<Tag> getTags() {
+    public List<Tag> getTags(Long boardId) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/tags") //
+                .target(server).path("api/tags/"+boardId) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Tag>>() {

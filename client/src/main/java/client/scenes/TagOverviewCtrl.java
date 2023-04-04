@@ -51,7 +51,7 @@ public class TagOverviewCtrl implements Initializable{
      * this method redirects the user to the tag creation window
      */
     public void createTag() {
-        mainCtrl.showTagCreation(currentBoard);
+        mainCtrl.showTagCreation(currentBoard, new Tag());
     }
 
     /**
@@ -92,7 +92,7 @@ public class TagOverviewCtrl implements Initializable{
      */
     public void refresh() {
         ListView<HBox> tagListView = new ListView<>();
-        tagsList = server.getTags();
+        tagsList = server.getTags(currentBoard.getId());
         FXMLLoader loader;
         for(Tag tag : tagsList) {
             loader = new FXMLLoader(getClass().getResource("/client/scenes/TagInOverview.fxml"));
@@ -105,7 +105,7 @@ public class TagOverviewCtrl implements Initializable{
             TagInOverviewCtrl tagController = loader.getController();
             tagController.setTagText(tag.getName());
             tagController.setColor(tag.getColour());
-            tagController.subscriber(session, server, tag);
+            tagController.subscriber(session, server, tag, mainCtrl, currentBoard);
             tagListView.getItems().add(newTag);
         }
         tagContainer.getChildren().set(0, tagListView);
