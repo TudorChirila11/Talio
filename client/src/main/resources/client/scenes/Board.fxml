@@ -44,7 +44,7 @@
                      </ImageView>
                  </graphic>
              </Button>
-             <Button fx:id="settingsButton" layoutX="750.0" layoutY="450.0" mnemonicParsing="false" onAction="#boardOverview" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
+             <Button fx:id="settingsButton" layoutX="750.0" layoutY="450.0" mnemonicParsing="false" onAction="#showColorManagement" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
                  <graphic>
                      <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
                          <image>

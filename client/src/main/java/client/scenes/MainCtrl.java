@@ -62,6 +62,10 @@ public class MainCtrl {
 
     private Scene tagOverview;
 
+    private ColorManagementCtrl colorManagementCtrl;
+
+    private Scene colorManagement;
+
 
 
     /**
@@ -76,12 +80,13 @@ public class MainCtrl {
      * @param tagOverview tagCreator scene
      * @param boardOverview  boardOverview scene
      * @param adminLogIn adminLogIn scene
+     * @param colorManagement colorManagement scene
      */
     public void initialize(Stage primaryStage, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
                            Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
                            Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview,
-                            Pair<AdminLogInCtrl, Parent> adminLogIn) {
+                            Pair<AdminLogInCtrl, Parent> adminLogIn, Pair<ColorManagementCtrl, Parent> colorManagement) {
 
         this.primaryStage = primaryStage;
 
@@ -112,6 +117,9 @@ public class MainCtrl {
         this.adminLogInCtrl = adminLogIn.getKey();
         this.adminLogIn = new Scene(adminLogIn.getValue());
 
+        this.colorManagementCtrl = colorManagement.getKey();
+        this.colorManagement = new Scene(colorManagement.getValue());
+
         admin = adminLogInCtrl.getServer().getAdminKey();
 
         adminLogInCtrl.setAdmin(false);
@@ -127,6 +135,12 @@ public class MainCtrl {
         boardOverviewCtrl.setAdmin(admin);
         primaryStage.setTitle("Board Overview");
         primaryStage.setScene(boardOverview);
+    }
+
+    public void showColorManagement(Board currentBoard) {
+        primaryStage.setTitle("Color Management");
+        primaryStage.setScene(colorManagement);
+        colorManagementCtrl.initialize(currentBoard);
     }
 
     /**

@@ -409,4 +409,8 @@ public class BoardCtrl implements Initializable {
 
         return pos;
     }
+
+    public void showColorManagement() {
+        mainCtrl.showColorManagement(currentBoard);
+    }
 }
