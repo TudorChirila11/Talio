@@ -15,6 +15,16 @@
         </HBox>
         <Text id="tagCreatorText" text="Tag name:"/>
         <TextArea id="tagDescription" fx:id="tagDescription"/>
-        <ColorPicker id="tagColour" fx:id="tagColour"/>
+        <HBox>
+                <Text text="Tag colour:" />
+                <HBox HBox.hgrow="ALWAYS" />
+                <ColorPicker id="tagColour" fx:id="tagColour"/>
+        </HBox>
+        <HBox>
+                <Text text="Tag text colour:" />
+                <HBox HBox.hgrow="ALWAYS" />
+                <ColorPicker id="tagColour" fx:id="tagTextColour"/>
+        </HBox>
         <Button id="createTagButton" fx:id="createTagButton" onAction="#createTag" text="create tag" />
+        <Text fx:id="resultUpdate" text="" />
 </VBox>
