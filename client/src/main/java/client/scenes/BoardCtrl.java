@@ -60,6 +60,10 @@ public class BoardCtrl implements Initializable {
 
     private boolean isLocked;
 
+    private boolean isAccessible;
+
+    private boolean isAdmin;
+
 
     HashMap<ListView<Card>, Collection> mapper;
 
@@ -307,11 +311,13 @@ public class BoardCtrl implements Initializable {
                 mapper.put(collection, current);
 
                 // Set up drag and drop for the individual collections...
-                setupDragAndDrop(collection);
+                if(isLocked && !isAccessible) {
+                    setupDragAndDrop(collection);
+                }
                 // Creating a vertical stacked box with the label -> collection -> simple add task add button
                 Button simpleAddTaskButton = new Button("+");
 
-                if (isLocked && !passwordCheck()) {
+                if (isLocked && !isAccessible) {
                     simpleAddTaskButton.setDisable(true);
                 }
 
@@ -355,6 +361,7 @@ public class BoardCtrl implements Initializable {
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
         }
+        isAccessible = passwordCheck();
     }
 
     /**
@@ -445,7 +452,7 @@ public class BoardCtrl implements Initializable {
             CardCell cell = new CardCell(mainCtrl, server, session);
             cell.onMouseClickedProperty().set(event -> {
                 if (event.getClickCount() == 2) {
-                    if(isLocked && !passwordCheck()){
+                    if(isLocked && !isAccessible){
                         mainCtrl.viewCard(cell.getItem().getId());
                     }else{
                         mainCtrl.editCard(cell.getItem().getId());
@@ -509,7 +516,7 @@ public class BoardCtrl implements Initializable {
      */
     private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
-        if (isLocked && !passwordCheck()) {
+        if (isLocked && !isAccessible) {
             delete.setDisable(true);
             label.setDisable(true);
         }
@@ -574,5 +581,13 @@ public class BoardCtrl implements Initializable {
         pos = (int) Math.min(y / (cardSize + error), sz);
 
         return pos;
+    }
+
+    /**
+     * sets admin
+     * @param admin
+     */
+
+    public void setAdmin(boolean admin) {
     }
 }

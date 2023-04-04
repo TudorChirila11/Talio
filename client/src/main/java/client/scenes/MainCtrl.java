@@ -127,6 +127,7 @@ public class MainCtrl {
      */
     public void showBoardOverviewAdmin(boolean admin) {
         boardOverviewCtrl.setAdmin(admin);
+        boardCtrl.setAdmin(admin);
         primaryStage.setTitle("Board Overview");
         primaryStage.setScene(boardOverview);
     }
