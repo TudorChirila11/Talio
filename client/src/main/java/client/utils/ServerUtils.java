@@ -358,7 +358,7 @@ public class ServerUtils {
      */
     public List<Tag> getTagsByCard(Card card) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/tags/" + card) //
+                .target(server).path("api/tags/card/" + card.getId()) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Tag>>() {

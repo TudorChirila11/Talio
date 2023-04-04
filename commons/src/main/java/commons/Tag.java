@@ -1,9 +1,14 @@
 package commons;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 @Table(name = "tags")
@@ -18,8 +23,8 @@ public class Tag {
     @Column(name = "board_id")
     private Long boardId;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    private List<Card> cards = new ArrayList<>();
+    @ElementCollection
+    private List<Long> cards = new ArrayList<>();
 
     @ElementCollection
     private List<Double> colour = new ArrayList<>();
@@ -32,7 +37,7 @@ public class Tag {
      * @param cards the cards that use this tag
      * @param colour the colour of the tag and the tag's text
      */
-    public Tag(Long id, String name, Long boardId, List<Card> cards, List<Double> colour){
+    public Tag(Long id, String name, Long boardId, List<Long> cards, List<Double> colour){
         this.id = id;
         this.name = name;
         this.boardId = boardId;
@@ -47,7 +52,7 @@ public class Tag {
      * @param cards the cards that use this tag
      * @param colour the colour of the tag and the tag's text
      */
-    public Tag(String name, Long boardId, List<Card> cards, List<Double> colour){
+    public Tag(String name, Long boardId, List<Long> cards, List<Double> colour){
         this.name = name;
         this.boardId = boardId;
         this.cards = cards;
@@ -108,7 +113,7 @@ public class Tag {
      * a getter for the tag colour
      * @return the colour of the tag
      */
-    public List<Card> getCards() {
+    public List<Long> getCards() {
         return cards;
     }
 
@@ -128,40 +133,36 @@ public class Tag {
     }
 
     /**
+     * A setter method for the cards that will be using this tag
+     * @param cards the cards that will be using this tag
+     */
+    public void setCards(List<Long> cards) {
+        this.cards = cards;
+    }
+
+    /**
      * An equals method for the tag entity
-     * @param o the object that will be compared to this tag
+     * @param obj the object that will be compared to this tag
      * @return a boolean representing whether the object o is equal to this tag or not
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Tag tag = (Tag) o;
-        return Objects.equals(id, tag.id) && Objects.equals(name, tag.name) && Objects.equals(boardId, tag.boardId) &&
-                Objects.equals(cards, tag.cards) && Objects.equals(colour, tag.colour);
-    }
+    public boolean equals(Object obj) {return EqualsBuilder.reflectionEquals(this, obj);}
 
     /**
-     * A hashcode method for this entity
-     * @return the hashcode of the function
+     * generate the hashcode
+     * @return hashcode
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, boardId, cards, colour);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     /**
-     * A toString method for this entity
-     * @return a string representing this entity
+     * to string methode
+     * @return string
      */
     @Override
     public String toString() {
-        return "Tag{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", boardId=" + boardId +
-                ", cards=" + cards +
-                ", colour=" + colour +
-                '}';
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 }

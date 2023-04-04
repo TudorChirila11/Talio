@@ -2,10 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Card;
-import commons.Collection;
-import commons.Board;
-import commons.Subtask;
+import commons.*;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
@@ -25,6 +22,25 @@ import java.util.ResourceBundle;
 
 public class CardInformationCtrl implements Initializable {
 
+    @FXML
+    public Button tagAdder;
+
+    @FXML
+    public MenuButton tagChooserAdd;
+
+    @FXML
+    public MenuButton tagChooserDelete;
+
+    @FXML
+    public Button tagDeleter;
+
+    private List<Tag> tagList;
+
+    private List<Tag> totalTagList;
+
+    private Tag currentTagAdd;
+
+    private Tag currentTagDelete;
 
     enum State {
         EDIT, CREATE
@@ -100,6 +116,24 @@ public class CardInformationCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tagAdder.setOnAction(event -> {
+            if (currentTagAdd != null && !tagList.contains(currentTagAdd)) {
+                tagList.add(currentTagAdd);
+                tagChooserAdd.setText("choose a tag");
+                currentTagAdd = null;
+                refresh();
+            }
+        });
+
+        tagDeleter.setOnAction(event -> {
+            if (currentTagDelete != null && tagList.contains(currentTagDelete)) {
+                tagList.remove(currentTagDelete);
+                tagChooserDelete.setText("choose a tag");
+                currentTagDelete = null;
+                refresh();
+            }
+        });
+
         subtaskHBoxes = new ArrayList<>();
         buildAddSubtask();
         setupCollectionMenu();
@@ -288,6 +322,9 @@ public class CardInformationCtrl implements Initializable {
      * Refresh method
      */
     public void refresh() {
+        if (currentBoard != null) {
+            setupTags();
+        }
         setupCollectionMenu();
         if (state == State.EDIT) {
             title.setText("Edit card");
@@ -316,26 +353,29 @@ public class CardInformationCtrl implements Initializable {
 
         subtasksList.sort(Comparator.comparing(Subtask::getIndex));
         for (Subtask s : subtasksList) {
-            HBox hb = new HBox(10);
-            TextField tf = new TextField();
-            Button deleteButton = new Button("x");
-            deleteButton.getStyleClass().add("deleteSubTaskButton");
-            Button up = new Button("^");
-            Button down = new Button("v");
-            CheckBox cb = new CheckBox();
-            cb.setSelected(s.getFinished());
-
-            setUpSubTaskControls(s, tf, hb, up, down, cb, deleteButton);
-            hb.getChildren().addAll(tf, cb, up, down, deleteButton);
-            subtaskBoxes.add(hb);
+            createSubtask(subtaskBoxes, s);
         }
         subtaskHBoxes = subtaskBoxes;
-
 
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtaskHBoxes);
         scrollPane.setContent(vbox);
+    }
+
+    private void createSubtask(ArrayList<HBox> subtaskBoxes, Subtask s) {
+        HBox hb = new HBox(10);
+        TextField tf = new TextField();
+        Button deleteButton = new Button("x");
+        deleteButton.getStyleClass().add("deleteSubTaskButton");
+        Button up = new Button("^");
+        Button down = new Button("v");
+        CheckBox cb = new CheckBox();
+        cb.setSelected(s.getFinished());
+
+        setUpSubTaskControls(s, tf, hb, up, down, cb, deleteButton);
+        hb.getChildren().addAll(tf, cb, up, down, deleteButton);
+        subtaskBoxes.add(hb);
     }
 
     /**
@@ -362,12 +402,13 @@ public class CardInformationCtrl implements Initializable {
 
             Card c = server.addCard(card);
             server.send("/app/cards", c, session);
+            updateTags(c);
+
         } else {
             card.setSubtasks(subtasksList);
             Card c = server.updateCard(card.getId(), card);
             server.send("/app/cards", c, session);
             try {
-
                 Collection newCol = collectionCurrent;
                 Long index = card.getIndex();
                 Long newIndex = (long) collectionCurrent.getCards().size();
@@ -386,6 +427,7 @@ public class CardInformationCtrl implements Initializable {
                 alert.showAndWait();
                 return;
             }
+            updateTags(c);
         }
         clearFields(); ///security measure
         mainCtrl.showBoard(currentBoard);
@@ -467,13 +509,15 @@ public class CardInformationCtrl implements Initializable {
      * @param cardId - the Id of the card we want to edit
      */
     public void setEditMode(Long cardId) {
+
         setCard(getCardById(cardId));
         collectionCurrent = server.getCollectionById(card.getCollectionId());
         setState(CardInformationCtrl.State.EDIT);
         Board board = server.getBoardOfCard(cardId);
         setBoard(board);
         subtasksList = server.getSubtasksForCard(card);
-        refresh();
+
+        setTag();
     }
 
     /**
@@ -486,6 +530,76 @@ public class CardInformationCtrl implements Initializable {
         // Create a new card that will be deleted if the user clicks close.
         setCard(new Card());
         setBoard(board);
+
+        setTag();
+    }
+
+    private void setTag() {
+        if (currentBoard != null) {
+            if (card.equals(new Card())) {
+                tagList = new ArrayList<>();
+            } else {
+                tagList = server.getTagsByCard(card);
+            }
+            totalTagList = server.getTags(currentBoard.getId());
+            setupTags();
+        }
+
         refresh();
+    }
+
+    /**
+     * This method will set up the tag menu, so that the user can add and delete cards from the card.
+     */
+    public void setupTags() {
+
+        tagChooserAdd.getItems().clear();
+
+        //Adding all the tags that the card doesn't have
+        for (Tag tag : totalTagList) {
+            if (!tagList.contains(tag)) {
+                MenuItem menuItem = new MenuItem(tag.getName());
+                menuItem.setOnAction(event -> {
+                    tagChooserAdd.setText(tag.getName());
+                    currentTagAdd = tag;
+                });
+                tagChooserAdd.getItems().add(menuItem);
+            }
+        }
+
+        tagChooserDelete.getItems().clear();
+
+        //Adding all the tags that the card has
+        for (Tag tag : tagList) {
+            MenuItem menuItem = new MenuItem(tag.getName());
+            menuItem.setOnAction(event -> {
+                tagChooserDelete.setText(tag.getName());
+                currentTagDelete = tag;
+            });
+            tagChooserDelete.getItems().add(menuItem);
+        }
+    }
+
+    /**
+     * This method is used to add all the relevant card ids to all the tags
+     */
+    public void updateTags(Card c) {
+        // this just adds the card to all the tags that the card added
+        for (Tag tag : tagList) {
+            if (!tag.getCards().contains(c.getId())) {
+                System.out.println(c.getId() + "hello");
+                tag.getCards().add(c.getId());
+                server.send("/app/tagsUpdate", tag, session);
+            }
+        }
+
+        // this just deletes the card from all the tags that the card removed
+        for (Tag tag : totalTagList) {
+            if (tag.getCards().contains(c.getId()) && !tagList.contains(tag)) {
+                System.out.println(c.getId() + "there");
+                tag.getCards().remove(c.getId());
+                server.send("/app/tagsUpdate", tag, session);
+            }
+        }
     }
 }

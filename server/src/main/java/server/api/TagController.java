@@ -1,6 +1,5 @@
 package server.api;
 
-import commons.Card;
 import commons.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -59,6 +58,7 @@ public class TagController {
     @MessageMapping("/tagsUpdate") // /app/collections
     @SendTo("/topic/update")
     public Tag editTag(Tag t){
+        System.out.println(t);
         updateTag(t.getId(), t);
         return t;
     }
@@ -109,15 +109,15 @@ public class TagController {
 
     /**
      * Hardcoded mapping all tags
-     * @param card the card which will be used to get only the tags that the client needs
+     * @param cardId the card which will be used to get only the tags that the client needs
      * @return List of tags objects
      */
-    @GetMapping(path = {"/{card}"})
-    public List<Tag> getAllInCard(@PathVariable("card") Card card) {
+    @GetMapping(path = {"/card/{cardId}"})
+    public List<Tag> getAllInCard(@PathVariable("cardId") Long cardId) {
         List<Tag> tagList = getAll();
         List<Tag> result = new ArrayList<>();
         for (Tag tag : tagList) {
-            if (tag.getCards().contains(card)){
+            if (tag.getCards().contains(cardId)){
                 result.add(tag);
             }
         }
@@ -172,6 +172,8 @@ public class TagController {
 
         // remove the cards
         tagInDatabase.setColour(newTag.getColour());
+
+        tagInDatabase.setCards(newTag.getCards());
 
         // store the collection
         Tag theSavedTag = repo.save(tagInDatabase);
