@@ -25,7 +25,8 @@ public class CardInformationCtrl implements Initializable {
 
 
     enum State {
-        EDIT, CREATE, VIEW
+        EDIT, CREATE, VIEW, INACTIVE
+
     }
 
     private final ServerUtils server;
@@ -107,7 +108,7 @@ public class CardInformationCtrl implements Initializable {
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
-        refresh();
+        //refresh();
     }
 
     /**
@@ -299,16 +300,21 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * stores these subtasks into the database
+<<<<<<< HEAD
      * @param c  - the id we want to store the list of subtasks in
+=======
+     * @param c - the id we want to store the list of subtasks in
+>>>>>>> main
      */
     private void saveSubtasksCardId(Card c) {
         List<Subtask> subtasks = c.getSubtasks();
         for(Subtask s : subtasks)
-        {
-            s.setCardId(c.getId());
-            Subtask newS = server.updateSubtask(s.getId(), s);
-            server.send("app/subtasks", newS, session);//TODO send subtask through server
-        }
+            if(s.getCardId() == null)
+            {
+                s.setCardId(c.getId());
+                Subtask newS = server.updateSubtask(s.getId(), s);
+                server.send("app/subtasks", newS, session);//TODO send subtask through server
+            }
     }
 
     /**
@@ -316,6 +322,7 @@ public class CardInformationCtrl implements Initializable {
      */
     public void goBack() {
         clearFields();
+        state = State.INACTIVE;
         mainCtrl.showBoard(currentBoard);
     }
 
@@ -324,6 +331,8 @@ public class CardInformationCtrl implements Initializable {
      * Refresh method
      */
     public void refresh() {
+        if(state == State.INACTIVE || state == null)
+            return;
         setupCollectionMenu();
         if(state == State.VIEW){
             title.setText("View card");
@@ -362,10 +371,6 @@ public class CardInformationCtrl implements Initializable {
 
         if (card.getSubtasks() == null || card.getId() == null)
             card.setSubtasks(new ArrayList<>());
-
-        populateSubtasksScreen(card.getSubtasks());
-        if(card.getId()!=null)
-            server.deleteSubtasksOfCard(card.getId(), session);
         loadSubtasksPane();
     }
 
@@ -418,11 +423,7 @@ public class CardInformationCtrl implements Initializable {
         }
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
-        /*for(Subtask s : toDelete) {
-            if(s.getId()!=null){
-                server.send("/app/subtasksDelete", s.getId(), session);
-            }
-        }*/
+
         Collection oldCol = null;
         if(card.getCollectionId()!=null)
             oldCol = server.getCollectionById(card.getCollectionId());
@@ -433,8 +434,9 @@ public class CardInformationCtrl implements Initializable {
             saveSubtasksCardId(c);
             server.send("/app/cards", c, session);
         }
-        else {
+        else{
             System.out.println("card id: " + card.getId());
+            deleteSubtasksOfCard(card.getId());
             Card c = server.updateCard(card.getId(), card);
             saveSubtasksCardId(c);
             //System.out.println(c);
@@ -445,6 +447,8 @@ public class CardInformationCtrl implements Initializable {
                 Long newIndex = (long) collectionCurrent.getCards().size();
                 if(oldCol!= null && (long) newCol.getId()!= (long) oldCol.getId() && state == State.EDIT) {
                     Card d = server.changeCardIndex(oldCol, index, newCol, newIndex);
+                    oldCol = server.getCollectionById(oldCol.getId());
+                    newCol = server.getCollectionById(newCol.getId());
                     server.send("/app/collections", oldCol, session);
                     server.send("/app/collections", newCol, session);
                     server.send("/app/cards", d, session);
@@ -454,6 +458,7 @@ public class CardInformationCtrl implements Initializable {
             }
         }
         clearFields(); ///security measure
+        state = State.INACTIVE;
         mainCtrl.showBoard(currentBoard);
     }
 
@@ -533,6 +538,10 @@ public class CardInformationCtrl implements Initializable {
         setState(CardInformationCtrl.State.EDIT);
         Board board = server.getBoardOfCard(cardId);
         setBoard(board);
+        card.setSubtasks(server.getSubtasksOfCard(card.getId()));
+        populateSubtasksScreen(card.getSubtasks());
+        if (card.getId() != null)
+            deleteSubtasksOfCard(card.getId());
         refresh();
     }
 
@@ -558,5 +567,18 @@ public class CardInformationCtrl implements Initializable {
         setCard(new Card());
         setBoard(board);
         refresh();
+    }
+
+    /**
+     * deletes subtasks of card id
+     *
+     * @param id - the id of the card we want to delete the subtasks of
+     */
+    public void deleteSubtasksOfCard(Long id) {
+        List<Subtask> subtasks = server.getSubtasksOfCard(id);
+        for(Subtask s : subtasks)
+        {
+            server.send("/app/subtasksDelete", s.getId(), session);
+        }
     }
 }

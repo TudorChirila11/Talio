@@ -36,6 +36,9 @@ public class CardCell extends ListCell<Card> {
     @FXML
     private Button editButton;
 
+    @FXML
+    private Label doneSubtasks;
+
     private VBox vBox;
 
     private Long id;
@@ -113,6 +116,7 @@ public class CardCell extends ListCell<Card> {
             id = card.getId();
             descriptionLabel.setWrapText(true);
             descriptionLabel.setText(card.getDescription());
+            doneSubtasks.setText(server.getDoneSubtasksForCard(id));
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
 

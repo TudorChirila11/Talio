@@ -409,6 +409,8 @@ public class BoardCtrl implements Initializable {
 
                 Collection oldCollection = mapper.get(sourceList);
                 Collection newCollection = mapper.get(listView);
+                if(oldCollection == newCollection)
+                    newIndex = Math.min(newIndex, listView.getItems().size()-1);
                 long oldIndex = sourceIndex;
                 //int currentIndex = getIndex(listView, event.getY());
                 Card d = server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
@@ -589,5 +591,12 @@ public class BoardCtrl implements Initializable {
      */
 
     public void setAdmin(boolean admin) {
+
+    }
+    /**
+     * Switches to the color management scene
+     */
+    public void showColorManagement() {
+        mainCtrl.showColorManagement(currentBoard);
     }
 }
