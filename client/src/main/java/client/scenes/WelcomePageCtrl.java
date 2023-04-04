@@ -59,6 +59,7 @@ public class WelcomePageCtrl implements Initializable {
             if (pingHost("localhost", 8080, 1000)) {
                 server.changeIP("localhost");
                 server.createStompSession("localhost");
+                mainCtrl.setAdminKey(server.getAdminKey());
                 mainCtrl.showBoardOverview();
             } else {
                 errorConnection.setText("The localhost server has not yet been started");
@@ -67,6 +68,7 @@ public class WelcomePageCtrl implements Initializable {
             if (pingHost(ip, 8080, 1000)) {
                 server.changeIP(ip);
                 server.createStompSession(ip);
+                mainCtrl.setAdminKey(server.getAdminKey());
                 mainCtrl.showBoardOverview();
             } else {
                 errorConnection.setText("The entered IP address is invalid");
