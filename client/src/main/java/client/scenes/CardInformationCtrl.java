@@ -6,7 +6,6 @@ import commons.Card;
 import commons.Collection;
 import commons.Board;
 import commons.Subtask;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -18,16 +17,14 @@ import javafx.stage.Modality;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class CardInformationCtrl implements Initializable {
 
 
     enum State {
-        EDIT, CREATE
+        EDIT, CREATE, INACTIVE
     }
 
     private final ServerUtils server;
@@ -37,7 +34,8 @@ public class CardInformationCtrl implements Initializable {
 
     private ArrayList<HBox> subtaskHBoxes;
 
-    private List<Subtask> subtasksList;
+    private List<Subtask> toDelete;
+
 
     private State state;
 
@@ -100,12 +98,13 @@ public class CardInformationCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        toDelete = new ArrayList<>();
         subtaskHBoxes = new ArrayList<>();
         buildAddSubtask();
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
-        refresh();
+        //refresh();
     }
 
     /**
@@ -153,7 +152,9 @@ public class CardInformationCtrl implements Initializable {
     }
 
     /**
-     * creates the 'Add subtask' option for the subtask list
+     * creates the 'Add subtask' option
+     *
+     * @return a Hbox containing the 'Add subtask' option
      */
     private void buildAddSubtask() {
         addSubtaskButton.setOnAction(event -> {
@@ -165,11 +166,11 @@ public class CardInformationCtrl implements Initializable {
                 subtask.setName(subtaskName.getText());
                 subtask.setCardId(card.getId());
                 subtask.setFinished(false);
-//                subtask = server.addSubTask(subtask);
-//                server.send("/app/subtasks", subtask, session);
+                card.getSubtasks().add(subtask);
 
                 HBox hb = new HBox(10);
                 TextField tf = new TextField();
+                tf.setBackground(Background.EMPTY);
                 Button deleteButton = new Button("x");
                 deleteButton.getStyleClass().add("deleteSubTaskButton");
                 Button up = new Button("^");
@@ -179,10 +180,9 @@ public class CardInformationCtrl implements Initializable {
                 setUpSubTaskControls(subtask, tf, hb, up, down, cb, deleteButton);
                 hb.getChildren().addAll(tf, cb, up, down, deleteButton);
 
-
                 subtaskHBoxes.add(hb);
                 subtaskName.clear();
-                refresh();
+                loadSubtasksPane();
             }
 
         });
@@ -201,8 +201,8 @@ public class CardInformationCtrl implements Initializable {
      */
     private void setUpSubTaskControls(Subtask subtask, TextField tf, HBox hb, Button up, Button down, CheckBox cb, Button deleteButton) {
         tf.setPrefWidth(80);
-        tf.setBackground(Background.EMPTY);
         tf.setText(subtask.getName());
+        renameSubtask(subtask, tf);
         cb.setOnAction(event1 -> {
             if (cb.isSelected()) {
                 subtask.setFinished(true);
@@ -213,40 +213,64 @@ public class CardInformationCtrl implements Initializable {
                 tf.setDisable(false);
                 tf.setOpacity(1);
             }
-//            server.send("/app/subtasks", subtask, session);
-            refresh();
+            populateSubtasksScreen(card.getSubtasks());
+            loadSubtasksPane();
         });
         up.getStyleClass().add("arrows");
         up.setOnAction(event13 -> {
             int index = subtaskHBoxes.indexOf(hb);
             if (index > 0) {
-                Subtask swap = server.getSubtasksForCard(card).get(index-1);
+                Subtask swap = card.getSubtasks().get(index - 1);
                 subtaskHBoxes.remove(hb);
                 subtaskHBoxes.add(index - 1, hb);
                 subtask.setIndex((long) index - 1);
                 swap.setIndex((long) index);
-//                server.send("/app/subtasks", swap, session);
-//                server.send("/app/subtasks", subtask, session);
-                refresh();
+                populateSubtasksScreen(card.getSubtasks());
+                loadSubtasksPane();
             }
         });
         down.setOnAction(event12 -> {
             int index = subtaskHBoxes.indexOf(hb);
             if (index < subtaskHBoxes.size() - 1) {
-                Subtask swap = server.getSubtasksForCard(card).get(index + 1);
+                Subtask swap = card.getSubtasks().get(index + 1);
                 swap.setIndex((long) index);
                 subtaskHBoxes.remove(hb);
                 subtaskHBoxes.add(index + 1, hb);
                 subtask.setIndex((long) index + 1);
-//                server.send("/app/subtasks", swap, session);
-//                server.send("/app/subtasks", subtask, session);
-                refresh();
+                populateSubtasksScreen(card.getSubtasks());
+                loadSubtasksPane();
             }
         });
         down.getStyleClass().add("arrows");
         deleteButton.setOnAction(event -> {
-//            server.send("/app/subtasksDelete", subtask.getId(), session);
-            refresh();
+            card.getSubtasks().remove(subtask);
+            populateSubtasksScreen(card.getSubtasks());
+            loadSubtasksPane();
+           // toDelete.add(subtask);
+        });
+    }
+
+    /**
+     * Renames the subtask
+     *
+     * @param subtask the subtask to rename
+     * @param tf      the TextField to rename the subtask to
+     */
+    private void renameSubtask(Subtask subtask, TextField tf) {
+        tf.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                TextInputDialog dialog = new TextInputDialog(tf.getText());
+                dialog.setTitle("Edit Subtask");
+                dialog.setHeaderText("Edit Subtask");
+                dialog.setContentText("Please enter the new name of the subtask:");
+                Optional<String> result = dialog.showAndWait();
+                result.ifPresent(name -> {
+                    subtask.setName(name);
+                    tf.setText(name);
+                });
+                populateSubtasksScreen(card.getSubtasks());
+                loadSubtasksPane();
+            }
         });
     }
 
@@ -255,9 +279,8 @@ public class CardInformationCtrl implements Initializable {
      */
     public void deleteCard() {
         try {
-//            server.send("/app/cardsDelete", card.getId(), session);
+            server.send("/app/cardsDelete", card.getId(), session);
         } catch (WebApplicationException e) {
-
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.setContentText(e.getMessage());
@@ -267,19 +290,31 @@ public class CardInformationCtrl implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText("Card Deleted!");
         alert.showAndWait();
-        clearFields();
         goBack();
+    }
+
+
+    /**
+     * stores these subtasks into the database
+     * @param c - the id we want to store the list of subtasks in
+     */
+    private void saveSubtasksCardId(Card c) {
+        List<Subtask> subtasks = c.getSubtasks();
+        for(Subtask s : subtasks)
+            if(s.getCardId() == null)
+            {
+                s.setCardId(c.getId());
+                Subtask newS = server.updateSubtask(s.getId(), s);
+                server.send("app/subtasks", newS, session);//TODO send subtask through server
+            }
     }
 
     /**
      * Method to return to the board
      */
     public void goBack() {
-//        // If a card is created, but not saved, it will be deleted.
-//        // We always create a card before editing it, so we need to delete it if we don't save it.
-//        // Also we are able to add subtasks to the card.
-//        if (state == State.CREATE)
-//            server.deleteCard(card.getId());
+        clearFields();
+        state = State.INACTIVE;
         mainCtrl.showBoard(currentBoard);
     }
 
@@ -288,8 +323,11 @@ public class CardInformationCtrl implements Initializable {
      * Refresh method
      */
     public void refresh() {
+        if(state == State.INACTIVE || state == null)
+            return;
         setupCollectionMenu();
         if (state == State.EDIT) {
+            ///Delete all subtasks from the database
             title.setText("Edit card");
             collectionCurrent = server.getCollectionById(card.getCollectionId());
             cardName.setText(card.getTitle());
@@ -302,22 +340,23 @@ public class CardInformationCtrl implements Initializable {
             collectionMenu.setText("Select...");
         else collectionMenu.setText(collectionCurrent.getName());
 
-        ArrayList<HBox> subtaskBoxes = new ArrayList<>();
+        if (card.getSubtasks() == null || card.getId() == null)
+            card.setSubtasks(new ArrayList<>());
+        loadSubtasksPane();
+    }
 
-        if (subtasksList == null || card.getId() == null)
-            subtasksList = new ArrayList<>();
-        else {
-            try {
-                subtasksList = server.getSubtasksForCard(card);
-            } catch (BadRequestException e) {
-                showError(e.getMessage());
-            }
-        }
-
-        subtasksList.sort(Comparator.comparing(Subtask::getIndex));
-        for (Subtask s : subtasksList) {
+    /**
+     * populates the subtask screen with a list of subtasks
+     * @param subtaskList - the subtask list we want to populate the screen with
+     */
+    public void populateSubtasksScreen(List<Subtask> subtaskList) {
+        subtaskHBoxes = new ArrayList<>();
+        subtaskList.sort(Comparator.comparing(Subtask::getIndex));
+        System.out.println(subtaskList);
+        for (Subtask s : subtaskList) {
             HBox hb = new HBox(10);
             TextField tf = new TextField();
+            tf.setBackground(Background.EMPTY);
             Button deleteButton = new Button("x");
             deleteButton.getStyleClass().add("deleteSubTaskButton");
             Button up = new Button("^");
@@ -327,11 +366,13 @@ public class CardInformationCtrl implements Initializable {
 
             setUpSubTaskControls(s, tf, hb, up, down, cb, deleteButton);
             hb.getChildren().addAll(tf, cb, up, down, deleteButton);
-            subtaskBoxes.add(hb);
+            subtaskHBoxes.add(hb);
         }
-        subtaskHBoxes = subtaskBoxes;
-
-
+    }
+    /**
+     * Function to reload only the subtasks pane visually, not the whole card information
+     */
+    public void loadSubtasksPane() {
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.getChildren().addAll(subtaskHBoxes);
@@ -353,47 +394,47 @@ public class CardInformationCtrl implements Initializable {
         }
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
+
         Collection oldCol = null;
-        if (card.getCollectionId() != null)
+        if(card.getCollectionId()!=null)
             oldCol = server.getCollectionById(card.getCollectionId());
-        if (state == State.CREATE) {
+        if(state == State.CREATE) {
             card.setCollectionId(collectionCurrent.getId());
             card.setIndex((long) collectionCurrent.getCards().size());
-
             Card c = server.addCard(card);
+            saveSubtasksCardId(c);
             server.send("/app/cards", c, session);
-        } else {
-            card.setSubtasks(subtasksList);
+        }
+        else{
+            System.out.println("card id: " + card.getId());
+            deleteSubtasksOfCard(card.getId());
             Card c = server.updateCard(card.getId(), card);
+            saveSubtasksCardId(c);
+            //System.out.println(c);
             server.send("/app/cards", c, session);
             try {
-
                 Collection newCol = collectionCurrent;
                 Long index = card.getIndex();
                 Long newIndex = (long) collectionCurrent.getCards().size();
-
-                if (oldCol != null && (long) newCol.getId() != (long) oldCol.getId() && state == State.EDIT) {
+                if(oldCol!= null && (long) newCol.getId()!= (long) oldCol.getId() && state == State.EDIT) {
                     Card d = server.changeCardIndex(oldCol, index, newCol, newIndex);
+                    oldCol = server.getCollectionById(oldCol.getId());
+                    newCol = server.getCollectionById(newCol.getId());
                     server.send("/app/collections", oldCol, session);
                     server.send("/app/collections", newCol, session);
                     server.send("/app/cards", d, session);
                 }
-
             } catch (WebApplicationException e) {
-                var alert = new Alert(Alert.AlertType.ERROR);
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
-                return;
+                showError(e.getMessage());
             }
         }
         clearFields(); ///security measure
+        state = State.INACTIVE;
         mainCtrl.showBoard(currentBoard);
     }
 
     /**
      * Retrieves the values stored in the text field,areas...
-     *
      * @return A card object.
      */
     public Card getCard() {
@@ -402,17 +443,16 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * To delete a card
-     *
      * @param id of card
      */
-    public void deleteCard(long id) {
+    public void deleteCard(long id){
         server.deleteCard(id);
     }
 
     /**
      * Clears text fields and data
      */
-    public void clearFields() {
+    public void clearFields(){
         cardName.clear();
         cardDescription.clear();
         subtaskHBoxes.clear();
@@ -422,10 +462,10 @@ public class CardInformationCtrl implements Initializable {
     /**
      * displays an alert with the given text.
      * this method exists to avoid boilerplate code
-     *
      * @param text - the message to be displayed inside the error
      */
-    private void showError(String text) {
+    private void showError(String text)
+    {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setContentText(text);
         a.show();
@@ -433,7 +473,6 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * returns a card with specified id
-     *
      * @param cardId - the id of the card we want to search
      * @return - a card object
      */
@@ -445,7 +484,6 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * Board getter
-     *
      * @return the board we are currently running this scene in
      */
     public Board getBoard() {
@@ -454,16 +492,15 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * Board setter
-     *
      * @param board - the new value of this class's currentBoard field
      */
-    public void setBoard(Board board) {
+    public void setBoard(Board board)
+    {
         this.currentBoard = board;
     }
 
     /**
      * configures this controller to enter in 'Edit Card' Mode
-     *
      * @param cardId - the Id of the card we want to edit
      */
     public void setEditMode(Long cardId) {
@@ -472,20 +509,34 @@ public class CardInformationCtrl implements Initializable {
         setState(CardInformationCtrl.State.EDIT);
         Board board = server.getBoardOfCard(cardId);
         setBoard(board);
-        subtasksList = server.getSubtasksForCard(card);
+        card.setSubtasks(server.getSubtasksOfCard(card.getId()));
+        populateSubtasksScreen(card.getSubtasks());
+        if (card.getId() != null)
+            deleteSubtasksOfCard(card.getId());
         refresh();
     }
 
     /**
      * configures this controller to enter in 'Create Card' Mode
-     *
      * @param board - the id of the board we are currently in
      */
     public void setCreateMode(Board board) {
         setState(CardInformationCtrl.State.CREATE);
-        // Create a new card that will be deleted if the user clicks close.
         setCard(new Card());
         setBoard(board);
         refresh();
+    }
+
+    /**
+     * deletes subtasks of card id
+     *
+     * @param id - the id of the card we want to delete the subtasks of
+     */
+    public void deleteSubtasksOfCard(Long id) {
+        List<Subtask> subtasks = server.getSubtasksOfCard(id);
+        for(Subtask s : subtasks)
+        {
+            server.send("/app/subtasksDelete", s.getId(), session);
+        }
     }
 }
