@@ -582,6 +582,7 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * This method is used to add all the relevant card ids to all the tags
+     * @param c the card that'll be added or removed from all the appropriate tags
      */
     public void updateTags(Card c) {
         // this just adds the card to all the tags that the card added
