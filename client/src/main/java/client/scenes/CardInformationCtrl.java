@@ -106,6 +106,14 @@ public class CardInformationCtrl implements Initializable {
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
+        //refresh();
+    }
+
+    /**
+     * method to register for long polling updates
+     */
+    public void registerForUpdates()
+    {
         server.registerForUpdates(l ->{
             System.out.println("Caught data!");
             System.out.println(l);
@@ -114,7 +122,6 @@ public class CardInformationCtrl implements Initializable {
                 Platform.runLater(() -> checkDeleted());
             }
         });
-        //refresh();
     }
 
     /**

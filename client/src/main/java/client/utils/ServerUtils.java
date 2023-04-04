@@ -410,16 +410,16 @@ public class ServerUtils {
      * Registers updates for deleted cards in the delete by Id method
      * @param consumer the id of the card
      */
-    public void registerForUpdates(Consumer<Long> consumer){
-        EXEC.submit(() ->{
-            while(!Thread.interrupted()){
+    public void registerForUpdates(Consumer<Long> consumer) {
+        EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
                 var res = ClientBuilder.newClient(new ClientConfig())
                         .target(server).path("api/cards/updates")
                         .request(APPLICATION_JSON)
                         .accept(APPLICATION_JSON)
                         .get(Response.class);
 
-                if(res.getStatus() == 204){
+                if (res.getStatus() == 204) {
                     continue;
                 }
 
@@ -428,6 +428,15 @@ public class ServerUtils {
             }
 
         });
+    }
+
+    /**
+     *
+     * @return - the cardinformationCtrl method
+     */
+    public CardInformationCtrl getCardInformationCtrl()
+    {
+        return cardInformationCtrl;
     }
 
     /**
