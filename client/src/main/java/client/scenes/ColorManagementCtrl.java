@@ -1,6 +1,5 @@
 package client.scenes;
 
-import client.Main;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
@@ -17,6 +16,11 @@ public class ColorManagementCtrl implements Initializable {
 
     private Board currentBoard;
 
+    /**
+     * ColorManagementCtrl constructor
+     * @param server serverUtils ref
+     * @param mainCtrl mainCtrl ref
+     */
     @Inject
     public ColorManagementCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
@@ -32,11 +36,24 @@ public class ColorManagementCtrl implements Initializable {
     }
 
 
+    /**
+     *
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
     }
 
+    /**
+     * Goes back to the current board
+     */
     public void showCurrentBoard() {
         mainCtrl.showBoard(currentBoard);
     }

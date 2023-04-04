@@ -410,6 +410,9 @@ public class BoardCtrl implements Initializable {
         return pos;
     }
 
+    /**
+     * Switches to the color management scene
+     */
     public void showColorManagement() {
         mainCtrl.showColorManagement(currentBoard);
     }

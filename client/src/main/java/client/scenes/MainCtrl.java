@@ -131,12 +131,23 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * Displays the admin log in Scene
+     * and enables the controller
+     * @param admin boolean which represents
+     *              whether the client is an admin
+     */
     public void showBoardOverviewAdmin(boolean admin) {
         boardOverviewCtrl.setAdmin(admin);
         primaryStage.setTitle("Board Overview");
         primaryStage.setScene(boardOverview);
     }
 
+    /**
+     * Displays the color management Scene
+     * and enables the controller
+     * @param currentBoard the current Board
+     */
     public void showColorManagement(Board currentBoard) {
         primaryStage.setTitle("Color Management");
         primaryStage.setScene(colorManagement);
