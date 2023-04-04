@@ -63,6 +63,10 @@ public class MainCtrl {
 
     private Scene tagOverview;
 
+    private ColorManagementCtrl colorManagementCtrl;
+
+    private Scene colorManagement;
+
 
 
     /**
@@ -77,12 +81,13 @@ public class MainCtrl {
      * @param tagOverview tagCreator scene
      * @param boardOverview  boardOverview scene
      * @param adminLogIn adminLogIn scene
+     * @param colorManagement colorManagement scene
      */
     public void initialize(Stage primaryStage, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
                            Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
                            Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview,
-                            Pair<AdminLogInCtrl, Parent> adminLogIn) {
+                            Pair<AdminLogInCtrl, Parent> adminLogIn, Pair<ColorManagementCtrl, Parent> colorManagement) {
 
         this.primaryStage = primaryStage;
 
@@ -113,6 +118,11 @@ public class MainCtrl {
         this.adminLogInCtrl = adminLogIn.getKey();
         this.adminLogIn = new Scene(adminLogIn.getValue());
 
+        this.colorManagementCtrl = colorManagement.getKey();
+        this.colorManagement = new Scene(colorManagement.getValue());
+
+        admin = adminLogInCtrl.getServer().getAdminKey();
+
         adminLogInCtrl.setAdmin(false);
 
         welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
@@ -123,12 +133,23 @@ public class MainCtrl {
 
     /**
      * Displays the BoardOverviewAdmin Scene
-     * @param admin the admin keyboolean
+     * @param admin the admin key boolean
      */
     public void showBoardOverviewAdmin(boolean admin) {
         boardOverviewCtrl.setAdmin(admin);
         primaryStage.setTitle("Board Overview");
         primaryStage.setScene(boardOverview);
+    }
+
+    /**
+     * Displays the color management Scene
+     * and enables the controller
+     * @param currentBoard the current Board
+     */
+    public void showColorManagement(Board currentBoard) {
+        primaryStage.setTitle("Color Management");
+        primaryStage.setScene(colorManagement);
+        colorManagementCtrl.initialize(currentBoard);
     }
 
     /**
