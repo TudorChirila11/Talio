@@ -92,6 +92,7 @@ public class TagOverviewCtrl implements Initializable{
      */
     public void refresh() {
         ListView<HBox> tagListView = new ListView<>();
+
         if(currentBoard != null){
             tagsList = server.getTags(currentBoard.getId());
             FXMLLoader loader;

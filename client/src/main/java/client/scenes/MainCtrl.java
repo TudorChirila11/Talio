@@ -53,7 +53,6 @@ public class MainCtrl {
 
     private Scene adminLogIn;
 
-    private String admin;
 
     private TagCreatorCtrl tagCreatorCtrl;
 
@@ -121,11 +120,9 @@ public class MainCtrl {
         this.colorManagementCtrl = colorManagement.getKey();
         this.colorManagement = new Scene(colorManagement.getValue());
 
-        admin = adminLogInCtrl.getServer().getAdminKey();
+        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl, adminLogInCtrl);
 
         adminLogInCtrl.setAdmin(false);
-
-        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
 
         showWelcomePage();
         primaryStage.show();
@@ -143,6 +140,14 @@ public class MainCtrl {
     }
 
     /**
+     * Sets admin
+     * @param admin afwe
+     */
+    public void setAdminKey(String admin) {
+        adminLogInCtrl.setAdminKey(admin);
+    }
+
+    /**
      * Displays the color management Scene
      * and enables the controller
      * @param currentBoard the current Board
@@ -151,14 +156,6 @@ public class MainCtrl {
         primaryStage.setTitle("Color Management");
         primaryStage.setScene(colorManagement);
         colorManagementCtrl.initialize(currentBoard);
-    }
-
-    /**
-     * Admin key getter
-     * @return String admin
-     */
-    public String getAdmin() {
-        return admin;
     }
 
     /**
@@ -304,7 +301,6 @@ public class MainCtrl {
      * and enables the controller
      */
     public void showWelcomePage(){
-        admin = welcomePageCtrl.generateKey();
         primaryStage.setTitle("Welcome page Overview: Welcome page");
         primaryStage.setScene(welcomePage);
     }

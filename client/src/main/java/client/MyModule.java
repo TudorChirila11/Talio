@@ -38,5 +38,6 @@ public class MyModule implements Module {
         binder.bind(TagCreatorCtrl.class).in(Scopes.SINGLETON);
         binder.bind(TagOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(KeyboardShortcutFCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(AdminLogInCtrl.class).in(Scopes.SINGLETON);
     }
 }

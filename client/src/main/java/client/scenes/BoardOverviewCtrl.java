@@ -36,6 +36,8 @@ import javafx.stage.Modality;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
@@ -99,7 +101,17 @@ public class BoardOverviewCtrl implements Initializable {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
         this.session = session;
         String path = server.getServer().replaceAll("[^a-zA-Z0-9]", "_");
+        if (path.contains("localhost_8080")) {
+            try (Socket socket = new Socket()) {
+                socket.connect(new InetSocketAddress("google.com", 80));
+                path = "http___" + socket.getLocalAddress().getHostAddress().replaceAll("[^a-zA-Z0-9]", "_") + "_8080_";
+                System.out.println(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         boardFilePath = "boards_" + path + ".txt";
+        System.out.println(boardFilePath);
     }
 
     /**

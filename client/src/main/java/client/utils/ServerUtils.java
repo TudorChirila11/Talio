@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import client.scenes.*;
@@ -55,6 +57,8 @@ public class ServerUtils {
 
     private CardInformationCtrl cardInformationCtrl;
     private TagCreatorCtrl tagCreatorCtrl;
+
+    private AdminLogInCtrl adminLogInCtrl;
 
 
     /**
@@ -399,6 +403,50 @@ public class ServerUtils {
                 });
     }
 
+
+    public static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+
+    /**
+     * Registers updates for deleted cards in the delete by Id method
+     * @param consumer the id of the card
+     */
+    public void registerForUpdates(Consumer<Long> consumer) {
+        EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = ClientBuilder.newClient(new ClientConfig())
+                        .target(server).path("api/cards/updates")
+                        .request(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .get(Response.class);
+
+                if (res.getStatus() == 204) {
+                    continue;
+                }
+
+                var l = res.readEntity(Long.class);
+                consumer.accept(l);
+            }
+
+        });
+    }
+
+    /**
+     *
+     * @return - the cardinformationCtrl method
+     */
+    public CardInformationCtrl getCardInformationCtrl()
+    {
+        return cardInformationCtrl;
+    }
+
+    /**
+     * stops the Thread executor doing the long polling
+     */
+    public void stop(){
+        EXEC.shutdownNow();
+    }
+
+
     /**
      * adds card to specific index inside a specific collection's card array
      * @param col - the collection we want to add the card to
@@ -428,6 +476,7 @@ public class ServerUtils {
         tagOverviewCtrl.subscriber(session);
         cardInformationCtrl.subscriber(session);
         tagCreatorCtrl.subscriber(session);
+        adminLogInCtrl.subscriber(session);
     }
 
 
@@ -623,13 +672,16 @@ public class ServerUtils {
      * @param tagOverviewCtrl a controller that uses websockets
      * @param cardInformationCtrl a controller that uses websockets
      * @param tagCreatorCtrl a controller that uses websockets
+     * @param adminLogInCtrl a controller that uses websockets
      */
-    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl){
+    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl,
+                               AdminLogInCtrl adminLogInCtrl){
         this.boardCtrl = boardCtrl;
         this.boardOverviewCtrl = boardOverviewCtrl;
         this.tagOverviewCtrl = tagOverviewCtrl;
         this.cardInformationCtrl = cardInformationCtrl;
         this.tagCreatorCtrl = tagCreatorCtrl;
+        this.adminLogInCtrl = adminLogInCtrl;
     }
 
 
