@@ -16,6 +16,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import client.scenes.AdminLogInCtrl;
 import com.google.inject.Inject;
 import commons.Board;
 import jakarta.ws.rs.BadRequestException;
@@ -35,6 +36,8 @@ import javafx.stage.Modality;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,6 +54,8 @@ public class BoardOverviewCtrl implements Initializable {
     private TextField boardKey;
 
 
+    private AdminLogInCtrl adminLogInCtrl;
+
     private final ServerUtils server;
 
     private final MainCtrl mainCtrl;
@@ -59,16 +64,20 @@ public class BoardOverviewCtrl implements Initializable {
 
     private StompSession session;
 
+    private boolean isAdmin;
+
     /**
      * Constructor for the BoardOverview Ctrl
      *
-     * @param server   serverUtils ref
-     * @param mainCtrl main controller ref
+     * @param server         serverUtils ref
+     * @param mainCtrl       main controller ref
+     * @param adminLogInCtrl admin controller ref
      */
     @Inject
-    public BoardOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public BoardOverviewCtrl(ServerUtils server, MainCtrl mainCtrl, AdminLogInCtrl adminLogInCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.adminLogInCtrl = adminLogInCtrl;
     }
 
     /**
@@ -85,64 +94,76 @@ public class BoardOverviewCtrl implements Initializable {
 
     /**
      * A method for starting to listen to a server once the connection has been established
+     *
      * @param session the session that is connected to a server that the client is connected to
      */
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(this::refresh), session);
         this.session = session;
         String path = server.getServer().replaceAll("[^a-zA-Z0-9]", "_");
-        boardFilePath = "boards_"+ path + ".txt";
+        if (path.contains("localhost_8080")) {
+            try (Socket socket = new Socket()) {
+                socket.connect(new InetSocketAddress("google.com", 80));
+                path = "http___" + socket.getLocalAddress().getHostAddress().replaceAll("[^a-zA-Z0-9]", "_") + "_8080_";
+                System.out.println(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        boardFilePath = "boards_" + path + ".txt";
+        System.out.println(boardFilePath);
     }
 
     /**
      * Refreshes the board Overview
      */
     public void refresh() {
-        try {
-            File current = new File(boardFilePath);
-            Scanner scanner = new Scanner(current);
-            // Vbox to contain all boards.
-            VBox boardsBox = new VBox(25);
-            int size = 0;
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                long boardID = Long.parseLong(line.split(" -BOOL- ")[0]);
-
-                boolean created = line.split(" -BOOL- ")[1].equals("true");
-                try {
-                    Board b = server.getBoardById(boardID);
-                    size++;
-                    HBox boardContent = new HBox(25);
-                    Label boardLabel = new Label(b.getName());
-                    Button copyKey = new Button();
-                    ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
-                    Button openBoard = new Button("Open Board");
-                    Button delete = new Button("X");
-
-                    prepareContent(boardLabel, copyKey, imageView, openBoard, delete, b, created);
-
-                    boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
-                    boardsBox.getChildren().add(boardContent);
-                } catch (BadRequestException e) {
-                    current = removeBoardFromClient(boardID, current);
+        if (!isAdmin) {
+            try {
+                File current = new File(boardFilePath);
+                Scanner scanner = new Scanner(current);
+                VBox boardsBox = new VBox(25);
+                int size = 0;
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    long boardID = Long.parseLong(line.split(" -BOOL- ")[0]);
+                    System.out.println(boardID);
+                    boolean created = line.split(" -BOOL- ")[1].equals("true");
+                    try {
+                        Board b = server.getBoardById(boardID);
+                        size++;
+                        HBox boardContent = new HBox(25);
+                        Label boardLabel = new Label(b.getName());
+                        Button copyKey = new Button();
+                        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().
+                                getResourceAsStream("/client/assets/key.png"))));
+                        Button openBoard = new Button("Open Board");
+                        Button delete = new Button("X");
+                        prepareContent(boardLabel, copyKey, imageView, openBoard, delete, b, created);
+                        boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
+                        boardsBox.getChildren().add(boardContent);
+                    } catch (BadRequestException e) {
+                        current = removeBoardFromClient(boardID, current);
+                        e.printStackTrace();
+                    }
                 }
-            }
-            scanner.close();
-            if (!current.getName().equals(boardFilePath)) {
-                if (!current.getName().equals("boardsTemp.txt")) {
-                    new File("boardsTemp.txt").delete();
+                scanner.close();
+                if (!current.getName().equals(boardFilePath)) {
+                    if (!current.getName().equals("boardsTemp.txt")) {
+                        new File("boardsTemp.txt").delete();
+                    }
+                    new File(boardFilePath).delete();
+                    current.renameTo(new File(boardFilePath));
+                    new File("boardsTest.txt").delete();
                 }
-                new File(boardFilePath).delete();
-                current.renameTo(new File(boardFilePath));
-                new File("boardsTest.txt").delete();
+                boardsBox.setPrefSize(600, 225 * size);
+                boardContainer.setContent(boardsBox);
+            } catch (FileNotFoundException e) {
+                System.out.println("No boards exist for client.");
             }
-            boardsBox.setPrefSize(600, 225 * size);
-            boardContainer.setContent(boardsBox);
-
-        } catch (FileNotFoundException e) {
-            System.out.println("No boards exist for client.");
+        } else {
+            addAllBoards();
         }
-
     }
 
     /**
@@ -417,9 +438,52 @@ public class BoardOverviewCtrl implements Initializable {
     }
 
     /**
+     * Helper method that adds all boards to the overview,
+     * used if a user is an admin
+     */
+    public void addAllBoards() {
+        System.out.println("Added all boards");
+        int size = 0;
+        VBox boardsBox = new VBox(25);
+        for (Board board : server.getBoards()) {
+            size++;
+            HBox boardContent = new HBox(25);
+            Label boardLabel = new Label(board.getName());
+            Button copyKey = new Button();
+            ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
+            Button openBoard = new Button("Open Board");
+            Button delete = new Button("X");
+
+            prepareContent(boardLabel, copyKey, imageView, openBoard, delete, board, true);
+
+            boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
+            boardsBox.getChildren().add(boardContent);
+            boardsBox.setPrefSize(600, 225 * size);
+            boardContainer.setContent(boardsBox);
+        }
+    }
+
+    /**
      * Switch back to welcome page
      */
     public void showWelcomePage() {
         mainCtrl.showWelcomePage();
+    }
+
+    /**
+     * Switch to the admin login page
+     */
+    public void showAdminLoginPage() {
+        mainCtrl.showAdminLogIn();
+    }
+
+    /**
+     * Admin setter
+     *
+     * @param admin - new value for isAdmin
+     */
+    public void setAdmin(boolean admin) {
+        this.isAdmin = admin;
+        refresh();
     }
 }

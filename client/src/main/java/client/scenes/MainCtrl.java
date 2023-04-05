@@ -49,6 +49,11 @@ public class MainCtrl {
 
     private Scene keyboardShortcut;
 
+    private AdminLogInCtrl adminLogInCtrl;
+
+    private Scene adminLogIn;
+
+
     private TagCreatorCtrl tagCreatorCtrl;
 
     private Scene tagCreator;
@@ -56,6 +61,11 @@ public class MainCtrl {
     private TagOverviewCtrl tagOverviewCtrl;
 
     private Scene tagOverview;
+
+    private ColorManagementCtrl colorManagementCtrl;
+
+    private Scene colorManagement;
+
 
 
     /**
@@ -69,11 +79,15 @@ public class MainCtrl {
      * @param tagCreator tagCreator scene
      * @param tagOverview tagCreator scene
      * @param boardOverview  boardOverview scene
+     * @param adminLogIn adminLogIn scene
+     * @param colorManagement colorManagement scene
      */
     public void initialize(Stage primaryStage, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
                            Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
                            Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
-                           Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview) {
+                           Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview,
+                            Pair<AdminLogInCtrl, Parent> adminLogIn, Pair<ColorManagementCtrl, Parent> colorManagement) {
+
         this.primaryStage = primaryStage;
 
         this.cardInformationCtrl = cardInfo.getKey();
@@ -100,10 +114,47 @@ public class MainCtrl {
         this.boardOverviewCtrl = boardOverview.getKey();
         this.boardOverview = new Scene(boardOverview.getValue());
 
-        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
+        this.adminLogInCtrl = adminLogIn.getKey();
+        this.adminLogIn = new Scene(adminLogIn.getValue());
+
+        this.colorManagementCtrl = colorManagement.getKey();
+        this.colorManagement = new Scene(colorManagement.getValue());
+
+        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl, adminLogInCtrl);
+
+        adminLogInCtrl.setAdmin(false);
 
         showWelcomePage();
         primaryStage.show();
+    }
+
+    /**
+     * Displays the BoardOverviewAdmin Scene
+     * @param admin the admin key boolean
+     */
+    public void showBoardOverviewAdmin(boolean admin) {
+        boardOverviewCtrl.setAdmin(admin);
+        primaryStage.setTitle("Board Overview");
+        primaryStage.setScene(boardOverview);
+    }
+
+    /**
+     * Sets admin
+     * @param admin afwe
+     */
+    public void setAdminKey(String admin) {
+        adminLogInCtrl.setAdminKey(admin);
+    }
+
+    /**
+     * Displays the color management Scene
+     * and enables the controller
+     * @param currentBoard the current Board
+     */
+    public void showColorManagement(Board currentBoard) {
+        primaryStage.setTitle("Color Management");
+        primaryStage.setScene(colorManagement);
+        colorManagementCtrl.initialize(currentBoard);
     }
 
     /**
@@ -174,6 +225,15 @@ public class MainCtrl {
     public void showCollection(){
         primaryStage.setTitle("Collection Overview: Collection");
         primaryStage.setScene(collection);
+    }
+
+    /**
+     * Displays the Admin Log In Scene
+     * and enables the controller
+     */
+    public void showAdminLogIn() {
+        primaryStage.setTitle("Admin Log In: Admin");
+        primaryStage.setScene(adminLogIn);
     }
 
     /**

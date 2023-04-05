@@ -39,7 +39,7 @@ public class Card {
     private Long index;
 
     @OrderColumn(name="indexInCard")
-    @OneToMany(mappedBy = "cardId", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "cardId", cascade = CascadeType.ALL)
     private List<Subtask> subtasks = new ArrayList<>();
 
 

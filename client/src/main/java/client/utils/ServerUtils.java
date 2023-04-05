@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import client.scenes.*;
@@ -43,6 +45,7 @@ public class ServerUtils {
 
     private static String server;
     private String ip;
+    private String adminKey;
 
     private StompSession session;
 
@@ -54,6 +57,29 @@ public class ServerUtils {
 
     private CardInformationCtrl cardInformationCtrl;
     private TagCreatorCtrl tagCreatorCtrl;
+
+    private AdminLogInCtrl adminLogInCtrl;
+
+
+    /**
+     * Method used to generate a String of 8 random alphanumeric characters
+     * @return String of 8 random alphanumeric characters
+     */
+    private String generateAdminKey() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/boards/adminKey") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(String.class);
+    }
+
+    /**
+     * Admin Key getter method
+     * @return String admin key
+     */
+    public String getAdminKey() {
+        return generateAdminKey();
+    }
 
     /**
      * @param ip the ip that the user will be connecting to
@@ -71,9 +97,6 @@ public class ServerUtils {
     public String getServer(){
         return server;
     }
-
-
-
 
     /**
      * Adding a new Card to the server DB
@@ -394,6 +417,50 @@ public class ServerUtils {
                 });
     }
 
+
+    public static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+
+    /**
+     * Registers updates for deleted cards in the delete by Id method
+     * @param consumer the id of the card
+     */
+    public void registerForUpdates(Consumer<Long> consumer) {
+        EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = ClientBuilder.newClient(new ClientConfig())
+                        .target(server).path("api/cards/updates")
+                        .request(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .get(Response.class);
+
+                if (res.getStatus() == 204) {
+                    continue;
+                }
+
+                var l = res.readEntity(Long.class);
+                consumer.accept(l);
+            }
+
+        });
+    }
+
+    /**
+     *
+     * @return - the cardinformationCtrl method
+     */
+    public CardInformationCtrl getCardInformationCtrl()
+    {
+        return cardInformationCtrl;
+    }
+
+    /**
+     * stops the Thread executor doing the long polling
+     */
+    public void stop(){
+        EXEC.shutdownNow();
+    }
+
+
     /**
      * adds card to specific index inside a specific collection's card array
      * @param col - the collection we want to add the card to
@@ -460,6 +527,20 @@ public class ServerUtils {
     }
 
     /**
+     * gets a list of the subtasks of card 'id'
+     * @param id - the id of the card we want to search the subtasks of
+     * @return the subtasks of card 'id'
+     */
+    public List<Subtask> getSubtasksOfCard(Long id) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/subtasks/getFromCard/"+id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Subtask>>(){
+                });
+    }
+
+    /**
      * returns this card's board object
      * @param cardId - the card we want to search the board of
      * @return board object
@@ -469,6 +550,64 @@ public class ServerUtils {
         Collection collection = getCollectionById(c.getCollectionId());
         Board board = getBoardById(collection.getBoardId());
         return board;
+    }
+
+    /**
+     * update subtask with id 'id'
+     * @param id - the id of the subtask we want to update
+     * @param s - the new subtask info
+     * @return - the new subtask object
+     */
+    public Subtask updateSubtask(Long id, Subtask s) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks/"+id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .put(Entity.entity(s, APPLICATION_JSON), Subtask.class);
+    }
+
+    /**
+     * store subtask in the database
+     *
+     * @param s - the subtask we want to store
+     * @return - stored Subtask object
+     */
+    public Subtask addSubtask(Subtask s)
+    {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(s, APPLICATION_JSON), Subtask.class);
+    }
+
+    /**
+     * delete subtask from the database
+     *
+     * @param id - id of the Subtask we want to delete
+     * @return - response with deletion operation status
+     */
+    public Response deleteSubtask(Long id)
+    {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/subtasks/"+id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+    }
+
+    /**
+     * returns string with how many done subtasks does card 'id' have
+     * @param id - card id
+     * @return string with format 'doneSubtasks/totalSubtasks'
+     */
+    public String getDoneSubtasksForCard(Long id) {
+        List<Subtask> subtasks = getSubtasksOfCard(id);
+        int nr =0 ;
+        for(Subtask s : subtasks)
+            if(s.getFinished())
+                nr++;
+        return nr+"/"+subtasks.size();
     }
 
     /**
@@ -485,6 +624,7 @@ public class ServerUtils {
         tagOverviewCtrl.subscriber(session);
         cardInformationCtrl.subscriber(session);
         tagCreatorCtrl.subscriber(session);
+        adminLogInCtrl.subscriber(session);
     }
 
     /**
@@ -545,13 +685,16 @@ public class ServerUtils {
      * @param tagOverviewCtrl a controller that uses websockets
      * @param cardInformationCtrl a controller that uses websockets
      * @param tagCreatorCtrl a controller that uses websockets
+     * @param adminLogInCtrl a controller that uses websockets
      */
-    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl){
+    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl,
+                               AdminLogInCtrl adminLogInCtrl){
         this.boardCtrl = boardCtrl;
         this.boardOverviewCtrl = boardOverviewCtrl;
         this.tagOverviewCtrl = tagOverviewCtrl;
         this.cardInformationCtrl = cardInformationCtrl;
         this.tagCreatorCtrl = tagCreatorCtrl;
+        this.adminLogInCtrl = adminLogInCtrl;
     }
 
 }

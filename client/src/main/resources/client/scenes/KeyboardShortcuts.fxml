@@ -10,9 +10,9 @@
 <?import javafx.scene.text.Text?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #93BFCF;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane stylesheets="@/client/stylesheets/Global.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #93BFCF;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ScrollPane cache="true" layoutX="112.0" layoutY="85.0" prefHeight="231.0" prefWidth="376.0" style="-fx-border-color: black; -fx-border-radius: 50 50 50 50; -fx-background-color: #93BFCF;" styleClass="KeyboardShortcutsBox" stylesheets="@/client/stylesheets/Global.css">
+      <ScrollPane cache="true" layoutX="112.0" layoutY="85.0" prefHeight="231.0" prefWidth="376.0" style="-fx-border-color: black; -fx-border-radius: 50 50 50 50; -fx-background-color: #93BFCF;">
          <content>
             <VBox prefHeight="482.0" prefWidth="359.0">
                <children>
