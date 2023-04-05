@@ -477,11 +477,9 @@ public class CardInformationCtrl implements Initializable {
             updateTags(c);
 
         } else{
-         //   System.out.println("card id: " + card.getId());
             deleteSubtasksOfCard(card.getId());
             Card c = server.updateCard(card.getId(), card);
             saveSubtasksCardId(c);
-            //System.out.println(c);
             server.send("/app/cards", c, session);
             try {
                 Collection newCol = collectionCurrent;
