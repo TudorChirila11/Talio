@@ -143,6 +143,8 @@ public class CardInformationCtrl implements Initializable {
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
+        totalTagList = new ArrayList<>();
+        tagList = new ArrayList<>();
         //refresh();
     }
 
@@ -415,6 +417,10 @@ public class CardInformationCtrl implements Initializable {
             cardName.setText(card.getTitle());
             cardDescription.setText(card.getDescription());
             removeButton.setDisable(true);
+            tagAdder.setDisable(true);
+            tagDeleter.setDisable(true);
+            tagChooserAdd.setDisable(true);
+            tagChooserDelete.setDisable(true);
         }else{
             scrollPane.setDisable(false);
             cardName.setDisable(false);

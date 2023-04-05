@@ -535,7 +535,10 @@ public class BoardCtrl implements Initializable {
      */
     private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
-        if (isLocked && !isAccessible && !isAdmin) delete.setDisable(true); label.setDisable(true);
+        if (isLocked && !isAccessible && !isAdmin){
+            delete.setDisable(true);
+            label.setDisable(true);
+        }
         delete.getStyleClass().add("delete_button");
         delete.setOnAction(event -> {
             try {
@@ -563,6 +566,16 @@ public class BoardCtrl implements Initializable {
                 }
             }
         });
+        addSimpleAddTaskButton(collection, simpleAddTaskButton);
+    }
+
+    /**
+     * Adds a button to add a card to a collection
+     *
+     * @param collection          the collection
+     * @param simpleAddTaskButton the button to add a cards
+     */
+    private void addSimpleAddTaskButton(Collection collection, Button simpleAddTaskButton) {
         simpleAddTaskButton.getStyleClass().add("simpleAddTaskButton");
         simpleAddTaskButton.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
