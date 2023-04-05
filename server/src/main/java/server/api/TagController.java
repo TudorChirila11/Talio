@@ -7,6 +7,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.TagRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -57,6 +58,7 @@ public class TagController {
     @MessageMapping("/tagsUpdate") // /app/collections
     @SendTo("/topic/update")
     public Tag editTag(Tag t){
+        System.out.println(t);
         updateTag(t.getId(), t);
         return t;
     }
@@ -102,8 +104,24 @@ public class TagController {
      */
     @GetMapping(path = {"/{id}"})
     public List<Tag> getAllInBoard(@PathVariable("id") long boardId) {
-        System.out.println(boardId);
         return repo.findByBoardId(boardId);
+    }
+
+    /**
+     * Hardcoded mapping all tags
+     * @param cardId the card which will be used to get only the tags that the client needs
+     * @return List of tags objects
+     */
+    @GetMapping(path = {"/card/{cardId}"})
+    public List<Tag> getAllInCard(@PathVariable("cardId") Long cardId) {
+        List<Tag> tagList = getAll();
+        List<Tag> result = new ArrayList<>();
+        for (Tag tag : tagList) {
+            if (tag.getCards().contains(cardId)){
+                result.add(tag);
+            }
+        }
+        return result;
     }
 
     /**
@@ -154,6 +172,8 @@ public class TagController {
 
         // remove the cards
         tagInDatabase.setColour(newTag.getColour());
+
+        tagInDatabase.setCards(newTag.getCards());
 
         // store the collection
         Tag theSavedTag = repo.save(tagInDatabase);

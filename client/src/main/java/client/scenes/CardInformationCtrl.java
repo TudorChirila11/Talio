@@ -2,10 +2,8 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Card;
+import commons.*;
 import commons.Collection;
-import commons.Board;
-import commons.Subtask;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,6 +19,26 @@ import java.util.*;
 import java.util.List;
 
 public class CardInformationCtrl implements Initializable {
+
+    @FXML
+    public Button tagAdder;
+
+    @FXML
+    public MenuButton tagChooserAdd;
+
+    @FXML
+    public MenuButton tagChooserDelete;
+
+    @FXML
+    public Button tagDeleter;
+
+    private List<Tag> tagList;
+
+    private List<Tag> totalTagList;
+
+    private Tag currentTagAdd;
+
+    private Tag currentTagDelete;
 
     enum State {
         EDIT, CREATE, INACTIVE
@@ -98,6 +116,24 @@ public class CardInformationCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tagAdder.setOnAction(event -> {
+            if (currentTagAdd != null && !tagList.contains(currentTagAdd)) {
+                tagList.add(currentTagAdd);
+                tagChooserAdd.setText("choose a tag");
+                currentTagAdd = null;
+                refresh();
+            }
+        });
+
+        tagDeleter.setOnAction(event -> {
+            if (currentTagDelete != null && tagList.contains(currentTagDelete)) {
+                tagList.remove(currentTagDelete);
+                tagChooserDelete.setText("choose a tag");
+                currentTagDelete = null;
+                refresh();
+            }
+        });
+
         subtaskHBoxes = new ArrayList<>();
         data = Collections.synchronizedList(new ArrayList<>());
         buildAddSubtask();
@@ -356,6 +392,9 @@ public class CardInformationCtrl implements Initializable {
     public void refresh() {
         if(state == State.INACTIVE || state == null)
             return;
+        if (currentBoard != null) {
+            setupTags();
+        }
         setupCollectionMenu();
         if (state == State.EDIT) {
             ///Delete all subtasks from the database
@@ -435,13 +474,12 @@ public class CardInformationCtrl implements Initializable {
             Card c = server.addCard(card);
             saveSubtasksCardId(c);
             server.send("/app/cards", c, session);
-        }
-        else{
-         //   System.out.println("card id: " + card.getId());
+            updateTags(c);
+
+        } else{
             deleteSubtasksOfCard(card.getId());
             Card c = server.updateCard(card.getId(), card);
             saveSubtasksCardId(c);
-            //System.out.println(c);
             server.send("/app/cards", c, session);
             try {
                 Collection newCol = collectionCurrent;
@@ -458,6 +496,7 @@ public class CardInformationCtrl implements Initializable {
             } catch (WebApplicationException e) {
                 showError(e.getMessage());
             }
+            updateTags(c);
         }
         clearFields(); ///security measure
         state = State.INACTIVE;
@@ -543,6 +582,8 @@ public class CardInformationCtrl implements Initializable {
         card.setSubtasks(server.getSubtasksOfCard(card.getId()));
         populateSubtasksScreen(card.getSubtasks());
         refresh();
+
+        setTag();
     }
 
     /**
@@ -553,6 +594,21 @@ public class CardInformationCtrl implements Initializable {
         setState(CardInformationCtrl.State.CREATE);
         setCard(new Card());
         setBoard(board);
+
+        setTag();
+    }
+
+    private void setTag() {
+        if (currentBoard != null) {
+            if (card.equals(new Card())) {
+                tagList = new ArrayList<>();
+            } else {
+                tagList = server.getTagsByCard(card);
+            }
+            totalTagList = server.getTags(currentBoard.getId());
+            setupTags();
+        }
+
         refresh();
     }
 
@@ -566,6 +622,62 @@ public class CardInformationCtrl implements Initializable {
         for(Subtask s : subtasks)
         {
             server.send("/app/subtasksDelete", s.getId(), session);
+        }
+    }
+
+    /**
+     * This method will set up the tag menu, so that the user can add and delete cards from the card.
+     */
+    public void setupTags() {
+
+        tagChooserAdd.getItems().clear();
+
+        //Adding all the tags that the card doesn't have
+        for (Tag tag : totalTagList) {
+            if (!tagList.contains(tag)) {
+                MenuItem menuItem = new MenuItem(tag.getName());
+                menuItem.setOnAction(event -> {
+                    tagChooserAdd.setText(tag.getName());
+                    currentTagAdd = tag;
+                });
+                tagChooserAdd.getItems().add(menuItem);
+            }
+        }
+
+        tagChooserDelete.getItems().clear();
+
+        //Adding all the tags that the card has
+        for (Tag tag : tagList) {
+            MenuItem menuItem = new MenuItem(tag.getName());
+            menuItem.setOnAction(event -> {
+                tagChooserDelete.setText(tag.getName());
+                currentTagDelete = tag;
+            });
+            tagChooserDelete.getItems().add(menuItem);
+        }
+    }
+
+    /**
+     * This method is used to add all the relevant card ids to all the tags
+     * @param c the card that'll be added or removed from all the appropriate tags
+     */
+    public void updateTags(Card c) {
+        // this just adds the card to all the tags that the card added
+        for (Tag tag : tagList) {
+            if (!tag.getCards().contains(c.getId())) {
+                System.out.println(c.getId() + "hello");
+                tag.getCards().add(c.getId());
+                server.send("/app/tagsUpdate", tag, session);
+            }
+        }
+
+        // this just deletes the card from all the tags that the card removed
+        for (Tag tag : totalTagList) {
+            if (tag.getCards().contains(c.getId()) && !tagList.contains(tag)) {
+                System.out.println(c.getId() + "there");
+                tag.getCards().remove(c.getId());
+                server.send("/app/tagsUpdate", tag, session);
+            }
         }
     }
 }
