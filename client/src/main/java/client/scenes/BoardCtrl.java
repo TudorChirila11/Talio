@@ -221,28 +221,35 @@ public class BoardCtrl implements Initializable {
                 showAlert("Wrong password");
                 return;
             }
-            // Writes board id and password to a file
-            File file = new File("password.txt");
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            try {
-                FileWriter writer = new FileWriter(file, true);
-                writer.write(currentBoard.getId().toString() + "-PASSWORD-" + currentBoard.getPassword() + "\n");
-                writer.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            writeNewPasswordToFile();
             isLocked = false;
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
             refresh(currentBoard);
         } catch (WebApplicationException e) {
             showAlert(e.toString());
+        }
+    }
+
+    /**
+     * Writes the new password to a file
+     */
+    private void writeNewPasswordToFile() {
+        // Writes board id and password to a file
+        File file = new File("password.txt");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            FileWriter writer = new FileWriter(file, true);
+            writer.write(currentBoard.getId().toString() + "-PASSWORD-" + currentBoard.getPassword() + "\n");
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -262,14 +269,16 @@ public class BoardCtrl implements Initializable {
                 }else{
                     return;
                 }
-            } else {
+            }else {
+                // Changes the password of the board
                 TextInputDialog dialog = new TextInputDialog();
-                dialog.setTitle("Password");
+                dialog.setTitle("Change Password");
                 dialog.setHeaderText("Enter the new password for the board");
                 dialog.setContentText("Password:");
                 Optional<String> result = dialog.showAndWait();
                 if (result.isPresent()) {
                     currentBoard.setPassword(result.get());
+                    writeNewPasswordToFile();
                 }else{
                     return;
                 }
@@ -344,10 +353,10 @@ public class BoardCtrl implements Initializable {
     private void lockSetup() {
         isLocked = currentBoard.isLocked();
         lockButton.setOnMouseClicked(event -> {
-            if (event.getButton().equals(MouseButton.SECONDARY)) {
+            if (event.getButton().equals(MouseButton.SECONDARY) && (isAccessible || isAdmin || !isLocked)) {
                 removeLock();
             } else {
-                if (isLocked) {
+                if (isLocked && !isAccessible) {
                     System.out.println("Lock button clicked");
                     unlockBoard();
                 } else {

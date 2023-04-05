@@ -31,6 +31,10 @@
     -fx-background-position: center;
 }
 
+.imageButton:hover ImageView{
+    -fx-effect: innershadow( gaussian , blue , 7 , 1 , 1 , 1 );
+}
+
 #boardChoiceBox{
     -fx-background-color: #93BFCF;
 }
