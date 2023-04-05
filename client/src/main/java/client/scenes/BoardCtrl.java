@@ -525,7 +525,6 @@ public class BoardCtrl implements Initializable {
         }
     }
 
-    // CHECKSTYLE:OFF
     /**
      * Controller for Label interactions.
      *
@@ -536,10 +535,7 @@ public class BoardCtrl implements Initializable {
      */
     private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
-        if (isLocked && !isAccessible && !isAdmin) {
-            delete.setDisable(true);
-            label.setDisable(true);
-        }
+        if (isLocked && !isAccessible && !isAdmin) delete.setDisable(true); label.setDisable(true);
         delete.getStyleClass().add("delete_button");
         delete.setOnAction(event -> {
             try {
@@ -583,13 +579,11 @@ public class BoardCtrl implements Initializable {
                     Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()));
                     server.send("/app/cards", newCard, session);
                     currentBoard = server.getBoardById(currentBoard.getId());
-                    System.out.println(currentBoard);
                 } else showAlert("Please enter a title for the card");
             }
         });
     }
 
-    // CHECKSTYLE:ONs
 
     /**
      * returns this card's future index inside listview lv
