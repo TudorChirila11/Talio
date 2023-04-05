@@ -1,7 +1,12 @@
 package commons;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.*;
-import java.util.Objects;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Subtask {
@@ -134,41 +139,30 @@ public class Subtask {
     }
 
     /**
-     * An equals method for the subtask data class
-     * @param o the object that'll be compared to this
-     * @return a boolean representing whether the 2 objects are equal or not
+     * the equals methode
+     * @param obj other object
+     * @return boolean true iff same
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Subtask subtask = (Subtask) o;
-        return Objects.equals(id, subtask.id) && Objects.equals(cardId, subtask.cardId) && Objects.equals(index, subtask.index) && Objects.equals(name, subtask.name) && Objects.equals(finished, subtask.finished);
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     /**
-     * A hashcode method for the subtask data class
-     * @return the integer that represents the hashed object
+     * generate the hashcode
+     * @return hashcode
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, cardId, index, name, finished);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
-
     /**
-     * A toString method for the subtask data class
-     * @return A string representing the whole data class
+     * to string methode
+     * @return string
      */
-
     @Override
     public String toString() {
-        return "Subtask{" +
-                "id=" + id +
-                ", cardId=" + cardId +
-                ", index=" + index +
-                ", name='" + name + '\'' +
-                ", finished=" + finished +
-                '}';
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 }

@@ -7,7 +7,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -115,6 +116,7 @@ public class Board {
     }
 
     /**
+<<<<<<< HEAD
      * get the locked status of the board
      * @return isLocked
      */
@@ -159,14 +161,13 @@ public class Board {
 
 
     /**
-     * A hashcode method for the board data class
-     * @return the integer that represents the hashed object
+     * generate the hashcode
+     * @return hashcode
      */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
-
 
 
     /**

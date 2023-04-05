@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: #6096B4;" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardInformationCtrl">
+<AnchorPane prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: #6096B4;" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardInformationCtrl">
    <children>
       <Text fx:id="title" layoutX="34.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Information">
          <font>
@@ -54,18 +54,19 @@
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Text>
-            <TextArea fx:id="cardDescription" layoutX="23.0" layoutY="93.0" prefHeight="114.0" prefWidth="191.0" />
-            <MenuButton layoutX="28.0" layoutY="238.0" mnemonicParsing="false" text="Add tag">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Create tag (TBA)" />
-              </items>
-            </MenuButton>
-            <Text layoutX="30.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags:" wrappingWidth="41.515625">
+
+            <Text layoutX="30.0" layoutY="225.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags:">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Text>
+            <TextArea fx:id="cardDescription" layoutX="23.0" layoutY="93.0" prefHeight="114.0" prefWidth="191.0" />
+            <MenuButton fx:id="tagChooserAdd" layoutX="28.0" layoutY="233.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="144.0" text="choose a tag" />
+            <Button fx:id="tagAdder" layoutX="178.0" layoutY="233.0" prefHeight="24.0" prefWidth="64.0" text="add tag" />
+            <MenuButton fx:id="tagChooserDelete" layoutX="28.0" layoutY="263.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="144.0" text="choose a tag" />
+            <Button fx:id="tagDeleter" layoutX="177.0" layoutY="263.0" text="delete tag" />
             <Line endX="11.0" endY="187.39999389648438" layoutX="238.0" layoutY="87.0" startX="11.0" startY="-62.20000457763672" />
+
             <Text layoutX="272.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subtasks:">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
