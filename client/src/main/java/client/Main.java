@@ -68,5 +68,8 @@ public class Main extends Application {
         mainCtrl.initialize(primaryStage, board, cardInformation, collection, welcomePage, keyboardShortcutPage,
                 tagCreator, tagOverview, boardOverview, adminLogIn, colorManagement);
 
+        primaryStage.setOnCloseRequest(e -> {
+            cardInformation.getKey().stop();
+        });
     }
 }

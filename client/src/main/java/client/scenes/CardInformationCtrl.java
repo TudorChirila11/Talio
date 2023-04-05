@@ -22,7 +22,6 @@ import java.util.List;
 
 public class CardInformationCtrl implements Initializable {
 
-
     enum State {
         EDIT, CREATE, INACTIVE
     }
@@ -34,7 +33,6 @@ public class CardInformationCtrl implements Initializable {
 
     private ArrayList<HBox> subtaskHBoxes;
 
-    private List<Subtask> toDelete;
 
 
     private State state;
@@ -57,6 +55,8 @@ public class CardInformationCtrl implements Initializable {
 
     @FXML
     private TextField subtaskName;
+
+    private List<Long> data;
 
     @FXML
     private Text title;
@@ -98,14 +98,45 @@ public class CardInformationCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        toDelete = new ArrayList<>();
         subtaskHBoxes = new ArrayList<>();
+        data = Collections.synchronizedList(new ArrayList<>());
         buildAddSubtask();
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
         //refresh();
     }
+
+    /**
+     * method to register for long polling updates
+     */
+    public void registerForUpdates()
+    {
+        server.registerForUpdates(l ->{
+            data.add(l);
+            if(state == State.EDIT){
+                Platform.runLater(() -> checkDeleted());
+            }
+        });
+    }
+
+    /**
+     * Checks if a card has been deleted with long polling
+     */
+    private void checkDeleted() {
+        showError("This card has been deleted by another user!");
+        if(data.contains(card.getId())){
+            goBack();
+        }
+    }
+
+    /**
+     * stops the polling
+     */
+    public void stop() {
+        server.stop();
+    }
+
 
     /**
      * A method for starting to listen to a server once the connection has been established
@@ -305,7 +336,7 @@ public class CardInformationCtrl implements Initializable {
             {
                 s.setCardId(c.getId());
                 Subtask newS = server.updateSubtask(s.getId(), s);
-                server.send("app/subtasks", newS, session);//TODO send subtask through server
+                server.send("app/subtasks", newS, session);
             }
     }
 
@@ -352,7 +383,7 @@ public class CardInformationCtrl implements Initializable {
     public void populateSubtasksScreen(List<Subtask> subtaskList) {
         subtaskHBoxes = new ArrayList<>();
         subtaskList.sort(Comparator.comparing(Subtask::getIndex));
-        System.out.println(subtaskList);
+     //   System.out.println(subtaskList);
         for (Subtask s : subtaskList) {
             HBox hb = new HBox(10);
             TextField tf = new TextField();
@@ -406,7 +437,7 @@ public class CardInformationCtrl implements Initializable {
             server.send("/app/cards", c, session);
         }
         else{
-            System.out.println("card id: " + card.getId());
+         //   System.out.println("card id: " + card.getId());
             deleteSubtasksOfCard(card.getId());
             Card c = server.updateCard(card.getId(), card);
             saveSubtasksCardId(c);
@@ -501,7 +532,7 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * configures this controller to enter in 'Edit Card' Mode
-     * @param cardId - the Id of the card we want to edit
+     * @param cardId - the id of the card we want to edit
      */
     public void setEditMode(Long cardId) {
         setCard(getCardById(cardId));
@@ -511,8 +542,6 @@ public class CardInformationCtrl implements Initializable {
         setBoard(board);
         card.setSubtasks(server.getSubtasksOfCard(card.getId()));
         populateSubtasksScreen(card.getSubtasks());
-        if (card.getId() != null)
-            deleteSubtasksOfCard(card.getId());
         refresh();
     }
 

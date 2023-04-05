@@ -92,23 +92,25 @@ public class TagOverviewCtrl implements Initializable{
      */
     public void refresh() {
         ListView<HBox> tagListView = new ListView<>();
-        tagsList = server.getTags(currentBoard.getId());
-        FXMLLoader loader;
-        for(Tag tag : tagsList) {
-            loader = new FXMLLoader(getClass().getResource("/client/scenes/TagInOverview.fxml"));
-            HBox newTag = null;
-            try {
-                newTag = loader.load();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        if(currentBoard != null) {
+            tagsList = server.getTags(currentBoard.getId());
+            FXMLLoader loader;
+            for(Tag tag : tagsList) {
+                loader = new FXMLLoader(getClass().getResource("/client/scenes/TagInOverview.fxml"));
+                HBox newTag = null;
+                try {
+                    newTag = loader.load();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                TagInOverviewCtrl tagController = loader.getController();
+                tagController.setTagText(tag.getName());
+                tagController.setColor(tag.getColour());
+                tagController.subscriber(session, server, tag, mainCtrl, currentBoard);
+                tagListView.getItems().add(newTag);
             }
-            TagInOverviewCtrl tagController = loader.getController();
-            tagController.setTagText(tag.getName());
-            tagController.setColor(tag.getColour());
-            tagController.subscriber(session, server, tag, mainCtrl, currentBoard);
-            tagListView.getItems().add(newTag);
+            tagContainer.getChildren().set(0, tagListView);
         }
-        tagContainer.getChildren().set(0, tagListView);
     }
 
     /**
