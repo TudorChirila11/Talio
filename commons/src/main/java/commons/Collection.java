@@ -26,7 +26,7 @@ public class Collection {
     private Long boardId;
 
     @OrderColumn(name="index")
-    @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "collectionId", cascade = CascadeType.ALL)
     private List<Card> cards = new ArrayList<>();
 
 

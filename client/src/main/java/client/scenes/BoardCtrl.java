@@ -251,7 +251,7 @@ public class BoardCtrl implements Initializable {
      */
     private void lockBoard() {
         try {
-            if (currentBoard.getPassword() == null || currentBoard.getPassword().equals("")) {
+            if (currentBoard.getPassword() == null) {
                 TextInputDialog dialog = new TextInputDialog();
                 dialog.setTitle("Password");
                 dialog.setHeaderText("Enter a password for the board");
@@ -259,25 +259,24 @@ public class BoardCtrl implements Initializable {
                 Optional<String> result = dialog.showAndWait();
                 if (result.isPresent()) {
                     currentBoard.setPassword(result.get());
+                }else{
+                    return;
                 }
             } else {
                 TextInputDialog dialog = new TextInputDialog();
                 dialog.setTitle("Password");
-                dialog.setHeaderText("Enter the password for the board");
+                dialog.setHeaderText("Enter the new password for the board");
                 dialog.setContentText("Password:");
                 Optional<String> result = dialog.showAndWait();
                 if (result.isPresent()) {
-                    if (!result.get().equals(currentBoard.getPassword())) {
-                        showAlert("Wrong password");
-                        return;
-                    }
+                    currentBoard.setPassword(result.get());
+                }else{
+                    return;
                 }
             }
             currentBoard.setLocked(true);
-            System.out.println(currentBoard);
             server.send("/app/boards", currentBoard, session);
             currentBoard = server.getBoardById(currentBoard.getId());
-            System.out.println(currentBoard);
         } catch (WebApplicationException e) {
             showAlert(e.toString());
         }

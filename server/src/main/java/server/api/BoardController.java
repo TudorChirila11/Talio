@@ -143,6 +143,7 @@ public class BoardController {
     @PostMapping(path = {"/", ""})
     public ResponseEntity<Board> add(@RequestBody Board board) {
         Board saved = repo.save(board);
+        System.out.println(saved);
         return ResponseEntity.ok(saved);
     }
 
