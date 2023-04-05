@@ -391,7 +391,7 @@ public class CardInformationCtrl implements Initializable {
             collectionCurrent = server.getCollectionById(card.getCollectionId());
             cardName.setText(card.getTitle());
             cardDescription.setText(card.getDescription());
-        } else {
+        } else if(state != State.VIEW) {
             title.setText("Add card");
             collectionCurrent = null;
         }

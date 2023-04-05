@@ -4,10 +4,9 @@ import client.Main;
 import client.scenes.MainCtrl;
 
 import client.utils.ServerUtils;
+import commons.Board;
 import commons.Card;
 import jakarta.ws.rs.WebApplicationException;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -45,34 +44,42 @@ public class CardCell extends ListCell<Card> {
 
     private StompSession session;
 
+    private boolean passwordCheck;
+
+    private Board currentBoard;
+
+    private boolean isAdmin;
+
     /**
      * Constructor for the Custom Task Cell of type Card
      *
      * @param mainCtrl - reference for main controller
      * @param server   reference for server
      * @param session  current Stompsession for websockets
+     * @param isAdmin  boolean to check if the user is an admins
+     * @param currentBoard current board
+     * @param passwordCheck boolean to check if the board is password protected
      */
-    public CardCell(MainCtrl mainCtrl, ServerUtils server, StompSession session) {
+    public CardCell(MainCtrl mainCtrl, ServerUtils server, StompSession session, boolean isAdmin, Board currentBoard, boolean passwordCheck) {
         super();
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.session = session;
+        this.isAdmin = isAdmin;
+        this.currentBoard = currentBoard;
+        this.passwordCheck = passwordCheck;
         loadFXML();
-        removeButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    server.send("/app/cardsDelete", id, session);
+        removeButton.setOnAction(event -> {
+            try {
+                server.send("/app/cardsDelete", id, session);
+            } catch (WebApplicationException e) {
 
-                } catch (WebApplicationException e) {
-
-                    var alert = new Alert(Alert.AlertType.ERROR);
-                    alert.initModality(Modality.APPLICATION_MODAL);
-                    alert.setContentText(e.getMessage());
-                    alert.showAndWait();
-                }
-                getListView().getItems().remove(getItem());
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
             }
+            getListView().getItems().remove(getItem());
         });
         editButton.setOnAction(event -> {
             mainCtrl.editCard(id);
@@ -119,17 +126,19 @@ public class CardCell extends ListCell<Card> {
             doneSubtasks.setText(server.getDoneSubtasksForCard(id));
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
-
-            if (server.getBoardOfCard(id).isLocked() && !passwordCheck()) {
-                removeButton.setDisable(true);
-                editButton.setOnAction(event -> {
-                    var alert = new Alert(Alert.AlertType.ERROR);
-                    alert.initModality(Modality.APPLICATION_MODAL);
-                    alert.setContentText("This board is locked, you can't edit cards");
-                    alert.showAndWait();
-                });
-            } else {
-                System.out.println("id is null");
+            if(currentBoard != null){
+                if ((currentBoard.isLocked() && !passwordCheck) && !isAdmin) {
+                    removeButton.setDisable(true);
+                    editButton.setOnAction(event -> {
+                        var alert = new Alert(Alert.AlertType.ERROR);
+                        alert.initModality(Modality.APPLICATION_MODAL);
+                        alert.setContentText("This board is locked, you can't edit cards. Will enter the card in read-only mode.");
+                        alert.showAndWait();
+                        mainCtrl.viewCard(id);
+                    });
+                } else {
+                    System.out.println(id);
+                }
             }
         }
     }

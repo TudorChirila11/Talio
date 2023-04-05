@@ -23,6 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -126,6 +127,7 @@ public class BoardCtrl implements Initializable {
                 currentBoard.setLocked(false);
                 currentBoard.setPassword(null);
                 server.send("/app/boards", currentBoard, session);
+                currentBoard = server.getBoardById(currentBoard.getId());
                 isLocked = false;
                 addCollectionButton.setDisable(false);
                 addCardButton.setDisable(false);
@@ -192,6 +194,7 @@ public class BoardCtrl implements Initializable {
         } catch (WebApplicationException e) {
             showAlert(e.toString());
         }
+        currentBoard = server.getBoardById(currentBoard.getId());
     }
 
     /**
@@ -211,11 +214,12 @@ public class BoardCtrl implements Initializable {
             dialog.setHeaderText("Enter the password for the board");
             dialog.setContentText("Password:");
             Optional<String> result = dialog.showAndWait();
-            if (result.isPresent()) {
-                if (!result.get().equals(currentBoard.getPassword())) {
-                    showAlert("Wrong password");
-                    return;
-                }
+            if(!result.isPresent()){
+                return;
+            }
+            if (!result.get().equals(currentBoard.getPassword())) {
+                showAlert("Wrong password");
+                return;
             }
             // Writes board id and password to a file
             File file = new File("password.txt");
@@ -270,7 +274,10 @@ public class BoardCtrl implements Initializable {
                 }
             }
             currentBoard.setLocked(true);
+            System.out.println(currentBoard);
             server.send("/app/boards", currentBoard, session);
+            currentBoard = server.getBoardById(currentBoard.getId());
+            System.out.println(currentBoard);
         } catch (WebApplicationException e) {
             showAlert(e.toString());
         }
@@ -286,7 +293,8 @@ public class BoardCtrl implements Initializable {
         if (currentBoard != null) {
             lockSetup();
             boardLabel.setText(board.getName());
-            boardLabel.setMaxWidth(Double.MAX_VALUE);
+            boardLabel.setPrefWidth(300);
+            HBox.setHgrow(boardLabel, Priority.ALWAYS);
             AnchorPane.setLeftAnchor(boardLabel, 0.0);
             AnchorPane.setRightAnchor(boardLabel, 0.0);
             boardLabel.setAlignment(javafx.geometry.Pos.CENTER);
@@ -294,32 +302,29 @@ public class BoardCtrl implements Initializable {
             // Create a horizontal box to hold the task lists
             HBox taskListsBox = new HBox(25);
             taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
-            mapper = new HashMap<ListView<Card>, Collection>();
+            mapper = new HashMap<>();
             for (Collection current : taskCollections) {
                 String collectionName = current.getName();
                 ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
-                // Create a label for the collection name
                 Label collectionLabel = new Label(collectionName);
                 collectionLabel.getStyleClass().add("collectionLabel");
 
                 ListView<Card> collection = new ListView<>(list);
                 collection.getStyleClass().add("collection");
-                collection.setCellFactory(new CardCellFactory(mainCtrl, server, session));
+                collection.setCellFactory(new CardCellFactory(mainCtrl, server, session, isAdmin, currentBoard, isAdmin));
                 collection.setPrefSize(225, 275);
 
                 //maps this listview to its associate Collection
                 mapper.put(collection, current);
-
-                // Set up drag and drop for the individual collections...
-                if(isLocked && !isAccessible) {
+                if (isAdmin) {
+                    setupDragAndDrop(collection);
+                } else if (!isLocked || isAccessible) {
                     setupDragAndDrop(collection);
                 }
                 // Creating a vertical stacked box with the label -> collection -> simple add task add button
                 Button simpleAddTaskButton = new Button("+");
 
-                if (isLocked && !isAccessible) {
-                    simpleAddTaskButton.setDisable(true);
-                }
+                if ((isLocked && !isAccessible && !isAdmin)) simpleAddTaskButton.setDisable(true);
 
                 VBox collectionVBox = new VBox(10);
                 collectionVBox.getChildren().addAll(collectionLabel, collection, simpleAddTaskButton);
@@ -340,9 +345,9 @@ public class BoardCtrl implements Initializable {
     private void lockSetup() {
         isLocked = currentBoard.isLocked();
         lockButton.setOnMouseClicked(event -> {
-            if(event.getButton().equals(MouseButton.SECONDARY)){
+            if (event.getButton().equals(MouseButton.SECONDARY)) {
                 removeLock();
-            }else{
+            } else {
                 if (isLocked) {
                     System.out.println("Lock button clicked");
                     unlockBoard();
@@ -352,11 +357,17 @@ public class BoardCtrl implements Initializable {
                 }
             }
         });
-        if (isLocked && !passwordCheck()) {
-            lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
-            addCollectionButton.setDisable(true);
-            addCardButton.setDisable(true);
-        }else{
+        if (!isAdmin) {
+            if (isLocked && !passwordCheck()) {
+                lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
+                addCollectionButton.setDisable(true);
+                addCardButton.setDisable(true);
+            } else {
+                lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
+                addCollectionButton.setDisable(false);
+                addCardButton.setDisable(false);
+            }
+        } else {
             lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
@@ -409,14 +420,15 @@ public class BoardCtrl implements Initializable {
 
                 Collection oldCollection = mapper.get(sourceList);
                 Collection newCollection = mapper.get(listView);
-                if(oldCollection == newCollection)
-                    newIndex = Math.min(newIndex, listView.getItems().size()-1);
+                if (oldCollection == newCollection)
+                    newIndex = Math.min(newIndex, listView.getItems().size() - 1);
                 long oldIndex = sourceIndex;
                 //int currentIndex = getIndex(listView, event.getY());
                 Card d = server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
                 server.send("/app/collections", server.getCollectionById(oldCollection.getId()), session);
                 server.send("/app/collections", server.getCollectionById(newCollection.getId()), session);
                 server.send("/app/cards", d, session);
+                currentBoard = server.getBoardById(currentBoard.getId());
                 refresh(currentBoard);
             }
         }
@@ -451,14 +463,10 @@ public class BoardCtrl implements Initializable {
             listView.setOnDragDropped(event -> configDropped(event, listView, getIndex(listView, event.getY()), om));
         }
         listView.setCellFactory(param -> {
-            CardCell cell = new CardCell(mainCtrl, server, session);
+            CardCell cell = new CardCell(mainCtrl, server, session, isAdmin, currentBoard, isAccessible);
             cell.onMouseClickedProperty().set(event -> {
                 if (event.getClickCount() == 2) {
-                    if(isLocked && !isAccessible){
-                        mainCtrl.viewCard(cell.getItem().getId());
-                    }else{
-                        mainCtrl.editCard(cell.getItem().getId());
-                    }
+                    mainCtrl.editCard(cell.getItem().getId());
                 }
             });
             cell.setOnDragDetected(event -> {
@@ -501,6 +509,7 @@ public class BoardCtrl implements Initializable {
                 Collection randomC = new Collection(newName, currentBoard);
                 try {
                     server.send("/app/collections", randomC, session);
+                    currentBoard = server.getBoardById(currentBoard.getId());
                 } catch (WebApplicationException e) {
                     showAlert(e.getMessage());
                 }
@@ -508,6 +517,7 @@ public class BoardCtrl implements Initializable {
         }
     }
 
+    // CHECKSTYLE:OFF
     /**
      * Controller for Label interactions.
      *
@@ -518,7 +528,7 @@ public class BoardCtrl implements Initializable {
      */
     private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
-        if (isLocked && !isAccessible) {
+        if (isLocked && !isAccessible && !isAdmin) {
             delete.setDisable(true);
             label.setDisable(true);
         }
@@ -526,6 +536,7 @@ public class BoardCtrl implements Initializable {
         delete.setOnAction(event -> {
             try {
                 server.send("/app/collectionsDelete", collection, session);
+                currentBoard = server.getBoardById(currentBoard.getId());
             } catch (WebApplicationException e) {
                 showAlert(e.getMessage());
             }
@@ -543,6 +554,7 @@ public class BoardCtrl implements Initializable {
                     if (!newName.isEmpty()) {
                         collection.setName(newName);
                         server.send("/app/collections", collection, session);
+                        currentBoard = server.getBoardById(currentBoard.getId());
                     }
                 }
             }
@@ -562,10 +574,14 @@ public class BoardCtrl implements Initializable {
                 if (!input.getText().equals("")) {
                     Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()));
                     server.send("/app/cards", newCard, session);
+                    currentBoard = server.getBoardById(currentBoard.getId());
+                    System.out.println(currentBoard);
                 } else showAlert("Please enter a title for the card");
             }
         });
     }
+
+    // CHECKSTYLE:ONs
 
     /**
      * returns this card's future index inside listview lv
@@ -587,12 +603,14 @@ public class BoardCtrl implements Initializable {
 
     /**
      * sets admin
+     *
      * @param admin
      */
 
     public void setAdmin(boolean admin) {
-
+        isAdmin = admin;
     }
+
     /**
      * Switches to the color management scene
      */

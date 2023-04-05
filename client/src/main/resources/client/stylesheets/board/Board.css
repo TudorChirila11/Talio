@@ -72,6 +72,10 @@
      -fx-padding: 0 0 0 60;
 }
 
+.collectionLabel:hover{
+    -fx-text-fill: blue;
+}
+
 .simpleAddTaskButton{
     -fx-font-size: 10px;
     -fx-background-color: #00ff2b;
