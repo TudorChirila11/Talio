@@ -76,7 +76,7 @@
                   <VBox prefHeight="61.0" prefWidth="49.0" />
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="Add" />
+                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="Add" onAction="#createColorPreset"/>
                         <VBox prefHeight="200.0" prefWidth="100.0" />
                         <Button mnemonicParsing="false" prefWidth="59.0" text="Default" />
                      </children>

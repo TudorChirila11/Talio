@@ -12,13 +12,11 @@ public class AdminLogInCtrlTest {
     private ServerUtils serverUtils;
     private MainCtrl mainCtrl;
 
-    private BoardOverviewCtrl boardOverviewCtrl;
 
     @BeforeEach
     public void setUp() {
         serverUtils = new ServerUtils();
         mainCtrl = new MainCtrl();
-        boardOverviewCtrl = new BoardOverviewCtrl(serverUtils, mainCtrl, adminLogInCtrl);
         adminLogInCtrl = new AdminLogInCtrl(serverUtils, mainCtrl);
     }
 
