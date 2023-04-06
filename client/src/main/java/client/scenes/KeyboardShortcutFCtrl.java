@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -22,6 +24,22 @@ public class KeyboardShortcutFCtrl implements Initializable {
     private Button backButton;
 
 
+    private final ServerUtils server;
+
+    private final MainCtrl mainCtrl;
+
+
+    /**
+     * Constructor for the CollectionOverview Ctrl
+     * @param server serverUtils ref
+     * @param mainCtrl main controller ref
+     */
+    @Inject
+    public KeyboardShortcutFCtrl(ServerUtils server, MainCtrl mainCtrl) {
+        this.server = server;
+        this.mainCtrl = mainCtrl;
+    }
+
     /**
      *
      * @param location
@@ -34,6 +52,7 @@ public class KeyboardShortcutFCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        shortcutsVBox = new VBox();
         addShortcut("Keyboard Shortcuts", 20);
         addShortcut("? - Open the Keyboard Shortcuts Menu", 14);
         addEmptyLine();
@@ -73,5 +92,12 @@ public class KeyboardShortcutFCtrl implements Initializable {
     }
 
 
+
+    /**
+     * Shows the board overview
+     */
+    public void showBoardOverview() {
+        mainCtrl.showBoardOverview();
+    }
 
 }

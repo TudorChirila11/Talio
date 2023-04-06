@@ -1,7 +1,9 @@
 package client.scenes;
 
 
+import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
+import javafx.stage.Stage;
 
 import java.util.HashMap;
 
@@ -9,14 +11,18 @@ public class KeyboardShortcutCtrl extends Thread {
 
     private MainCtrl mainCtrl;
 
+    private Stage primaryStage;
+
     private HashMap<String, Boolean> activeKeys = new HashMap<>();
 
     /**
      * Constructor for the KeyboardShortcutCtrl
      * @param mainCtrl - the main controller of the application
+     * @param primaryStage - the primary stage of the application
      */
-    public KeyboardShortcutCtrl(MainCtrl mainCtrl) {
+    public KeyboardShortcutCtrl(MainCtrl mainCtrl, Stage primaryStage) {
         this.mainCtrl = mainCtrl;
+        this.primaryStage = primaryStage;
     }
 
 
@@ -26,51 +32,53 @@ public class KeyboardShortcutCtrl extends Thread {
      */
     @Override
     public void run() {
-        mainCtrl.getBoard().setOnKeyPressed(event -> {
-            String code = event.getCode().toString();
-            if (!activeKeys.containsKey(code)) {
-                activeKeys.put(code, true);
+        while (true){
+            primaryStage.getScene().setOnKeyPressed(event -> {
+                String code = event.getCode().toString();
+                if (!activeKeys.containsKey(code)) {
+                    activeKeys.put(code, true);
+                }
+            });
+            primaryStage.getScene().setOnKeyReleased(event -> {
+                activeKeys.remove(event.getCode().toString());
+            });
+            if (removeActiveKey(KeyCode.SHIFT.toString())) {
+                Platform.runLater(() -> mainCtrl.showKeyboardShortcutPage());
             }
-        });
-        mainCtrl.getBoard().setOnKeyReleased(event -> {
-            activeKeys.remove(event.getCode().toString());
-        });
-        if (removeActiveKey(KeyCode.SLASH.toString())) {
-            this.mainCtrl.showKeyboardShortcutPage();
-        }
-        if (removeActiveKey(KeyCode.UP.toString())) { //TODO make method for moving highlight up
-        }
-        if (removeActiveKey(KeyCode.DOWN.toString())) { //TODO make method for moving highlight down
-        }
-        if (removeActiveKey(KeyCode.LEFT.toString())) { //TODO make method for moving highlight left
-        }
-        if (removeActiveKey(KeyCode.RIGHT.toString())) { //TODO make method for moving highlight right
-        }
-        if (removeActiveKey(KeyCode.UP.toString()) && removeActiveKey(KeyCode.SHIFT.toString())) {
-            //TODO make method for moving highlighted task/card up
-        }
-        if (removeActiveKey(KeyCode.DOWN.toString()) && removeActiveKey(KeyCode.SHIFT.toString())) {
-            //TODO make method for moving highlighted task/card down
-        }
-        if (removeActiveKey(KeyCode.E.toString())) {
-            //TODO make method for editing cards
-        }
-        if (removeActiveKey(KeyCode.DELETE.toString()) || removeActiveKey(KeyCode.BACK_SPACE.toString())) {
-            //TODO make method to delete highlighted task
-        }
-        if (removeActiveKey(KeyCode.ENTER.toString()) &&
-                mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getBoard())) {
+            if (removeActiveKey(KeyCode.UP.toString())) { //TODO make method for moving highlight up
+            }
+            if (removeActiveKey(KeyCode.DOWN.toString())) { //TODO make method for moving highlight down
+            }
+            if (removeActiveKey(KeyCode.LEFT.toString())) { //TODO make method for moving highlight left
+            }
+            if (removeActiveKey(KeyCode.RIGHT.toString())) { //TODO make method for moving highlight right
+            }
+            if (removeActiveKey(KeyCode.UP.toString()) && removeActiveKey(KeyCode.SHIFT.toString())) {
+                //TODO make method for moving highlighted task/card up
+            }
+            if (removeActiveKey(KeyCode.DOWN.toString()) && removeActiveKey(KeyCode.SHIFT.toString())) {
+                //TODO make method for moving highlighted task/card down
+            }
+            if (removeActiveKey(KeyCode.E.toString())) {
+                //TODO make method for editing cards
+            }
+            if (removeActiveKey(KeyCode.DELETE.toString()) || removeActiveKey(KeyCode.BACK_SPACE.toString())) {
+                //TODO make method to delete highlighted task
+            }
+            if (removeActiveKey(KeyCode.ENTER.toString()) &&
+                    mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getBoard())) {
 //            this.mainCtrl.showCardInformation();
-        }
-        if (removeActiveKey(KeyCode.ESCAPE.toString()) &&
-                mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getCardInformation())) {
+            }
+            if (removeActiveKey(KeyCode.ESCAPE.toString()) &&
+                    mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getCardInformation())) {
 //            this.mainCtrl.showBoard();
-        }
-        if (removeActiveKey(KeyCode.T.toString())) {
-            //TODO open popup for adding tags
-        }
-        if (removeActiveKey(KeyCode.C.toString())) {
-            //TODO open popup for customization
+            }
+            if (removeActiveKey(KeyCode.T.toString())) {
+                //TODO open popup for adding tags
+            }
+            if (removeActiveKey(KeyCode.C.toString())) {
+                //TODO open popup for customization
+            }
         }
     }
 
@@ -89,4 +97,5 @@ public class KeyboardShortcutCtrl extends Thread {
             return false;
         }
     }
+
 }
