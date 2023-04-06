@@ -7,8 +7,6 @@ import client.utils.ServerUtils;
 import commons.Card;
 import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
-import javafx.beans.Observable;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
