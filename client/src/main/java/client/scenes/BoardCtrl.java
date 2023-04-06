@@ -241,8 +241,8 @@ public class BoardCtrl implements Initializable {
 
                 Collection oldCollection = mapper.get(sourceList);
                 Collection newCollection = mapper.get(listView);
-                if(oldCollection == newCollection)
-                    newIndex = Math.min(newIndex, listView.getItems().size()-1);
+                if (oldCollection == newCollection)
+                    newIndex = Math.min(newIndex, listView.getItems().size() - 1);
                 long oldIndex = sourceIndex;
                 //int currentIndex = getIndex(listView, event.getY());
                 Card d = server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
@@ -303,6 +303,83 @@ public class BoardCtrl implements Initializable {
                 dragboard.setContent(content);
                 event.consume();
             });
+
+            listView.setOnMouseMoved(event -> {
+                var cell1 = event.getTarget();
+                if(cell1 == null)
+                    return;
+                // if the target is not a cell, we traverse up the scene graph until we find a cell
+                while(cell1.getClass() != CardCell.class && cell1.getClass() != Node.class){
+                    // null check is needed because the scene graph can be arbitrarily deep
+                    cell1 = ((Node) cell1).getParent();
+                    if(cell1 == null)
+                        return;
+                }
+                listView.requestFocus();
+                // cast this to a cell
+                CardCell c = (CardCell) cell1;
+                // Select the list of this cell to have mouse events be registerd
+                c.setOnMouseEntered(event1 -> {
+                    listView.getSelectionModel().select(c.getItem());
+                    // if now someone pressed the down arrow key we move the "select" to the cell below this
+                    // if it exists
+                    c.setOnKeyPressed(event2 -> {
+                        if (event2.getCode() == KeyCode.DOWN) {
+                            int index = listView.getItems().indexOf(c.getItem());
+                            if (index < listView.getItems().size() - 1) {
+                                listView.getSelectionModel().select(index + 1);
+                            }
+                        }
+                        if(event2.getCode() == KeyCode.UP){
+                            int index = listView.getItems().indexOf(c.getItem());
+                            if (index > 0) {
+                                listView.getSelectionModel().select(index - 1);
+                            }
+                        }
+                        // if the
+                    });
+                });
+            });
+
+            listView.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ENTER) {
+                    mainCtrl.editCard(listView.getSelectionModel().getSelectedItem().getId());
+                }
+                // if the user pressed the Backspace we delete the selected card
+                if (event.getCode() == KeyCode.BACK_SPACE) {
+                    try {
+                        server.send("/app/cardsDelete", listView.getSelectionModel().getSelectedItem(), session);
+                    } catch (WebApplicationException e) {
+
+                        var alert = new Alert(Alert.AlertType.ERROR);
+                        alert.initModality(Modality.APPLICATION_MODAL);
+                        alert.setContentText(e.getMessage());
+                        alert.showAndWait();
+                    }
+                }
+                // if the user presses E then a text field will appear where he can edit the name of the card
+                if (event.getCode() == KeyCode.E) {
+                    var alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.setContentText("Change the title for the card:");
+                    var textField = new TextField();
+                    alert.getDialogPane().setContent(textField);
+                    alert.showAndWait();
+                    if (alert.getResult() == ButtonType.OK) {
+                        var card = listView.getSelectionModel().getSelectedItem();
+                        card.setTitle(textField.getText());
+                        try {
+                            server.send("/app/cards", card, session);
+                        } catch (WebApplicationException e) {
+                            var alert2 = new Alert(Alert.AlertType.ERROR);
+                            alert2.initModality(Modality.APPLICATION_MODAL);
+                            alert2.setContentText(e.getMessage());
+                            alert2.showAndWait();
+                        }
+                    }
+                }
+            });
+
             if (listView.getItems().size() >= 4) {
                 configOnDragOver(cell);
                 cell.setOnDragDropped(event -> configDropped(event, listView, server.getCard(cell.getItem().getId()).getIndex(), om));
@@ -350,11 +427,12 @@ public class BoardCtrl implements Initializable {
         delete.setOnAction(event -> {
             try {
                 server.send("/app/collectionsDelete", collection, session);
-            } catch (WebApplicationException e) {showAlert(e.getMessage());}
+            } catch (WebApplicationException e) {
+                showAlert(e.getMessage());
+            }
         });
         label.setGraphic(delete);
         label.setContentDisplay(ContentDisplay.RIGHT);
-
         label.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 // Rename collection
