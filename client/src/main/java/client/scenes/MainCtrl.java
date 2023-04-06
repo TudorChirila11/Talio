@@ -120,9 +120,10 @@ public class MainCtrl {
         this.colorManagementCtrl = colorManagement.getKey();
         this.colorManagement = new Scene(colorManagement.getValue());
 
-        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl, adminLogInCtrl);
 
         adminLogInCtrl.setAdmin(false);
+
+        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl, adminLogInCtrl, colorManagementCtrl);
 
         showWelcomePage();
         primaryStage.show();

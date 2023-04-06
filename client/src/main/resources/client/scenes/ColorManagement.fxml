@@ -37,6 +37,7 @@
                         <Font size="18.0" />
                      </font>
                   </Text>
+
                   <ColorPicker fx:id="boardBackground"/>
                   <Button mnemonicParsing="false" prefWidth="59.0" text="Reset" />
                </children>
@@ -59,7 +60,8 @@
                         <Font size="18.0" />
                      </font>
                   </Text>
-                  <ColorPicker fx:id="collectionBackground"/>
+                  <ColorPicker fx:id="collectionBackground" />
+
                   <Button mnemonicParsing="false" prefWidth="59.0" text="Reset" />
                </children>
             </HBox>
@@ -70,21 +72,23 @@
                         <Font size="18.0" />
                      </font>
                   </Text>
+
                   <ColorPicker fx:id="cardFont"/>
                   <ColorPicker fx:id="cardBackground"/>
+
                   <VBox prefHeight="61.0" prefWidth="49.0" />
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#createColorPreset" prefHeight="25.0" prefWidth="59.0" text="Add" />
+                        <Button fx:id="addPreset" mnemonicParsing="false" onAction="#createColorPreset" prefHeight="25.0" prefWidth="59.0" text="Add" />
                         <VBox prefHeight="200.0" prefWidth="100.0" />
-                        <Button mnemonicParsing="false" prefWidth="59.0" text="Default" />
+                        <Button fx:id="defaultPreset" mnemonicParsing="false" prefWidth="59.0" text="Default" />
                      </children>
                   </VBox>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="Edit" />
+                        <Button fx:id="editPreset" mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="Edit" />
                         <VBox prefHeight="200.0" prefWidth="100.0" />
-                        <Button mnemonicParsing="false" text="Remove" />
+                        <Button fx:id="removePreset" mnemonicParsing="false" text="Remove" />
                      </children>
                   </VBox>
                </children>

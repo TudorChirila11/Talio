@@ -58,6 +58,7 @@ public class ServerUtils {
     private CardInformationCtrl cardInformationCtrl;
     private TagCreatorCtrl tagCreatorCtrl;
 
+    private ColorManagementCtrl colorManagementCtrl;
     private AdminLogInCtrl adminLogInCtrl;
 
 
@@ -477,6 +478,7 @@ public class ServerUtils {
     }
 
 
+
     /**
      * switches the position of card from indexOld, Collection old to indexNew, Collection newCol
      *
@@ -511,6 +513,7 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(newCard, APPLICATION_JSON), Card.class);
     }
+
 
     /**
      * returns this card object
@@ -625,6 +628,7 @@ public class ServerUtils {
         cardInformationCtrl.subscriber(session);
         tagCreatorCtrl.subscriber(session);
         adminLogInCtrl.subscriber(session);
+        colorManagementCtrl.subscriber(session);
     }
 
     /**
@@ -645,6 +649,7 @@ public class ServerUtils {
         }
         throw new IllegalStateException();
     }
+
 
     /**
      * This method sends everything that the stomp client receives to the consumer (client)
@@ -686,14 +691,17 @@ public class ServerUtils {
      * @param cardInformationCtrl a controller that uses websockets
      * @param tagCreatorCtrl a controller that uses websockets
      * @param adminLogInCtrl a controller that uses websockets
+     * @param colorManagementCtrl a controller that uses websockets
      */
+
     public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl,
-                               AdminLogInCtrl adminLogInCtrl){
+                               AdminLogInCtrl adminLogInCtrl, ColorManagementCtrl colorManagementCtrl){
         this.boardCtrl = boardCtrl;
         this.boardOverviewCtrl = boardOverviewCtrl;
         this.tagOverviewCtrl = tagOverviewCtrl;
         this.cardInformationCtrl = cardInformationCtrl;
         this.tagCreatorCtrl = tagCreatorCtrl;
+        this.colorManagementCtrl = colorManagementCtrl;
         this.adminLogInCtrl = adminLogInCtrl;
     }
 
