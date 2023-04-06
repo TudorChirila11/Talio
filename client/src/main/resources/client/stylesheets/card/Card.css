@@ -34,3 +34,19 @@
     -fx-border-width: 2;
     -fx-background-radius: 20;
 }
+
+#tagInCardContainerView{
+    -fx-background-color: transparent;
+
+}
+
+#tagInCardContainerView .list-cell {
+    -fx-padding: 0;
+}
+
+#tagInCardContainerView .scroll-bar:horizontal .increment-arrow,
+#tagInCardContainerView .scroll-bar:horizontal .decrement-arrow,
+#tagInCardContainerView .scroll-bar:horizontal .increment-button,
+#tagInCardContainerView .scroll-bar:horizontal .decrement-button {
+    -fx-padding: 0;
+}
