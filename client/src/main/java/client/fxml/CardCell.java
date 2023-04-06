@@ -6,10 +6,13 @@ import client.scenes.MainCtrl;
 import client.utils.ServerUtils;
 import commons.Board;
 import commons.Card;
+import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.scene.layout.VBox;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -17,6 +20,7 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.List;
 
 public class CardCell extends ListCell<Card> {
 
@@ -37,6 +41,11 @@ public class CardCell extends ListCell<Card> {
 
     @FXML
     private Label doneSubtasks;
+
+    @FXML
+    private HBox tagInCardContainer;
+
+    private List<Tag> tagList;
 
     private VBox vBox;
 
@@ -126,7 +135,7 @@ public class CardCell extends ListCell<Card> {
             doneSubtasks.setText(server.getDoneSubtasksForCard(id));
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
-            if(currentBoard != null){
+            if (currentBoard != null) {
                 if ((currentBoard.isLocked() && !passwordCheck) && !isAdmin) {
                     removeButton.setDisable(true);
                     editButton.setOnAction(event -> {
@@ -139,34 +148,19 @@ public class CardCell extends ListCell<Card> {
                 } else {
                     System.out.println(id);
                 }
-            }
-        }
-    }
-    /**
-     * Checks if the password of the board is correct
-     *
-     * @return true if the password is correct
-     */
-    private boolean passwordCheck() {
-        File file = new File("password.txt");
-        if (file.exists()) {
-            try {
-                Scanner scanner = new Scanner(file);
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    String boardId = line.split("-PASSWORD-")[0];
-                    String password = line.split("-PASSWORD-")[1];
-                    if (boardId.equals(server.getBoardOfCard(id).getId().toString()) && password.equals(server.getBoardOfCard(id).getPassword())) {
-                        return true;
-                    }
+                //this is for showing all the tags in the card.
+                tagList = server.getTagsByCard(server.getCardById(card.getId()));
+                tagInCardContainer.getChildren().removeAll(tagInCardContainer.getChildren());
+                for (Tag tag : tagList) {
+                    Label tagLabel = new Label(tag.getName());
+                    List<Double> colour = tag.getColour();
+                    tagLabel.setStyle("-fx-background-color: " +
+                            new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") +
+                            "; -fx-padding: 0 5 0 5; -fx-background-radius: 10;");
+                    tagLabel.setTextFill(new Color(colour.get(3), colour.get(4), colour.get(5), 1.0));
+                    tagInCardContainer.getChildren().add(tagLabel);
                 }
-                scanner.close();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
-        return false;
     }
-
-
 }

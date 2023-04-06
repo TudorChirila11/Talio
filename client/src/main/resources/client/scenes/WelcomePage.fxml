@@ -19,16 +19,17 @@
             <Image url="@/client/assets/tailo.png" />
         </image>
     </ImageView>
-    <Text  text="Enter IP address here:" />
+    <Text  text="Enter url here:" />
 
     <HBox alignment="CENTER" spacing="15">
 
-        <TextField fx:id="userIP"/>
+        <TextField fx:id="userIP" promptText="domain:port"/>
 
         <Button fx:id="enterButton" text="Enter"/>
 
     </HBox>
 
+    <Text  text="Example: localhost:8080" />
 
     <Text text="(if nothing is entered, localhost will be used by default)"/>
 

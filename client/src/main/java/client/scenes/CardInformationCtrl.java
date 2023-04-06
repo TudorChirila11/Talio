@@ -206,9 +206,6 @@ public class CardInformationCtrl implements Initializable {
 
     private void setupCollectionMenu() {
         collectionMenu.getItems().clear();
-        if (collectionCurrent == null)
-            collectionMenu.setText("Select...");
-        else collectionMenu.setText(collectionCurrent.getName());
 
         if (currentBoard != null) {
             for (Collection c : server.getCollectionsFromBoard(currentBoard)) {
@@ -608,16 +605,20 @@ public class CardInformationCtrl implements Initializable {
      * @param cardId - the id of the card we want to edit
      */
     public void setEditMode(Long cardId) {
+        title.setText("Edit card");
         setCard(getCardById(cardId));
+        cardName.setText(card.getTitle());
+        cardDescription.setText(card.getDescription());
         collectionCurrent = server.getCollectionById(card.getCollectionId());
         setState(CardInformationCtrl.State.EDIT);
         Board board = server.getBoardOfCard(cardId);
         setBoard(board);
         card.setSubtasks(server.getSubtasksOfCard(card.getId()));
         populateSubtasksScreen(card.getSubtasks());
+        setupCollectionMenu();
+        setTag();
         refresh();
 
-        setTag();
     }
 
 
@@ -638,11 +639,15 @@ public class CardInformationCtrl implements Initializable {
      * @param board - the id of the board we are currently in
      */
     public void setCreateMode(Board board) {
+        collectionMenu.setText("Select...");
+        collectionCurrent = null;
+        title.setText("Add card");
         setState(CardInformationCtrl.State.CREATE);
         setCard(new Card());
         setBoard(board);
-
+        setupCollectionMenu();
         setTag();
+        refresh();
     }
 
     private void setTag() {
@@ -655,8 +660,6 @@ public class CardInformationCtrl implements Initializable {
             totalTagList = server.getTags(currentBoard.getId());
             setupTags();
         }
-
-        refresh();
     }
 
     /**
