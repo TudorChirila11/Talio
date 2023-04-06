@@ -9,12 +9,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root prefHeight="100.0" prefWidth="175.0" stylesheets="@/client/stylesheets/card/Card.css" type="javafx.scene.control.ListCell" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.control.ListView?>
+<fx:root prefHeight="106" prefWidth="175.0" stylesheets="@/client/stylesheets/card/Card.css" type="javafx.scene.control.ListCell" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <graphic>
         <VBox id="mainVBox" fx:id="mainVBox">
             <children>
                 <Label fx:id="titleLabel" style="-fx-font-size: 10pt; -fx-padding: 2 0 2 5" />
-                  <Label fx:id="descriptionLabel" style="-fx-font-size: 6pt; -fx-padding: 2 0 2 5" />
+                <Label fx:id="descriptionLabel" style="-fx-font-size: 6pt; -fx-padding: 2 0 2 5" />
+                <ListView id="tagInCardContainerView">
+                    <HBox id="tagInCardContainer" fx:id="tagInCardContainer" spacing="5" />
+                </ListView>
                 <HBox alignment="TOP_RIGHT">
                <children>
                   <Label fx:id="doneSubtasks" text="Label">

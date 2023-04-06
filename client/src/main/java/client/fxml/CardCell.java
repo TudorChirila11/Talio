@@ -5,17 +5,21 @@ import client.scenes.MainCtrl;
 
 import client.utils.ServerUtils;
 import commons.Card;
+import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.scene.layout.VBox;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.IOException;
+import java.util.List;
 
 public class CardCell extends ListCell<Card>  {
 
@@ -36,6 +40,11 @@ public class CardCell extends ListCell<Card>  {
 
     @FXML
     private Label doneSubtasks;
+
+    @FXML
+    private HBox tagInCardContainer;
+
+    private List<Tag> tagList;
 
     private VBox vBox;
 
@@ -116,6 +125,20 @@ public class CardCell extends ListCell<Card>  {
             descriptionLabel.setText(card.getDescription());
             doneSubtasks.setText(server.getDoneSubtasksForCard(id));
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+
+
+            //this is for showing all the tags in the card.
+            tagList = server.getTagsByCard(server.getCardById(card.getId()));
+            tagInCardContainer.getChildren().removeAll(tagInCardContainer.getChildren());
+            for (Tag tag : tagList) {
+                Label tagLabel = new Label(tag.getName());
+                List<Double> colour = tag.getColour();
+                tagLabel.setStyle("-fx-background-color: " +
+                        new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") +
+                        "; -fx-padding: 0 5 0 5; -fx-background-radius: 10;");
+                tagLabel.setTextFill(new Color(colour.get(3), colour.get(4), colour.get(5), 1.0));
+                tagInCardContainer.getChildren().add(tagLabel);
+            }
         }
     }
 

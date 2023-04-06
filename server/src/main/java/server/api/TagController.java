@@ -58,7 +58,6 @@ public class TagController {
     @MessageMapping("/tagsUpdate") // /app/collections
     @SendTo("/topic/update")
     public Tag editTag(Tag t){
-        System.out.println(t);
         updateTag(t.getId(), t);
         return t;
     }
