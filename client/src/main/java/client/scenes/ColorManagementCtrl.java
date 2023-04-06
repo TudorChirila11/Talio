@@ -81,7 +81,6 @@ public class ColorManagementCtrl implements Initializable {
     public ColorManagementCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-
     }
 
     /**
