@@ -11,10 +11,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ColorManagementCtrl implements Initializable {
@@ -93,6 +95,36 @@ public class ColorManagementCtrl implements Initializable {
     }
 
     /**
+     * reset background color for board
+     */
+    public void resetBoardBackgroundColor()
+    {
+        if(currentBoard.getColor() != null && currentBoard.getColor().size() == 6)
+        {
+
+            Color val = new Color((6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0, 1);
+            boardBackground.setValue(val);
+            System.out.println(currentBoard.getColor());
+            server.send("api/boards", currentBoard, session);
+        }
+    }
+
+    /**
+     * reset font color for board
+     */
+    public void resetBoardFontColor()
+    {
+
+        if(currentBoard.getColor() != null && currentBoard.getColor().size() == 6)
+        {
+            Color val = new Color(0D, 0D,  0D, 1);
+            boardFont.setValue(val);
+            server.send("api/boards", currentBoard, session);
+        }
+    }
+
+
+    /**
      * This method passes the current board to this controller
      * @param board the board that the color is related to
      */
@@ -110,7 +142,6 @@ public class ColorManagementCtrl implements Initializable {
             cardBackground.setValue(Color.LIGHTBLUE);
         }*/
     }
-
 
     /**
      * Method used to create a new color preset and add
@@ -150,17 +181,17 @@ public class ColorManagementCtrl implements Initializable {
      * when it is changed from the menu
      */
     public void updateBoard() {
-        Board newBoard = new Board(currentBoard.getId(), currentBoard.getName(), currentBoard.getCollections(),
-                new ArrayList<Double>(){{
-                    add(boardFont.getValue().getRed());
-                    add(boardFont.getValue().getGreen());
-                    add(boardFont.getValue().getBlue());
-                    add(boardBackground.getValue().getRed());
-                    add(boardBackground.getValue().getGreen());
-                    add(boardBackground.getValue().getBlue());
-                }});
-        currentBoard = newBoard;
-        server.send("/app/boards", newBoard, session);
+        List<Double> colors = new ArrayList<Double>(){{
+            add(boardFont.getValue().getRed());
+            add(boardFont.getValue().getGreen());
+            add(boardFont.getValue().getBlue());
+            add(boardBackground.getValue().getRed());
+            add(boardBackground.getValue().getGreen());
+            add(boardBackground.getValue().getBlue());
+        }};
+
+        currentBoard.setColor(colors);
+        server.send("/app/boards", currentBoard, session);
     }
 
     /**
