@@ -1,9 +1,14 @@
 package commons;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 @Table(name = "boards")
@@ -147,38 +152,31 @@ public class Board {
     }
 
     /**
-     * An equals method for the board data class
-     * @param o the object that'll be compared to this
-     * @return a boolean representing whether the 2 objects are equal or not
+     * the equals methode
+     * @param obj other object
+     * @return boolean true iff same
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Board board = (Board) o;
-        return Objects.equals(id, board.id) && Objects.equals(name, board.name) && Objects.equals(collections, board.collections);
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     /**
-     * A hashcode method for the board data class
-     * @return the integer that represents the hashed object
+     * generate the hashcode
+     * @return hashcode
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, collections);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     /**
-     * A toString method for the subtask data class
-     * @return A string representing the whole data class
+     * to string methode
+     * @return string
      */
     @Override
     public String toString() {
-        return "Board{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", collections=" + collections +
-                '}';
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 
     /**

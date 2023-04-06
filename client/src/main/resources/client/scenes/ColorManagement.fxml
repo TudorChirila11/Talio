@@ -37,7 +37,11 @@
                         <Font size="18.0" />
                      </font>
                   </Text>
+<<<<<<< HEAD
                   <ColorPicker fx:id="boardBackground" />
+=======
+                  <ColorPicker fx:id="boardBackground"/>
+>>>>>>> 7fbaacba5ca5cffe7dd8b2e78832814097f376dd
                   <Button mnemonicParsing="false" prefWidth="59.0" text="Reset" />
                </children>
             </HBox>
@@ -48,7 +52,11 @@
                         <Font size="18.0" />
                      </font>
                   </Text>
+<<<<<<< HEAD
                   <ColorPicker fx:id="collectionFont" />
+=======
+                  <ColorPicker fx:id="collectionFont"/>
+>>>>>>> 7fbaacba5ca5cffe7dd8b2e78832814097f376dd
                   <Button mnemonicParsing="false" prefWidth="59.0" text="Reset" />
                </children>
             </HBox>
@@ -59,7 +67,11 @@
                         <Font size="18.0" />
                      </font>
                   </Text>
+<<<<<<< HEAD
                   <ColorPicker fx:id="collectionBackground" />
+=======
+                  <ColorPicker fx:id="collectionBackground"/>
+>>>>>>> 7fbaacba5ca5cffe7dd8b2e78832814097f376dd
                   <Button mnemonicParsing="false" prefWidth="59.0" text="Reset" />
                </children>
             </HBox>
@@ -70,8 +82,13 @@
                         <Font size="18.0" />
                      </font>
                   </Text>
+<<<<<<< HEAD
                   <ColorPicker fx:id="cardFont" />
                   <ColorPicker fx:id="cardBackground" />
+=======
+                  <ColorPicker fx:id="cardFont"/>
+                  <ColorPicker fx:id="cardBackground"/>
+>>>>>>> 7fbaacba5ca5cffe7dd8b2e78832814097f376dd
                   <VBox prefHeight="61.0" prefWidth="49.0" />
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
