@@ -157,9 +157,9 @@ public class BoardCtrl implements Initializable {
             List<Double> colour = currentBoard.getColor();
             if(colour != null && colour.size() != 0){
                 boardPane.setStyle("-fx-background-color: " +
-                        new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") +
+                        new Color(colour.get(3), colour.get(4), colour.get(5), 1.0).toString().replace("0x", "#") +
                         ";" +
-                        "-fx-text-fill: " +  new Color(colour.get(3), colour.get(4), colour.get(5), 1.0).toString().replace("0x", "#")+";");
+                        "-fx-text-fill: " +  new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#")+";");
 
                 System.out.println(boardPane.getStyle());
                 System.out.println("board id is " + currentBoard.getId());
