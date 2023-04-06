@@ -514,6 +514,7 @@ public class ServerUtils {
                 .put(Entity.entity(newCard, APPLICATION_JSON), Card.class);
     }
 
+
     /**
      * returns this card object
      * @param id - card id
@@ -648,6 +649,7 @@ public class ServerUtils {
         }
         throw new IllegalStateException();
     }
+
 
     /**
      * This method sends everything that the stomp client receives to the consumer (client)

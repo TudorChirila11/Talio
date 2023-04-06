@@ -105,11 +105,12 @@ public class ColorManagementCtrl implements Initializable {
      * Method used to refresh the color preset list
      */
     public void refresh() {
-        if (colorPreset.equals(new ColorPreset())) {
+        /*if (colorPreset.equals(new ColorPreset())) {
             cardFont.setValue(Color.BLACK);
             cardBackground.setValue(Color.LIGHTBLUE);
-        }
+        }*/
     }
+
 
     /**
      * Method used to create a new color preset and add

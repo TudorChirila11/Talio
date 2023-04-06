@@ -22,6 +22,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -34,6 +35,7 @@ public class BoardCtrl implements Initializable {
     @FXML
     public Button tagButton;
     public Button tagOverview;
+    @FXML
     public AnchorPane boardPane;
 
     @FXML
@@ -98,7 +100,6 @@ public class BoardCtrl implements Initializable {
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
 
 
-
         refresh(currentBoard);
     }
 
@@ -152,6 +153,21 @@ public class BoardCtrl implements Initializable {
     public void refresh(Board board) {
         currentBoard = board;
         if (currentBoard != null) {
+
+            List<Double> colour = currentBoard.getColor();
+            if(colour != null && colour.size() != 0){
+                boardPane.setStyle("-fx-background-color: " +
+                        new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") +
+                        ";" +
+                        "-fx-text-fill: " +  new Color(colour.get(3), colour.get(4), colour.get(5), 1.0).toString().replace("0x", "#")+";");
+
+                System.out.println(boardPane.getStyle());
+                System.out.println("board id is " + currentBoard.getId());
+                System.out.println("its colors are " + colour);
+            }
+            else boardPane.setStyle("");
+//            boardPane.getStyleClass().add("boardPane");
+
             boardLabel.setText(board.getName());
             boardLabel.setMaxWidth(Double.MAX_VALUE);
             AnchorPane.setLeftAnchor(boardLabel, 0.0);
