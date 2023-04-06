@@ -34,6 +34,7 @@ public class BoardCtrl implements Initializable {
     @FXML
     public Button tagButton;
     public Button tagOverview;
+    public AnchorPane boardPane;
 
     @FXML
     private Button addCollectionButton;
@@ -95,6 +96,7 @@ public class BoardCtrl implements Initializable {
 
         tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard, new Tag()));
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
+
 
 
         refresh(currentBoard);
@@ -417,5 +419,13 @@ public class BoardCtrl implements Initializable {
      */
     public void showColorManagement() {
         mainCtrl.showColorManagement(currentBoard);
+    }
+
+    /**
+     * BoardPane getter
+     * @return the BoardPane
+     */
+    public AnchorPane getBoardPane() {
+        return boardPane;
     }
 }

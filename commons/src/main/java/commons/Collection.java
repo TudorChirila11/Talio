@@ -29,6 +29,39 @@ public class Collection {
     @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL)
     private List<Card> cards = new ArrayList<>();
 
+    @ElementCollection
+    private List<Double> color = new ArrayList<>();
+
+
+    /**
+     * Constructor of the collection
+     * @param id the id of the collection
+     * @param name the name of the collection
+     * @param boardId the id of the board where the collection is contained
+     * @param cards the cards inside the collection
+     * @param color the color of the collection
+     */
+    public Collection(Long id, String name, Long boardId, List<Card> cards, List<Double> color) {
+        this.id = id;
+        this.name = name;
+        this.boardId = boardId;
+        this.cards = cards;
+        this.color = color;
+    }
+
+    /**
+     * Constructor for Collection
+     * @param name - name of the collection
+     * @param board - the board to which the collection belongs to
+     * @param cards - the cards in the collection
+     * @param color - the color of the collection
+     */
+    public Collection(String name, Board board, List<Card> cards, List<Double> color) {
+        this.name = name;
+        this.boardId = board.getId();
+        this.cards = cards;
+        this.color = color;
+    }
 
     /**
      * Constructor for Collection
@@ -173,6 +206,22 @@ public class Collection {
      */
     public void setCards(List<Card> cards) {
         this.cards = cards;
+    }
+
+    /**
+     * Color getter
+     * @return the color of the collection
+     */
+    public List<Double> getColor() {
+        return color;
+    }
+
+    /**
+     * Color setter
+     * @param color the new color of the collection
+     */
+    public void setColor(List<Double> color) {
+        this.color = color;
     }
 
     /**

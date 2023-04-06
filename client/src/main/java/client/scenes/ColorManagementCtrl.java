@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
+import commons.Collection;
 import commons.ColorPreset;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -70,6 +71,7 @@ public class ColorManagementCtrl implements Initializable {
 
     private ColorPreset colorPreset;
 
+
     /**
      * ColorManagementCtrl constructor
      * @param server serverUtils ref
@@ -79,6 +81,7 @@ public class ColorManagementCtrl implements Initializable {
     public ColorManagementCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+
     }
 
     /**
@@ -96,7 +99,6 @@ public class ColorManagementCtrl implements Initializable {
      */
     public void initialize(Board board) {
         currentBoard = board;
-        //this.colorPreset = colorPreset;
     }
 
 
@@ -159,6 +161,26 @@ public class ColorManagementCtrl implements Initializable {
                 }});
         currentBoard = newBoard;
         server.send("/app/boards", newBoard, session);
+    }
+
+    /**
+     * Updates the color of the
+     * collections in a board.
+     */
+    public void updateCollection() {
+        for (Collection collection : currentBoard.getCollections()) {
+            Collection newCollection = new Collection(collection.getId(), collection.getName(), collection.getBoardId(),
+                    collection.getCards(), new ArrayList<Double>(){{
+                            add(collectionFont.getValue().getRed());
+                            add(collectionFont.getValue().getGreen());
+                            add(collectionFont.getValue().getBlue());
+                            add(collectionBackground.getValue().getRed());
+                            add(collectionBackground.getValue().getGreen());
+                            add(collectionBackground.getValue().getBlue());
+                        }});
+            collection = newCollection;
+            server.send("/app/collectionsUpdate", newCollection, session);
+        }
     }
 
     /**

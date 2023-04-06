@@ -10,8 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
-<AnchorPane id="colorManagementPane" prefHeight="512.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@/client/stylesheets/Global.css" fx:controller="client.scenes.ColorManagementCtrl">
+<AnchorPane id="colorManagementPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ColorManagementCtrl">
    <children>
       <Text layoutX="275.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Color Management" textAlignment="CENTER" wrappingWidth="251.13671875">
          <font>
@@ -76,7 +75,7 @@
                   <VBox prefHeight="61.0" prefWidth="49.0" />
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="Add" onAction="#createColorPreset"/>
+                        <Button mnemonicParsing="false" onAction="#createColorPreset" prefHeight="25.0" prefWidth="59.0" text="Add" />
                         <VBox prefHeight="200.0" prefWidth="100.0" />
                         <Button mnemonicParsing="false" prefWidth="59.0" text="Default" />
                      </children>
@@ -101,5 +100,6 @@
             </ImageView>
          </graphic>
       </Button>
+      <Button id="saveButton" layoutX="652.0" layoutY="64.0" minWidth="41.0" mnemonicParsing="false" onAction="#updateBoard" prefHeight="26.0" prefWidth="92.0" styleClass="imageButton" text="Save changes" />
    </children>
 </AnchorPane>
