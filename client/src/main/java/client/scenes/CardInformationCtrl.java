@@ -561,6 +561,10 @@ public class CardInformationCtrl implements Initializable {
      */
     public void setEditMode(Long cardId) {
         title.setText("Edit card");
+        currentTagAdd = null;
+        currentTagDelete = null;
+        tagChooserAdd.setText("choose a tag");
+        tagChooserDelete.setText("choose a tag");
         setCard(getCardById(cardId));
         cardName.setText(card.getTitle());
         cardDescription.setText(card.getDescription());
@@ -582,6 +586,10 @@ public class CardInformationCtrl implements Initializable {
      */
     public void setCreateMode(Board board) {
         collectionMenu.setText("Select...");
+        currentTagAdd = null;
+        currentTagDelete = null;
+        tagAdder.setText("choose a tag");
+        tagDeleter.setText("choose a tag");
         collectionCurrent = null;
         title.setText("Add card");
         setState(CardInformationCtrl.State.CREATE);
