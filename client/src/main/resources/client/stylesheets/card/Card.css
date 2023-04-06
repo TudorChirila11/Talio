@@ -34,3 +34,13 @@
     -fx-border-width: 2;
     -fx-background-radius: 20;
 }
+
+#tagInCardContainerView{
+    -fx-padding: 0 0 0 0;
+    -fx-background-color: transparent;
+}
+
+#tagInCardContainer{
+    -fx-border-width: 0;
+    -fx-padding: 0 0 0 0;
+}
