@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import client.scenes.*;
@@ -41,8 +43,8 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 public class ServerUtils {
 
-    private static String server = "http://localhost:8080/";
-    private String ip = "localhost";
+    private static String server;
+    private String ip;
     private String adminKey;
 
     private StompSession session;
@@ -55,6 +57,8 @@ public class ServerUtils {
 
     private CardInformationCtrl cardInformationCtrl;
     private TagCreatorCtrl tagCreatorCtrl;
+
+    private AdminLogInCtrl adminLogInCtrl;
 
 
     /**
@@ -371,6 +375,20 @@ public class ServerUtils {
     }
 
     /**
+     * Retrieves tags that are connected to a card
+     * @param card get only the tags that belong to this card
+     * @return List of tags
+     */
+    public List<Tag> getTagsByCard(Card card) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/tags/card/" + card.getId()) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Tag>>() {
+                });
+    }
+
+    /**
      * deletes card from index, in the Collection col's card array
      * @param col - the collection we want the card deleted from
      * @param index - the index
@@ -399,6 +417,50 @@ public class ServerUtils {
                 });
     }
 
+
+    public static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+
+    /**
+     * Registers updates for deleted cards in the delete by Id method
+     * @param consumer the id of the card
+     */
+    public void registerForUpdates(Consumer<Long> consumer) {
+        EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = ClientBuilder.newClient(new ClientConfig())
+                        .target(server).path("api/cards/updates")
+                        .request(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .get(Response.class);
+
+                if (res.getStatus() == 204) {
+                    continue;
+                }
+
+                var l = res.readEntity(Long.class);
+                consumer.accept(l);
+            }
+
+        });
+    }
+
+    /**
+     *
+     * @return - the cardinformationCtrl method
+     */
+    public CardInformationCtrl getCardInformationCtrl()
+    {
+        return cardInformationCtrl;
+    }
+
+    /**
+     * stops the Thread executor doing the long polling
+     */
+    public void stop(){
+        EXEC.shutdownNow();
+    }
+
+
     /**
      * adds card to specific index inside a specific collection's card array
      * @param col - the collection we want to add the card to
@@ -412,22 +474,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(col, APPLICATION_JSON), Collection.class);
-    }
-
-    /**
-     * This method changes the session to the appropriate url when the user connects to a server
-     * @param ip the url of the server to which the stomp client will connect to
-     */
-    public void createStompSession(String ip) throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        StompSessionHandlerAdapter sessionHandler = new MySessionHandler(latch);
-        session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
-        latch.await();
-        boardCtrl.subscriber(session);
-        boardOverviewCtrl.subscriber(session);
-        tagOverviewCtrl.subscriber(session);
-        cardInformationCtrl.subscriber(session);
-        tagCreatorCtrl.subscriber(session);
     }
 
 
@@ -565,6 +611,23 @@ public class ServerUtils {
     }
 
     /**
+     * This method changes the session to the appropriate url when the user connects to a server
+     * @param ip the url of the server to which the stomp client will connect to
+     */
+    public void createStompSession(String ip) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        StompSessionHandlerAdapter sessionHandler = new MySessionHandler(latch);
+        session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
+        latch.await();
+        boardCtrl.subscriber(session);
+        boardOverviewCtrl.subscriber(session);
+        tagOverviewCtrl.subscriber(session);
+        cardInformationCtrl.subscriber(session);
+        tagCreatorCtrl.subscriber(session);
+        adminLogInCtrl.subscriber(session);
+    }
+
+    /**
      * This method creates a stomp client that connects to the server
      * @param url the url that directs the clients to the server
      * @return a stomp client server instance that lets the user communicate with the server.
@@ -592,7 +655,6 @@ public class ServerUtils {
      * @param session the session that the register will use to subscribe to a server.
      */
     public <T> void registerForCollections(String dest, Class<T> type, Consumer<T> consumer, StompSession session) {
-        System.out.println(session);
         session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -623,17 +685,16 @@ public class ServerUtils {
      * @param tagOverviewCtrl a controller that uses websockets
      * @param cardInformationCtrl a controller that uses websockets
      * @param tagCreatorCtrl a controller that uses websockets
+     * @param adminLogInCtrl a controller that uses websockets
      */
-    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl){
+    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl,
+                               AdminLogInCtrl adminLogInCtrl){
         this.boardCtrl = boardCtrl;
         this.boardOverviewCtrl = boardOverviewCtrl;
         this.tagOverviewCtrl = tagOverviewCtrl;
         this.cardInformationCtrl = cardInformationCtrl;
         this.tagCreatorCtrl = tagCreatorCtrl;
+        this.adminLogInCtrl = adminLogInCtrl;
     }
-
-
-
-
 
 }

@@ -3,14 +3,19 @@ package server.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import commons.Card;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.CardRepository;
 
 @RestController
@@ -168,8 +173,35 @@ public class CardController {
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+        listeners.values().forEach(l -> {
+            l.accept(id);
+            System.out.println("l has been reached" + l);
+        });
+
         repo.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private Map<Object, Consumer<Long>> listeners = new ConcurrentHashMap<>();
+
+
+    /**
+     * This gets updates from the delete by Id method and saves this within a listener.
+     * @return the reponse (long if change occured/no content if no change)
+     */
+    @GetMapping("/updates")
+    public DeferredResult<ResponseEntity<Long>> getUpdates(){
+        var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var result = new DeferredResult<ResponseEntity<Long>>(5000L, noContent);
+
+        var key = new Object();
+        listeners.put(key, l -> {
+            result.setResult(ResponseEntity.ok(l));
+        });
+
+        result.onCompletion(() -> listeners.remove(key));
+
+        return result;
     }
 
     /**
@@ -189,11 +221,9 @@ public class CardController {
      */
     @PostMapping(path = { "/", ""})
     public ResponseEntity<Card> add(@RequestBody Card card){
-
         Card saved = repo.save(card);
         return ResponseEntity.ok(saved);
     }
-
 
 
 }

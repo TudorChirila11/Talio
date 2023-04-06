@@ -1,11 +1,14 @@
 package commons;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TagTest {
@@ -17,8 +20,8 @@ class TagTest {
     void setup()
     {
         d = new Board();
-        a = new Tag(324L, "tag", d.getId(), new ArrayList<Card>(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
-        b = new Tag("tag", d.getId(), new ArrayList<Card>(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
+        a = new Tag(324L, "tag", d.getId(), new ArrayList<Long>(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
+        b = new Tag("tag", d.getId(), new ArrayList<Long>(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
         c = new Tag("tag", d.getId(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
     }
 
@@ -28,7 +31,7 @@ class TagTest {
         assertEquals("tag", a.getName());
         assertEquals( new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)) , a.getColour());
         assertEquals(d.getId(), a.getBoardId());
-        assertEquals(new ArrayList<Card>(), a.getCards());
+        assertEquals(new ArrayList<Long>(), a.getCards());
         assertEquals(324L, a.getId());
     }
 
@@ -38,7 +41,7 @@ class TagTest {
         assertEquals("tag", b.getName());
         assertEquals( new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)) , b.getColour());
         assertEquals(d.getId(), b.getBoardId());
-        assertEquals(new ArrayList<Card>(), b.getCards());
+        assertEquals(new ArrayList<Long>(), b.getCards());
     }
 
     @Test
@@ -69,7 +72,7 @@ class TagTest {
         Tag e = a;
         assertEquals(e, a);
         assertSame(e, a);
-        Tag f = new Tag(324L, "tag", d.getId(), new ArrayList<Card>(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
+        Tag f = new Tag(324L, "tag", d.getId(), new ArrayList<Long>(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
         assertEquals(f, a);
         assertNotEquals(f, b);
         assertNotEquals(f, c);
@@ -80,7 +83,7 @@ class TagTest {
     @Test
     void testHash() {
         Tag e = a;
-        Tag f = new Tag(324L, "tag", d.getId(), new ArrayList<Card>(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
+        Tag f = new Tag(324L, "tag", d.getId(), new ArrayList<Long>(), new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
         assertEquals(e.hashCode(), a.hashCode());
         assertEquals(f.hashCode(), a.hashCode());
         assertNotEquals(b.hashCode(), a.hashCode());
@@ -89,12 +92,6 @@ class TagTest {
 
     @Test
     void testToString() {
-        assertEquals("Tag{" +
-                "id=" + a.getId() +
-                ", name='" + a.getName() + '\'' +
-                ", boardId=" + a.getBoardId() +
-                ", cards=" + a.getCards() +
-                ", colour=" + a.getColour() +
-                '}', a.toString());
+        assertEquals(ToStringBuilder.reflectionToString(a, MULTI_LINE_STYLE), a.toString());
     }
 }

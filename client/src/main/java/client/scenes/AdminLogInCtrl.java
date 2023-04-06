@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -20,12 +21,17 @@ public class AdminLogInCtrl implements Initializable {
 
     private boolean isAdmin;
 
+    private String admin;
+
     @FXML
     private TextField adminKey;
+
+    private StompSession session;
 
 
     /**
      * Constructor for the AdminLogInCtrl
+     *
      * @param server
      * @param mainCtrl
      */
@@ -35,28 +41,32 @@ public class AdminLogInCtrl implements Initializable {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * A method for starting to listen to a server once the connection has been established
+     *
+     * @param session the session that is connected to a server that the client is connected to
+     */
+    public void subscriber(StompSession session) {
+        this.session = session;
+    }
+
 
     /**
-     *
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
-     *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object, or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     }
-
 
     /**
      * Makes the current user an admin and displays a popup to let them know
      * the operation was successful
      */
     public void makeAdmin() {
-        if (adminKey.getText().equals(mainCtrl.getAdmin())) {
+        if (adminKey.getText().equals(admin)) {
             this.isAdmin = true;
             show("Welcome admin!");
         }
@@ -66,6 +76,7 @@ public class AdminLogInCtrl implements Initializable {
 
     /**
      * Helper method to create a popup with a message
+     *
      * @param message String that will become the displayed message
      */
     public static void show(String message) {
@@ -79,7 +90,8 @@ public class AdminLogInCtrl implements Initializable {
 
     /**
      * Getter to check if a user is an admin
-     * @return boolean checks if the user is an admin\
+     *
+     * @return boolean checks if the user is an admin
      */
     public boolean getAdmin() {
         return isAdmin;
@@ -94,6 +106,7 @@ public class AdminLogInCtrl implements Initializable {
 
     /**
      * Getter for the server
+     *
      * @return ServerUtils - the server
      */
     public ServerUtils getServer() {
@@ -101,15 +114,18 @@ public class AdminLogInCtrl implements Initializable {
     }
 
     /**
-     * Getter for the adminKey TextField
-     * @return TextField the admin key
+     * Sets the admin key
+     *
+     * @param admin
      */
-    public TextField getAdminKey() {
-        return adminKey;
+    public void setAdminKey(String admin) {
+        this.admin = admin;
     }
+
 
     /**
      * Setter for the isAdmin boolean
+     *
      * @param admin - boolean for the admin
      */
     public void setAdmin(boolean admin) {

@@ -132,7 +132,6 @@ public class CollectionController {
      * @param index the index of the card to remove
      * @return Response Entity
      */
-    ////TODO currently error-prone, see below why
     @DeleteMapping("{collectionId}/deleteCard/{index}/")
     public ResponseEntity<Collection> deleteCardAtPosition
     (@PathVariable long collectionId, @PathVariable int index) {
