@@ -35,7 +35,7 @@ public class WelcomePageCtrl implements Initializable {
 
 
     /**
-     * The method will be used to test whether the ip entered is valid or not.
+     * The method will be used to test whether the url entered is valid or not.
      * @param host a string that represents the website that will be checked.
      * @param port an integer that is the default port 8080 that'll be tested.
      * @param timeout the time in milliseconds that'll be the maximum timeout for the connection attempt.
@@ -52,13 +52,13 @@ public class WelcomePageCtrl implements Initializable {
 
     /**
      * makes sure that the user is connected to the right server
-     * @param ip the ip that the user has entered
+     * @param url the url that the user has entered
      */
-    public void changeIP(String ip) throws InterruptedException {
-        if (Objects.equals(ip, "")) {
+    public void changeIP(String url) throws InterruptedException {
+        if (Objects.equals(url, "")) {
             if (pingHost("localhost", 8080, 1000)) {
-                server.changeIP("localhost");
-                server.createStompSession("localhost");
+                server.changeIP("localhost:8080");
+                server.createStompSession("localhost:8080");
                 server.getCardInformationCtrl().registerForUpdates();
                 mainCtrl.setAdminKey(server.getAdminKey());
                 mainCtrl.showBoardOverview();
@@ -66,14 +66,19 @@ public class WelcomePageCtrl implements Initializable {
                 errorConnection.setText("The localhost server has not yet been started");
             }
         } else {
-            if (pingHost(ip, 8080, 1000)) {
-                server.changeIP(ip);
-                server.createStompSession(ip);
-                server.getCardInformationCtrl().registerForUpdates();
-                mainCtrl.setAdminKey(server.getAdminKey());
-                mainCtrl.showBoardOverview();
-            } else {
-                errorConnection.setText("The entered IP address is invalid");
+            try {
+                String[] urlSplit = url.split(":");
+                if (pingHost(urlSplit[0], Integer.parseInt(urlSplit[1]), 1000)) {
+                    server.changeIP(url);
+                    server.createStompSession(url);
+                    server.getCardInformationCtrl().registerForUpdates();
+                    mainCtrl.setAdminKey(server.getAdminKey());
+                    mainCtrl.showBoardOverview();
+                } else {
+                    errorConnection.setText("The entered url is invalid");
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                errorConnection.setText("The entered url is invalid");
             }
         }
     }
@@ -90,6 +95,8 @@ public class WelcomePageCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        enterButton.requestFocus();
 
         enterButton.setOnAction(event -> {
             try {
@@ -116,5 +123,13 @@ public class WelcomePageCtrl implements Initializable {
      */
     public String generateKey() {
         return server.getAdminKey();
+    }
+
+    /**
+     * Method that'll be called each time the scene is called, so the prompt text is showed,
+     * and the button gets focused
+     */
+    public void requestFocus() {
+        enterButton.requestFocus();
     }
 }
