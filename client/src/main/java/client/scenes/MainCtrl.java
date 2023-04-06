@@ -125,7 +125,7 @@ public class MainCtrl {
 
         adminLogInCtrl.setAdmin(false);
 
-        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl);
+        welcomePageCtrl.getServer().getControllers(boardCtrl, boardOverviewCtrl, tagOverviewCtrl, cardInformationCtrl, tagCreatorCtrl, colorManagementCtrl);
 
         showWelcomePage();
         primaryStage.show();

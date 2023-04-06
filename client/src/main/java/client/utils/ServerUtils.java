@@ -56,6 +56,8 @@ public class ServerUtils {
     private CardInformationCtrl cardInformationCtrl;
     private TagCreatorCtrl tagCreatorCtrl;
 
+    private ColorManagementCtrl colorManagementCtrl;
+
 
     /**
      * Method used to generate a String of 8 random alphanumeric characters
@@ -428,6 +430,7 @@ public class ServerUtils {
         tagOverviewCtrl.subscriber(session);
         cardInformationCtrl.subscriber(session);
         tagCreatorCtrl.subscriber(session);
+        colorManagementCtrl.subscriber(session);
     }
 
 
@@ -624,12 +627,13 @@ public class ServerUtils {
      * @param cardInformationCtrl a controller that uses websockets
      * @param tagCreatorCtrl a controller that uses websockets
      */
-    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl){
+    public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl, ColorManagementCtrl colorManagementCtrl){
         this.boardCtrl = boardCtrl;
         this.boardOverviewCtrl = boardOverviewCtrl;
         this.tagOverviewCtrl = tagOverviewCtrl;
         this.cardInformationCtrl = cardInformationCtrl;
         this.tagCreatorCtrl = tagCreatorCtrl;
+        this.colorManagementCtrl = colorManagementCtrl;
     }
 
 
