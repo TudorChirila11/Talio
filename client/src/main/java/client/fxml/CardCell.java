@@ -7,6 +7,8 @@ import client.utils.ServerUtils;
 import commons.Card;
 import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.beans.Observable;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -64,22 +66,6 @@ public class CardCell extends ListCell<Card>  {
         this.server = server;
         this.session = session;
         loadFXML();
-        /*
-        System.out.println("I am null...");
-        if (id != null) {
-            System.out.println("Wait, I am not null!!!");
-            tagList = server.getTagsByCard(server.getCardById(id));
-            for (Tag tag : tagList) {
-                Label tagLabel = new Label(tag.getName());
-                List<Double> colour = tag.getColour();
-                tagLabel.setStyle("-fx-background-color: " +
-                        new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") + "-fx-background-radius: 5");
-                tagLabel.setTextFill(new Color(colour.get(3), colour.get(4), colour.get(5), 1.0));
-                tagInCardContainer.getChildren().add(tagLabel);
-            }
-        }
-
-         */
         removeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -145,6 +131,7 @@ public class CardCell extends ListCell<Card>  {
 
             //this is for showing all the tags in the card.
             tagList = server.getTagsByCard(server.getCardById(card.getId()));
+            tagInCardContainer.getChildren().removeAll(tagInCardContainer.getChildren());
             for (Tag tag : tagList) {
                 Label tagLabel = new Label(tag.getName());
                 List<Double> colour = tag.getColour();
