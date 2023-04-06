@@ -16,10 +16,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -236,8 +238,6 @@ public class BoardCtrl implements Initializable {
             if (sourceNode != null) {
                 ListView<Card> sourceList = (ListView<Card>) sourceNode;
                 int sourceIndex = sourceList.getSelectionModel().getSelectedIndex();
-                //    Card sourceCard = sourceList.getItems().get(sourceIndex);
-                //  sourceList.getItems().remove(sourceCard);
 
                 Collection oldCollection = mapper.get(sourceList);
                 Collection newCollection = mapper.get(listView);
@@ -303,88 +303,200 @@ public class BoardCtrl implements Initializable {
                 dragboard.setContent(content);
                 event.consume();
             });
-
-            listView.setOnMouseMoved(event -> {
-                var cell1 = event.getTarget();
-                if(cell1 == null)
-                    return;
-                // if the target is not a cell, we traverse up the scene graph until we find a cell
-                while(cell1.getClass() != CardCell.class && cell1.getClass() != Node.class){
-                    // null check is needed because the scene graph can be arbitrarily deep
-                    cell1 = ((Node) cell1).getParent();
-                    if(cell1 == null)
-                        return;
-                }
-                listView.requestFocus();
-                // cast this to a cell
-                CardCell c = (CardCell) cell1;
-                // Select the list of this cell to have mouse events be registerd
-                c.setOnMouseEntered(event1 -> {
-                    listView.getSelectionModel().select(c.getItem());
-                    // if now someone pressed the down arrow key we move the "select" to the cell below this
-                    // if it exists
-                    c.setOnKeyPressed(event2 -> {
-                        if (event2.getCode() == KeyCode.DOWN) {
-                            int index = listView.getItems().indexOf(c.getItem());
-                            if (index < listView.getItems().size() - 1) {
-                                listView.getSelectionModel().select(index + 1);
-                            }
-                        }
-                        if(event2.getCode() == KeyCode.UP){
-                            int index = listView.getItems().indexOf(c.getItem());
-                            if (index > 0) {
-                                listView.getSelectionModel().select(index - 1);
-                            }
-                        }
-                        // if the
-                    });
-                });
-            });
-
-            listView.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ENTER) {
-                    mainCtrl.editCard(listView.getSelectionModel().getSelectedItem().getId());
-                }
-                // if the user pressed the Backspace we delete the selected card
-                if (event.getCode() == KeyCode.BACK_SPACE) {
-                    try {
-                        server.send("/app/cardsDelete", listView.getSelectionModel().getSelectedItem(), session);
-                    } catch (WebApplicationException e) {
-
-                        var alert = new Alert(Alert.AlertType.ERROR);
-                        alert.initModality(Modality.APPLICATION_MODAL);
-                        alert.setContentText(e.getMessage());
-                        alert.showAndWait();
-                    }
-                }
-                // if the user presses E then a text field will appear where he can edit the name of the card
-                if (event.getCode() == KeyCode.E) {
-                    var alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.initModality(Modality.APPLICATION_MODAL);
-                    alert.setContentText("Change the title for the card:");
-                    var textField = new TextField();
-                    alert.getDialogPane().setContent(textField);
-                    alert.showAndWait();
-                    if (alert.getResult() == ButtonType.OK) {
-                        var card = listView.getSelectionModel().getSelectedItem();
-                        card.setTitle(textField.getText());
-                        try {
-                            server.send("/app/cards", card, session);
-                        } catch (WebApplicationException e) {
-                            var alert2 = new Alert(Alert.AlertType.ERROR);
-                            alert2.initModality(Modality.APPLICATION_MODAL);
-                            alert2.setContentText(e.getMessage());
-                            alert2.showAndWait();
-                        }
-                    }
-                }
-            });
+            selectCell(listView);
+            dragAndDropShortcut(listView);
+            generalShortcuts(listView);
 
             if (listView.getItems().size() >= 4) {
                 configOnDragOver(cell);
                 cell.setOnDragDropped(event -> configDropped(event, listView, server.getCard(cell.getItem().getId()).getIndex(), om));
             }
             return cell;
+        });
+    }
+
+    /**
+     * This method initializes the shortcuts for the list view
+     * @param listView the list view of the card
+     */
+    private void generalShortcuts(ListView<Card> listView) {
+        listView.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                mainCtrl.editCard(listView.getSelectionModel().getSelectedItem().getId());
+            }
+            // if the user pressed the Backspace we delete the selected card
+            if (event.getCode() == KeyCode.BACK_SPACE) {
+                try {
+                    server.send("/app/cardsDelete", listView.getSelectionModel().getSelectedItem().getId(), session);
+                } catch (WebApplicationException e) {
+                    var alert = new Alert(Alert.AlertType.ERROR);
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                }
+            }
+            // if the user presses E then a text field will appear where he can edit the name of the card
+            if (event.getCode() == KeyCode.E) {
+                var alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.setContentText("Change the title for the card:");
+                var textField = new TextField();
+                alert.getDialogPane().setContent(textField);
+                alert.showAndWait();
+                if (alert.getResult() == ButtonType.OK) {
+                    var card = listView.getSelectionModel().getSelectedItem();
+                    card.setTitle(textField.getText());
+                    try {
+                        server.send("/app/cards", card, session);
+                    } catch (WebApplicationException e) {
+                        var alert2 = new Alert(Alert.AlertType.ERROR);
+                        alert2.initModality(Modality.APPLICATION_MODAL);
+                        alert2.setContentText(e.getMessage());
+                        alert2.showAndWait();
+                    }
+                }
+            }
+            createTagShortcut(listView, event);
+        });
+    }
+
+    /**
+     * This method creates a shortcut for the tag creation
+     * @param listView the list view of the card
+     * @param event the event that is triggered
+     */
+    private void createTagShortcut(ListView<Card> listView, KeyEvent event) {
+        if(event.getCode() == KeyCode.T){
+            var alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText("Select the tags you want to add to the card:");
+            var card = listView.getSelectionModel().getSelectedItem();
+            var tags = server.getTags(currentBoard.getId());
+            var tagsOnCard = server.getTagsByCard(card);
+            var tagsNotOnCard = new ArrayList<Tag>();
+            for (Tag t : tags) {
+                if (!tagsOnCard.contains(t)) {
+                    tagsNotOnCard.add(t);
+                }
+            }
+            var checkBoxes = new ArrayList<CheckBox>();
+            for (Tag t : tagsNotOnCard) {
+                var checkBox = new CheckBox(t.getName());
+                checkBoxes.add(checkBox);
+            }
+            if(checkBoxes.isEmpty()){
+                showAlert("There are no tags to add to the card.");
+                return;
+            }
+            var gridPane = new GridPane();
+            gridPane.setHgap(10);
+            gridPane.setVgap(10);
+            gridPane.setPadding(new Insets(20, 150, 10, 10));
+            for (int i = 0; i < checkBoxes.size(); i++) {
+                gridPane.add(checkBoxes.get(i), 0, i);
+            }
+            alert.getDialogPane().setContent(gridPane);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.OK) {
+                for (CheckBox c : checkBoxes) {
+                    if (c.isSelected()) {
+                        for (Tag t : tagsNotOnCard) {
+                            if (t.getName().equals(c.getText())) {
+                                t.getCards().add(card.getId());
+                                try {
+                                    server.send("/app/tags", t, session);
+                                } catch (WebApplicationException e) {
+                                    var alert2 = new Alert(Alert.AlertType.ERROR);
+                                    alert2.initModality(Modality.APPLICATION_MODAL);
+                                    alert2.setContentText(e.getMessage());
+                                    alert2.showAndWait();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * This configures the drag and drop of a card (shortcut)
+     * @param listView the list view of the card
+     */
+    private void dragAndDropShortcut(ListView<Card> listView) {
+        listView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isShiftDown() && event.getCode() == KeyCode.UP) {
+                var card = listView.getSelectionModel().getSelectedItem();
+                int index = listView.getItems().indexOf(card);
+                if (index > 0) {
+                    try {
+                        Collection c1 = mapper.get(listView);
+                        if(c1 == null)
+                            return;
+                        Card d = server.changeCardIndex(c1, index, c1, index - 1);
+                        server.send("/app/collections", server.getCollectionById(c1.getId()), session);
+                        server.send("/app/cards", d, session);
+                        refresh(currentBoard);
+                    } catch (WebApplicationException e) {
+                        var alert2 = new Alert(Alert.AlertType.ERROR);
+                        alert2.initModality(Modality.APPLICATION_MODAL);
+                        alert2.setContentText(e.getMessage());
+                        alert2.showAndWait();
+                    }
+                    event.consume();
+                }
+            }
+        });
+
+        listView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isShiftDown() && event.getCode() == KeyCode.DOWN) {
+                var card = listView.getSelectionModel().getSelectedItem();
+                int index = listView.getItems().indexOf(card);
+                if (index < listView.getItems().size() - 1) {
+                    try {
+                        Collection c1 = mapper.get(listView);
+                        if(c1 == null)
+                            return;
+                        Card d = server.changeCardIndex(c1, index, c1, index + 1);
+                        server.send("/app/collections", server.getCollectionById(c1.getId()), session);
+                        server.send("/app/cards", d, session);
+                        refresh(currentBoard);
+                    } catch (WebApplicationException e) {
+                        var alert2 = new Alert(Alert.AlertType.ERROR);
+                        alert2.initModality(Modality.APPLICATION_MODAL);
+                        alert2.setContentText(e.getMessage());
+                        alert2.showAndWait();
+                    }
+                    event.consume();
+                }
+            }
+        });
+    }
+
+
+    /**
+     * This configures the highlighting of a cell
+     */
+    private void selectCell(ListView<Card> listView) {
+        listView.setOnMouseMoved(event -> {
+            var cell1 = event.getTarget();
+            if (cell1 == null)
+                return;
+            // if the target is not a cell, we traverse up the scene graph until we find a cell
+            while (cell1.getClass() != CardCell.class && cell1.getClass() != Node.class) {
+                // null check is needed because the scene graph can be arbitrarily deep
+                cell1 = ((Node) cell1).getParent();
+                if (cell1 == null)
+                    return;
+            }
+            listView.requestFocus();
+            // cast this to a cell
+            CardCell c = (CardCell) cell1;
+            // Select the list of this cell to have mouse events be registerd
+            c.setOnMouseEntered(event1 -> {
+                listView.getSelectionModel().select(c.getItem());
+                // if the user presses shift up they drag and drop the card up one position
+            });
         });
     }
 
