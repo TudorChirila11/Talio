@@ -780,6 +780,11 @@ public class ServerUtils {
                 .delete();
     }
 
+    /**
+     * method that returns the default preset this card should have
+     * @param card - the card we want to set the default preset of
+     * @return - ColorPreset object
+     */
     public ColorPreset getDefaultPresetForCard(Card card) {
         Board b = getBoardOfCard(card.getId());
         ColorPreset ans = getDefaultPresets(b.getId());
