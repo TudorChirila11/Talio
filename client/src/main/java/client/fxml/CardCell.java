@@ -6,6 +6,7 @@ import client.scenes.MainCtrl;
 import client.utils.ServerUtils;
 import commons.Board;
 import commons.Card;
+import commons.ColorPreset;
 import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
@@ -17,9 +18,7 @@ import javafx.stage.Modality;
 import javafx.scene.layout.VBox;
 import org.springframework.messaging.simp.stomp.StompSession;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
 import java.util.List;
 
 public class CardCell extends ListCell<Card> {
@@ -47,7 +46,9 @@ public class CardCell extends ListCell<Card> {
 
     private List<Tag> tagList;
 
-    private VBox vBox;
+
+    @FXML
+    private VBox mainVBox;
 
     private Long id;
 
@@ -62,11 +63,11 @@ public class CardCell extends ListCell<Card> {
     /**
      * Constructor for the Custom Task Cell of type Card
      *
-     * @param mainCtrl - reference for main controller
-     * @param server   reference for server
-     * @param session  current Stompsession for websockets
-     * @param isAdmin  boolean to check if the user is an admins
-     * @param currentBoard current board
+     * @param mainCtrl      - reference for main controller
+     * @param server        reference for server
+     * @param session       current Stompsession for websockets
+     * @param isAdmin       boolean to check if the user is an admins
+     * @param currentBoard  current board
      * @param passwordCheck boolean to check if the board is password protected
      */
     public CardCell(MainCtrl mainCtrl, ServerUtils server, StompSession session, boolean isAdmin, Board currentBoard, boolean passwordCheck) {
@@ -93,8 +94,6 @@ public class CardCell extends ListCell<Card> {
         editButton.setOnAction(event -> {
             mainCtrl.editCard(id);
         });
-
-
     }
 
     /**
@@ -134,6 +133,12 @@ public class CardCell extends ListCell<Card> {
             descriptionLabel.setText(card.getDescription());
             doneSubtasks.setText(server.getDoneSubtasksForCard(id));
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            ColorPreset curr = null;
+            if (card.getColorPreset() == null)
+                curr = server.getDefaultPresetForCard(card);
+            else curr = card.getColorPreset();
+            Color bg = new Color(curr.getColor().get(0), curr.getColor().get(1), curr.getColor().get(2), 1.0);
+            Color font = new Color(curr.getColor().get(3), curr.getColor().get(4), curr.getColor().get(5), 1.0);
 
             if (currentBoard != null) {
                 if ((currentBoard.isLocked() && !passwordCheck) && !isAdmin) {
@@ -145,21 +150,39 @@ public class CardCell extends ListCell<Card> {
                         alert.showAndWait();
                         mainCtrl.viewCard(id);
                     });
-                } else {
-                    System.out.println(id);
                 }
-                //this is for showing all the tags in the card.
-                tagList = server.getTagsByCard(server.getCardById(card.getId()));
-                tagInCardContainer.getChildren().removeAll(tagInCardContainer.getChildren());
-                for (Tag tag : tagList) {
-                    Label tagLabel = new Label(tag.getName());
-                    List<Double> colour = tag.getColour();
-                    tagLabel.setStyle("-fx-background-color: " +
-                            new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") +
-                            "; -fx-padding: 0 5 0 5; -fx-background-radius: 10;");
-                    tagLabel.setTextFill(new Color(colour.get(3), colour.get(4), colour.get(5), 1.0));
-                    tagInCardContainer.getChildren().add(tagLabel);
-                }
+            }
+            //this is for showing all the tags in the card.
+            tagList = server.getTagsByCard(server.getCardById(card.getId()));
+            tagInCardContainer.getChildren().removeAll(tagInCardContainer.getChildren());
+            for (Tag tag : tagList) {
+                Label tagLabel = new Label(tag.getName());
+                List<Double> colour = tag.getColour();
+                tagLabel.setStyle("-fx-background-color: " +
+                        new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") +
+                        "; -fx-padding: 0 5 0 5; -fx-background-radius: 10;");
+                tagLabel.setTextFill(new Color(colour.get(3), colour.get(4), colour.get(5), 1.0));
+                tagInCardContainer.getChildren().add(tagLabel);
+            }
+            if (this.isSelected()) {
+                mainVBox.setStyle("-fx-background-color: " + bg.toString().replace("0x", "#") + "; -fx-border-color: white;");
+            } else {
+                mainVBox.setStyle("-fx-background-color: " + bg.toString().replace("0x", "#"));
+            }
+
+            titleLabel.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#"));
+            descriptionLabel.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#"));
+            doneSubtasks.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#"));
+            tagList = server.getTagsByCard(server.getCardById(card.getId()));
+            tagInCardContainer.getChildren().removeAll(tagInCardContainer.getChildren());
+            for (Tag tag : tagList) {
+                Label tagLabel = new Label(tag.getName());
+                List<Double> colour = tag.getColour();
+                tagLabel.setStyle("-fx-background-color: " +
+                        new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#") +
+                        "; -fx-padding: 0 5 0 5; -fx-background-radius: 10;");
+                tagLabel.setTextFill(new Color(colour.get(3), colour.get(4), colour.get(5), 1.0));
+                tagInCardContainer.getChildren().add(tagLabel);
             }
         }
     }

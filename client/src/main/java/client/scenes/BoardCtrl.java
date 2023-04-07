@@ -6,25 +6,26 @@ import client.utils.ServerUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import commons.Card;
+import commons.*;
 import commons.Collection;
-import commons.Tag;
-import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -40,6 +41,8 @@ public class BoardCtrl implements Initializable {
     @FXML
     public Button tagButton;
     public Button tagOverview;
+    @FXML
+    public AnchorPane boardPane;
 
     @FXML
     private Button addCollectionButton;
@@ -47,7 +50,8 @@ public class BoardCtrl implements Initializable {
     @FXML
     private Button addCardButton;
 
-
+    @FXML
+    private Button overviewBack;
     private Board currentBoard;
 
     @FXML
@@ -286,6 +290,7 @@ public class BoardCtrl implements Initializable {
             currentBoard.setLocked(true);
             server.send("/app/boards", currentBoard, session);
             currentBoard = server.getBoardById(currentBoard.getId());
+            refresh(currentBoard);
         } catch (WebApplicationException e) {
             showAlert(e.toString());
         }
@@ -300,6 +305,23 @@ public class BoardCtrl implements Initializable {
         currentBoard = board;
         if (currentBoard != null) {
             lockSetup();
+            List<Double> colour = currentBoard.getColor();
+            if(colour != null && colour.size() != 0){
+                boardPane.setStyle("-fx-background-color: " +
+                        new Color(colour.get(3), colour.get(4), colour.get(5), 1.0).toString().replace("0x", "#") +
+                        ";");
+                String fontColor = "-fx-text-fill: " +  new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#");
+                setBoardFontColor(fontColor);
+            }
+            else setBoardFontColor("");
+
+            List<Double> color = currentBoard.getCollectionColor();
+            String styleBG = "";
+            String styleFont = "";
+            if(color!=null && color.size() ==6) {
+                styleBG = "-fx-background-color: " + new Color(color.get(3), color.get(4), color.get(5), 1.0).toString().replace("0x","#") + ";";
+                styleFont = "-fx-text-fill: " + new Color(color.get(0), color.get(1), color.get(2), 1.0).toString().replace("0x","#") + ";";
+            }
             boardLabel.setText(board.getName());
             boardLabel.setPrefWidth(300);
             HBox.setHgrow(boardLabel, Priority.ALWAYS);
@@ -308,7 +330,7 @@ public class BoardCtrl implements Initializable {
             boardLabel.setAlignment(javafx.geometry.Pos.CENTER);
             List<Collection> taskCollections = server.getCollectionsFromBoard(currentBoard);
             // Create a horizontal box to hold the task lists
-            HBox taskListsBox = new HBox(25);
+            HBox taskListsBox = new HBox(30);
             taskListsBox.setPrefSize(225 * taskCollections.size(), 275);
             mapper = new HashMap<>();
             for (Collection current : taskCollections) {
@@ -316,7 +338,6 @@ public class BoardCtrl implements Initializable {
                 ObservableList<Card> list = FXCollections.observableList(server.getCardsForCollection(current));
                 Label collectionLabel = new Label(collectionName);
                 collectionLabel.getStyleClass().add("collectionLabel");
-
                 ListView<Card> collection = new ListView<>(list);
                 collection.getStyleClass().add("collection");
                 collection.setCellFactory(new CardCellFactory(mainCtrl, server, session, isAdmin, currentBoard, isAdmin));
@@ -340,11 +361,28 @@ public class BoardCtrl implements Initializable {
                 // Adding this to Hbox which contains each collection object + controls.
                 taskListsBox.getChildren().add(collectionVBox);
                 addTaskListControls(collectionLabel, collectionName, current, simpleAddTaskButton);
+
+                collectionLabel.setStyle(styleFont);
+                collection.setStyle(styleBG);
             }
 
             // Finally updating all the values in the pane with the current HBox
             collectionsContainer.setContent(taskListsBox);
         }
+    }
+
+
+    /**
+     * Sets the board font color
+     * @param fontColor the new font color
+     */
+    public void setBoardFontColor(String fontColor)
+    {
+        tagButton.setStyle(fontColor);
+        tagOverview.setStyle(fontColor);
+        boardLabel.setStyle(fontColor);
+        addCardButton.setStyle(fontColor);
+        overviewBack.setStyle(fontColor);
     }
 
     /**
@@ -431,7 +469,6 @@ public class BoardCtrl implements Initializable {
                 if (oldCollection == newCollection)
                     newIndex = Math.min(newIndex, listView.getItems().size() - 1);
                 long oldIndex = sourceIndex;
-                //int currentIndex = getIndex(listView, event.getY());
                 Card d = server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
                 server.send("/app/collections", server.getCollectionById(oldCollection.getId()), session);
                 server.send("/app/collections", server.getCollectionById(newCollection.getId()), session);
@@ -474,7 +511,9 @@ public class BoardCtrl implements Initializable {
             CardCell cell = new CardCell(mainCtrl, server, session, isAdmin, currentBoard, isAccessible);
             cell.onMouseClickedProperty().set(event -> {
                 if (event.getClickCount() == 2) {
-                    mainCtrl.editCard(cell.getItem().getId());
+                    if(cell.getItem() != null){
+                        mainCtrl.editCard(cell.getItem().getId());
+                    }
                 }
             });
             cell.setOnDragDetected(event -> {
@@ -491,11 +530,310 @@ public class BoardCtrl implements Initializable {
                 dragboard.setContent(content);
                 event.consume();
             });
+            selectCell(listView);
+            dragAndDropShortcut(listView);
+            generalShortcuts(listView);
+
             if (listView.getItems().size() >= 4) {
                 configOnDragOver(cell);
                 cell.setOnDragDropped(event -> configDropped(event, listView, server.getCard(cell.getItem().getId()).getIndex(), om));
             }
             return cell;
+        });
+    }
+
+    /**
+     * This method initializes the shortcuts for the list view
+     *
+     * @param listView the list view of the card
+     */
+    private void generalShortcuts(ListView<Card> listView) {
+        listView.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                mainCtrl.editCard(listView.getSelectionModel().getSelectedItem().getId());
+            }
+            // if the user pressed the Backspace we delete the selected card
+            if (event.getCode() == KeyCode.BACK_SPACE) {
+                try {
+                    server.send("/app/cardsDelete", listView.getSelectionModel().getSelectedItem().getId(), session);
+                } catch (WebApplicationException e) {
+                    var alert = new Alert(Alert.AlertType.ERROR);
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                }
+            }
+            // if the user presses E then a text field will appear where he can edit the name of the card
+            if (event.getCode() == KeyCode.E) {
+                var alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.setHeaderText("Change the title for the card:");
+                var textField = new TextField();
+                alert.getDialogPane().setContent(textField);
+                alert.showAndWait();
+                if (alert.getResult() == ButtonType.OK) {
+                    var card = listView.getSelectionModel().getSelectedItem();
+                    card.setTitle(textField.getText());
+                    try {
+                        server.send("/app/cards", card, session);
+                    } catch (WebApplicationException e) {
+                        var alert2 = new Alert(Alert.AlertType.ERROR);
+                        alert2.initModality(Modality.APPLICATION_MODAL);
+                        alert2.setContentText(e.getMessage());
+                        alert2.showAndWait();
+                    }
+                }
+            }
+            // if a user presses the right key the selected item will the next listview's cell at the same index
+            if (event.getCode() == KeyCode.RIGHT) {
+                listView.getSelectionModel().clearSelection();
+                selectFocus(listView, 1);
+                // Consume the event so that it is not processed further
+                event.consume();
+            }
+
+            // if a user presses the left key the selected item will the previous listview's cell at the same index
+            if (event.getCode() == KeyCode.LEFT) {
+                listView.getSelectionModel().clearSelection();
+                selectFocus(listView, -1);
+                // Consume the event so that it is not processed further
+                event.consume();
+            }
+
+            createTagShortcut(listView, event);
+            createPresetShortcut(listView, event);
+        });
+    }
+
+    /**
+     * This method creates a shortcut for choosing a preset
+     *
+     * @param listView the list view of the card
+     * @param event    the key event
+     */
+
+    private void createPresetShortcut(ListView<Card> listView, KeyEvent event) {
+        if (event.getCode() == KeyCode.C) {
+            var card = listView.getSelectionModel().getSelectedItem();
+            var alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setHeaderText("Select the preset you want to apply to the card:");
+            var presets = server.getPresets(currentBoard.getId());
+            // The user can now choose one preset out of the presets to apply to the card
+            var comboBox = new ComboBox<ColorPreset>();
+            comboBox.setCellFactory(param -> new ListCell<>() {
+                @Override
+                protected void updateItem(ColorPreset item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                    } else {
+                        setText("Preset: " + item.getId());
+                        Color background = new Color(item.getColor().get(0), item.getColor().get(1), item.getColor().get(2), 1.0);
+                        Color font = new Color(item.getColor().get(3), item.getColor().get(4), item.getColor().get(5), 1.0);
+                        setStyle("-fx-background-color: " + background.toString().replace("0x", "#") + "; -fx-text-fill: " + font.toString().replace("0x", "#") + ";");
+                    }
+                }
+            });
+            comboBox.setItems(FXCollections.observableArrayList(presets));
+            comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                Color background = new Color(newValue.getColor().get(0), newValue.getColor().get(1), newValue.getColor().get(2), 1.0);
+                Color font = new Color(newValue.getColor().get(3), newValue.getColor().get(4), newValue.getColor().get(5), 1.0);
+                comboBox.setStyle("-fx-background-color: " + background.toString().replace("0x", "#") + "; -fx-text-fill: " + font.toString().replace("0x", "#") + ";");
+            });
+            alert.getDialogPane().setContent(comboBox);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.OK) {
+                var preset = comboBox.getSelectionModel().getSelectedItem();
+                card.setColorPreset(preset);
+                try {
+                    server.send("/app/cards", card, session);
+                } catch (WebApplicationException e) {
+                    var alert2 = new Alert(Alert.AlertType.ERROR);
+                    alert2.initModality(Modality.APPLICATION_MODAL);
+                    alert2.setContentText(e.getMessage());
+                    alert2.showAndWait();
+                }
+            }
+        }
+    }
+
+    /**
+     * This method selects the next or previous cell in the list view
+     *
+     * @param listView the list view of the card
+     * @param i        the index of the cell
+     */
+    private void selectFocus(ListView<Card> listView, int i) {
+        VBox v = (VBox) listView.getParent();
+        int indexOfList = v.getParent().getChildrenUnmodifiable().indexOf(v);
+        int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+
+        ObservableList<Node> children = v.getParent().getChildrenUnmodifiable();
+        // Find the adjacent ListView
+        ListView adjacentListView = null;
+        if (indexOfList >= 0 && indexOfList < children.size() - 1) {
+            if(i ==-1 && indexOfList == 0){
+                return;
+            }
+            Node vbox = children.get(indexOfList + i);
+            if (vbox instanceof VBox) {
+                ObservableList<Node> vboxChildren = ((VBox) vbox).getChildrenUnmodifiable();
+                if (vboxChildren.size() > 1) {
+                    Node listViewNode = vboxChildren.get(1);
+                    if (listViewNode instanceof ListView) {
+                        adjacentListView = (ListView) listViewNode;
+                    }
+                }
+            }
+        }
+
+        // Select the item at the same index in the adjacent ListView
+        if (adjacentListView != null) {
+            adjacentListView.requestFocus();
+            adjacentListView.getSelectionModel().select(selectedIndex);
+        }
+    }
+
+    /**
+     * This method creates a shortcut for the tag creation
+     *
+     * @param listView the list view of the card
+     * @param event    the event that is triggered
+     */
+    private void createTagShortcut(ListView<Card> listView, KeyEvent event) {
+        if (event.getCode() == KeyCode.T) {
+            var alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setHeaderText("Select the tags you want to add to the card:");
+            var card = listView.getSelectionModel().getSelectedItem();
+            var tags = server.getTags(currentBoard.getId());
+            var tagsOnCard = server.getTagsByCard(card);
+            var tagsNotOnCard = new ArrayList<Tag>();
+            for (Tag t : tags) {
+                if (!tagsOnCard.contains(t)) {
+                    tagsNotOnCard.add(t);
+                }
+            }
+            var checkBoxes = new ArrayList<CheckBox>();
+            for (Tag t : tagsNotOnCard) {
+                var checkBox = new CheckBox(t.getName());
+                checkBoxes.add(checkBox);
+            }
+            if (checkBoxes.isEmpty()) {
+                showAlert("There are no tags to add to the card.");
+                return;
+            }
+            var gridPane = new GridPane();
+            gridPane.setHgap(10);
+            gridPane.setVgap(10);
+            gridPane.setPadding(new Insets(20, 150, 10, 10));
+            for (int i = 0; i < checkBoxes.size(); i++) {
+                gridPane.add(checkBoxes.get(i), 0, i);
+            }
+            alert.getDialogPane().setContent(gridPane);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.OK) {
+                for (CheckBox c : checkBoxes) {
+                    if (c.isSelected()) {
+                        for (Tag t : tagsNotOnCard) {
+                            if (t.getName().equals(c.getText())) {
+                                t.getCards().add(card.getId());
+                                try {
+                                    server.send("/app/tags", t, session);
+                                } catch (WebApplicationException e) {
+                                    var alert2 = new Alert(Alert.AlertType.ERROR);
+                                    alert2.initModality(Modality.APPLICATION_MODAL);
+                                    alert2.setContentText(e.getMessage());
+                                    alert2.showAndWait();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * This configures the drag and drop of a card (shortcut)
+     *
+     * @param listView the list view of the card
+     */
+    private void dragAndDropShortcut(ListView<Card> listView) {
+        listView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isShiftDown() && event.getCode() == KeyCode.UP) {
+                var card = listView.getSelectionModel().getSelectedItem();
+                int index = listView.getItems().indexOf(card);
+                if (index > 0) {
+                    try {
+                        Collection c1 = mapper.get(listView);
+                        if (c1 == null)
+                            return;
+                        Card d = server.changeCardIndex(c1, index, c1, index - 1);
+                        server.send("/app/collections", server.getCollectionById(c1.getId()), session);
+                        server.send("/app/cards", d, session);
+                        refresh(currentBoard);
+                    } catch (WebApplicationException e) {
+                        var alert2 = new Alert(Alert.AlertType.ERROR);
+                        alert2.initModality(Modality.APPLICATION_MODAL);
+                        alert2.setContentText(e.getMessage());
+                        alert2.showAndWait();
+                    }
+                    event.consume();
+                }
+            }
+        });
+
+        listView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isShiftDown() && event.getCode() == KeyCode.DOWN) {
+                var card = listView.getSelectionModel().getSelectedItem();
+                int index = listView.getItems().indexOf(card);
+                if (index < listView.getItems().size() - 1) {
+                    try {
+                        Collection c1 = mapper.get(listView);
+                        if (c1 == null)
+                            return;
+                        Card d = server.changeCardIndex(c1, index, c1, index + 1);
+                        server.send("/app/collections", server.getCollectionById(c1.getId()), session);
+                        server.send("/app/cards", d, session);
+                        refresh(currentBoard);
+                    } catch (WebApplicationException e) {
+                        var alert2 = new Alert(Alert.AlertType.ERROR);
+                        alert2.initModality(Modality.APPLICATION_MODAL);
+                        alert2.setContentText(e.getMessage());
+                        alert2.showAndWait();
+                    }
+                    event.consume();
+                }
+            }
+        });
+    }
+
+
+    /**
+     * This configures the highlighting of a cell
+     */
+    private void selectCell(ListView<Card> listView) {
+        listView.setOnMouseMoved(event -> {
+            var cell1 = event.getTarget();
+            if (cell1 == null)
+                return;
+            // if the target is not a cell, we traverse up the scene graph until we find a cell
+            while (cell1.getClass() != CardCell.class && cell1.getClass() != Node.class) {
+                // null check is needed because the scene graph can be arbitrarily deep
+                cell1 = ((Node) cell1).getParent();
+                if (cell1 == null)
+                    return;
+            }
+            listView.requestFocus();
+            // cast this to a cell
+            CardCell c = (CardCell) cell1;
+            // Select the list of this cell to have mouse events be registerd
+            c.setOnMouseEntered(event1 -> {
+                listView.getSelectionModel().select(c.getItem());
+                // if the user presses shift up they drag and drop the card up one position
+            });
         });
     }
 
@@ -581,7 +919,6 @@ public class BoardCtrl implements Initializable {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Add Card");
             alert.setHeaderText("Add a new card to " + collection.getName());
-            alert.setContentText("Please enter the title of the card:");
             alert.initModality(Modality.APPLICATION_MODAL);
             TextField input = new TextField();
             input.setPromptText("Card Title");
@@ -589,7 +926,8 @@ public class BoardCtrl implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 if (!input.getText().equals("")) {
-                    Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()));
+                    Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()), server.getDefaultPresets(currentBoard.getId()));
+                    newCard.setColorPreset(null);
                     server.send("/app/cards", newCard, session);
                     currentBoard = server.getBoardById(currentBoard.getId());
                 } else showAlert("Please enter a title for the card");
@@ -612,7 +950,7 @@ public class BoardCtrl implements Initializable {
         int pos = 0;
         double cardSize = 100, error = 0;
         pos = (int) Math.min(y / (cardSize + error), sz);
-
+        pos = Math.max(0, pos);
         return pos;
     }
 
@@ -631,5 +969,13 @@ public class BoardCtrl implements Initializable {
      */
     public void showColorManagement() {
         mainCtrl.showColorManagement(currentBoard);
+    }
+
+    /**
+     * BoardPane getter
+     * @return the BoardPane
+     */
+    public AnchorPane getBoardPane() {
+        return boardPane;
     }
 }

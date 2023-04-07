@@ -30,9 +30,9 @@ public class BoardController {
      * @param b the board that the server has received and will send to all the clients on the network
      * @return a board
      */
-    @MessageMapping("/boards") // /app/collections
+    @MessageMapping("/boards") // /app/boards
     @SendTo("/topic/update")
-    public Board addBoard(Board b){
+    public Board addBoard(Board b) {
         add(b);
         return b;
     }
@@ -43,7 +43,7 @@ public class BoardController {
      * @param b the b that the server has received and will send to all the clients on the network
      * @return a board
      */
-    @MessageMapping("/boardsDelete") // /app/collections
+    @MessageMapping("/boardsDelete") // /app/boards
     @SendTo("/topic/update")
     public Board deleteBoard(Board b){
         delete(b.getId());
@@ -58,7 +58,7 @@ public class BoardController {
      * @param board any given board
      * @return a board
      */
-    @MessageMapping("/allBoardsDelete") // /app/collectionsDelete
+    @MessageMapping("/allBoardsDelete") // /app/allBoardsDelete
     @SendTo("/topic/update")
     public Board deleteAll(Board board){
         deleteAll();
@@ -108,6 +108,7 @@ public class BoardController {
     }
 
 
+
     /**
      * this will delete the board
      *
@@ -143,7 +144,6 @@ public class BoardController {
     @PostMapping(path = {"/", ""})
     public ResponseEntity<Board> add(@RequestBody Board board) {
         Board saved = repo.save(board);
-        System.out.println(saved);
         return ResponseEntity.ok(saved);
     }
 

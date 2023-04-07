@@ -159,4 +159,19 @@ class CardTest {
         assertTrue(res.contains("index=234"));
         assertEquals(res, a.toString());
     }
+
+    @Test
+    void testCardConstructor(){
+        Collection collection = new Collection("Test collection");
+        Card card = new Card("Test title", "Test description", collection, 1L, new ColorPreset());
+        assertEquals("Test title", card.getTitle());
+    }
+
+    @Test
+    void testCardConstructor2(){
+        Long id = 1L;
+        Card card = new Card("Test title", "Test description", id, 0L, new ArrayList<>(), new ColorPreset());
+        assertEquals("Test title", card.getTitle());
+    }
+
 }

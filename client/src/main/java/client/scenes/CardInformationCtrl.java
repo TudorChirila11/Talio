@@ -39,6 +39,7 @@ public class CardInformationCtrl implements Initializable {
     private Tag currentTagAdd;
 
     private Tag currentTagDelete;
+    private ColorPreset currentColor;
 
     enum State {
         EDIT, CREATE, VIEW, INACTIVE
@@ -84,6 +85,11 @@ public class CardInformationCtrl implements Initializable {
 
     private StompSession session;
 
+    @FXML
+    private MenuButton colorChooser;
+
+    @FXML
+    private Button resetColor;
     /**
      * sets the CardInformationCtrl's state field
      *
@@ -143,8 +149,8 @@ public class CardInformationCtrl implements Initializable {
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
-        totalTagList = new ArrayList<>();
         tagList = new ArrayList<>();
+        totalTagList = new ArrayList<>();
         //refresh();
     }
 
@@ -220,6 +226,28 @@ public class CardInformationCtrl implements Initializable {
         }
     }
 
+    /**
+     * sets up menu for choosing colors
+     */
+    public void setupMenuColor()
+    {
+        colorChooser.getItems().clear();
+        List<ColorPreset> presets = server.getPresets(currentBoard.getId());
+        if (currentBoard != null) {
+            for (ColorPreset c : presets) {
+                String name = "Preset " + c.getId();
+                if(c.getIsDefault())
+                    name+=" (Default)";
+                MenuItem i = new MenuItem(name);
+                String finalName = name;
+                i.setOnAction(event -> {
+                    colorChooser.setText(finalName);
+                    currentColor = c;
+                });
+                colorChooser.getItems().add(i);
+            }
+        }
+    }
     /**
      * creates the 'Add subtask' option
      *
@@ -400,6 +428,7 @@ public class CardInformationCtrl implements Initializable {
             return;
         if (currentBoard != null) {
             setupTags();
+            setupMenuColor();
         }
         setupCollectionMenu();
         if(state == State.VIEW){
@@ -418,6 +447,7 @@ public class CardInformationCtrl implements Initializable {
             tagDeleter.setDisable(true);
             tagChooserAdd.setDisable(true);
             tagChooserDelete.setDisable(true);
+            colorChooser.setDisable(true);
         }else{
             scrollPane.setDisable(false);
             cardName.setDisable(false);
@@ -426,6 +456,11 @@ public class CardInformationCtrl implements Initializable {
             addSubtaskButton.setDisable(false);
             collectionMenu.setDisable(false);
             removeButton.setDisable(false);
+            tagAdder.setDisable(false);
+            tagDeleter.setDisable(false);
+            tagChooserAdd.setDisable(false);
+            tagChooserDelete.setDisable(false);
+            colorChooser.setDisable(false);
         }
         if (state == State.EDIT) {
             ///Delete all subtasks from the database
@@ -453,7 +488,6 @@ public class CardInformationCtrl implements Initializable {
     public void populateSubtasksScreen(List<Subtask> subtaskList) {
         subtaskHBoxes = new ArrayList<>();
         subtaskList.sort(Comparator.comparing(Subtask::getIndex));
-     //   System.out.println(subtaskList);
         for (Subtask s : subtaskList) {
             HBox hb = new HBox(10);
             TextField tf = new TextField();
@@ -481,6 +515,14 @@ public class CardInformationCtrl implements Initializable {
     }
 
     /**
+     * resets the color from the menu
+     */
+    public void setResetColor()
+    {
+        currentColor = null;
+        colorChooser.setText("Select...");
+    }
+    /**
      * Method to add Card to referencing Collection and
      * saving to database.
      */
@@ -495,7 +537,7 @@ public class CardInformationCtrl implements Initializable {
         }
         card.setTitle(cardName.getText());
         card.setDescription(cardDescription.getText());
-
+        card.setColorPreset(currentColor);
         Collection oldCol = null;
         if(card.getCollectionId()!=null)
             oldCol = server.getCollectionById(card.getCollectionId());
@@ -539,7 +581,7 @@ public class CardInformationCtrl implements Initializable {
      * @return A card object.
      */
     public Card getCard() {
-        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()));
+        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()), server.getDefaultPresets(currentBoard.getId()));
     }
 
     /**
@@ -606,13 +648,24 @@ public class CardInformationCtrl implements Initializable {
      */
     public void setEditMode(Long cardId) {
         title.setText("Edit card");
+        currentTagAdd = null;
+        currentTagDelete = null;
+        tagChooserAdd.setText("choose a tag");
+        tagChooserDelete.setText("choose a tag");
         setCard(getCardById(cardId));
+        if(card.getColorPreset() != null)
+        {
+            currentColor = card.getColorPreset();
+            colorChooser.setText("Preset " + currentColor.getId());
+        }
         cardName.setText(card.getTitle());
         cardDescription.setText(card.getDescription());
         collectionCurrent = server.getCollectionById(card.getCollectionId());
         setState(CardInformationCtrl.State.EDIT);
         Board board = server.getBoardOfCard(cardId);
         setBoard(board);
+        setupShortcut();
+
         card.setSubtasks(server.getSubtasksOfCard(card.getId()));
         populateSubtasksScreen(card.getSubtasks());
         setupCollectionMenu();
@@ -635,16 +688,45 @@ public class CardInformationCtrl implements Initializable {
     }
 
     /**
+     * sets up the shortcut for the card information scene
+     */
+    private void setupShortcut() {
+        Runnable runnable = () -> {
+            while (!Thread.currentThread().isInterrupted()){
+                if(mainCtrl.getCardInformation() != null) {
+                    mainCtrl.getCardInformation().setOnKeyPressed(event -> {
+                        if (event.getCode().toString().equals("ESCAPE")) {
+                            Platform.runLater(() -> {
+                                goBack();
+                            });
+                        }
+                    });
+                }
+            }
+            Thread.currentThread().stop();
+        };
+
+        Thread myThread = new Thread(runnable);
+        myThread.start();
+    }
+
+    /**
      * configures this controller to enter in 'Create Card' Mode
      * @param board - the id of the board we are currently in
      */
     public void setCreateMode(Board board) {
         collectionMenu.setText("Select...");
+        currentTagAdd = null;
+        currentTagDelete = null;
+        currentColor = null;
+        tagAdder.setText("choose a tag");
+        tagDeleter.setText("choose a tag");
         collectionCurrent = null;
         title.setText("Add card");
         setState(CardInformationCtrl.State.CREATE);
         setCard(new Card());
         setBoard(board);
+        setupShortcut();
         setupCollectionMenu();
         setTag();
         refresh();
@@ -715,7 +797,6 @@ public class CardInformationCtrl implements Initializable {
         // this just adds the card to all the tags that the card added
         for (Tag tag : tagList) {
             if (!tag.getCards().contains(c.getId())) {
-                System.out.println(c.getId() + "hello");
                 tag.getCards().add(c.getId());
                 server.send("/app/tagsUpdate", tag, session);
             }
@@ -724,7 +805,6 @@ public class CardInformationCtrl implements Initializable {
         // this just deletes the card from all the tags that the card removed
         for (Tag tag : totalTagList) {
             if (tag.getCards().contains(c.getId()) && !tagList.contains(tag)) {
-                System.out.println(c.getId() + "there");
                 tag.getCards().remove(c.getId());
                 server.send("/app/tagsUpdate", tag, session);
             }

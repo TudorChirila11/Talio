@@ -68,8 +68,12 @@ public class Main extends Application {
         mainCtrl.initialize(primaryStage, board, cardInformation, collection, welcomePage, keyboardShortcutPage,
                 tagCreator, tagOverview, boardOverview, adminLogIn, colorManagement);
 
+        KeyboardShortcutCtrl keyboardShortcutCtrl = new KeyboardShortcutCtrl(mainCtrl, primaryStage);
+        keyboardShortcutCtrl.start();
+
         primaryStage.setOnCloseRequest(e -> {
             cardInformation.getKey().stop();
+            keyboardShortcutCtrl.stop();
         });
     }
 }

@@ -1,22 +1,27 @@
 package client.scenes;
 
 
+import javafx.application.Platform;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.stage.Stage;
 
-import java.util.HashMap;
 
 public class KeyboardShortcutCtrl extends Thread {
 
     private MainCtrl mainCtrl;
 
-    private HashMap<String, Boolean> activeKeys = new HashMap<>();
+    private Stage primaryStage;
 
     /**
      * Constructor for the KeyboardShortcutCtrl
-     * @param mainCtrl - the main controller of the application
+     *
+     * @param mainCtrl     - the main controller of the application
+     * @param primaryStage - the primary stage of the application
      */
-    public KeyboardShortcutCtrl(MainCtrl mainCtrl) {
+    public KeyboardShortcutCtrl(MainCtrl mainCtrl, Stage primaryStage) {
         this.mainCtrl = mainCtrl;
+        this.primaryStage = primaryStage;
     }
 
 
@@ -26,67 +31,18 @@ public class KeyboardShortcutCtrl extends Thread {
      */
     @Override
     public void run() {
-        mainCtrl.getBoard().setOnKeyPressed(event -> {
-            String code = event.getCode().toString();
-            if (!activeKeys.containsKey(code)) {
-                activeKeys.put(code, true);
-            }
-        });
-        mainCtrl.getBoard().setOnKeyReleased(event -> {
-            activeKeys.remove(event.getCode().toString());
-        });
-        if (removeActiveKey(KeyCode.SLASH.toString())) {
-            this.mainCtrl.showKeyboardShortcutPage();
-        }
-        if (removeActiveKey(KeyCode.UP.toString())) { //TODO make method for moving highlight up
-        }
-        if (removeActiveKey(KeyCode.DOWN.toString())) { //TODO make method for moving highlight down
-        }
-        if (removeActiveKey(KeyCode.LEFT.toString())) { //TODO make method for moving highlight left
-        }
-        if (removeActiveKey(KeyCode.RIGHT.toString())) { //TODO make method for moving highlight right
-        }
-        if (removeActiveKey(KeyCode.UP.toString()) && removeActiveKey(KeyCode.SHIFT.toString())) {
-            //TODO make method for moving highlighted task/card up
-        }
-        if (removeActiveKey(KeyCode.DOWN.toString()) && removeActiveKey(KeyCode.SHIFT.toString())) {
-            //TODO make method for moving highlighted task/card down
-        }
-        if (removeActiveKey(KeyCode.E.toString())) {
-            //TODO make method for editing cards
-        }
-        if (removeActiveKey(KeyCode.DELETE.toString()) || removeActiveKey(KeyCode.BACK_SPACE.toString())) {
-            //TODO make method to delete highlighted task
-        }
-        if (removeActiveKey(KeyCode.ENTER.toString()) &&
-                mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getBoard())) {
-//            this.mainCtrl.showCardInformation();
-        }
-        if (removeActiveKey(KeyCode.ESCAPE.toString()) &&
-                mainCtrl.getPrimaryStage().getScene().equals(mainCtrl.getCardInformation())) {
-//            this.mainCtrl.showBoard();
-        }
-        if (removeActiveKey(KeyCode.T.toString())) {
-            //TODO open popup for adding tags
-        }
-        if (removeActiveKey(KeyCode.C.toString())) {
-            //TODO open popup for customization
-        }
-    }
-
-    /**
-     * Checks if the key has been pressed, and if so, removes it from the list
-     * @param code - the code of the key in the event
-     * @return - true or false, depending on whether the key has been pressed
-     */
-    private boolean removeActiveKey(String code) {
-        Boolean isActive = activeKeys.get(code);
-
-        if (isActive != null && isActive) {
-            activeKeys.put(code, false);
-            return true;
-        } else {
-            return false;
+        // creat listener for the primary scene when question mark is pressed+
+        while (true) {
+            Scene prev = primaryStage.getScene();
+            // Only if the shift and slash was pressed then when it is realease we go
+            // back to the previous scene
+            primaryStage.getScene().setOnKeyPressed(event -> {
+                if (event.isShiftDown() && event.getCode() == KeyCode.SLASH) {
+                    Platform.runLater(() -> {
+                        mainCtrl.showKeyboardShortcutPage();
+                    });
+                }
+            });
         }
     }
 }

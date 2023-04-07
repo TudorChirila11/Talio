@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
+<AnchorPane id="boardPane" fx:id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
     <children>
         <Button fx:id="overviewBack" layoutX="48.0" layoutY="43.0" mnemonicParsing="false" onAction="#boardOverview" styleClass="boardOverviewButton" text="Board Overview" />
         <ImageView id="tailoLogo" fitHeight="85.0" fitWidth="142.0" layoutX="333.0" pickOnBounds="true" preserveRatio="true">

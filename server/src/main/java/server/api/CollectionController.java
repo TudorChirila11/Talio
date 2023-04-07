@@ -50,6 +50,18 @@ public class CollectionController {
      * @param c the collection that the server has received and will send to all the clients on the network
      * @return a collection
      */
+    @MessageMapping("/collectionsUpdate") // /app/collectionsUpdate
+    @SendTo("/topic/update")
+    public Collection updateCollection(Collection c){
+        updateCollection(c.getId(), c);
+        return c;
+    }
+
+    /**
+     * This method receives and distributes collections between clients
+     * @param c the collection that the server has received and will send to all the clients on the network
+     * @return a collection
+     */
     @MessageMapping("/collectionsDelete") // /app/collectionsDelete
     @SendTo("/topic/update")
     public Collection deleteCollection(Collection c){

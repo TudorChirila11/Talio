@@ -90,6 +90,18 @@ class TagTest {
     }
 
     @Test
+    void testSetColour() {
+        a.setColour(new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)));
+        assertEquals(new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0)), a.getColour());
+    }
+
+    @Test
+    void testSetCards() {
+        a.setCards(new ArrayList<Long>(Arrays.asList(1L, 2L, 3L)));
+        assertEquals(new ArrayList<Long>(Arrays.asList(1L, 2L, 3L)), a.getCards());
+    }
+
+    @Test
     void testToString() {
         assertEquals(ToStringBuilder.reflectionToString(a, MULTI_LINE_STYLE), a.toString());
     }
