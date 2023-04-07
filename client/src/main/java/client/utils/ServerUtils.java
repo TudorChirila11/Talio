@@ -44,7 +44,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 public class ServerUtils {
 
     private static String server;
-    private String ip;
+    private String url;
     private String adminKey;
 
     private StompSession session;
@@ -83,12 +83,12 @@ public class ServerUtils {
     }
 
     /**
-     * @param ip the ip that the user will be connecting to
+     * @param url the ip that the user will be connecting to
      */
-    public void changeIP(String ip) {
+    public void changeIP(String url) {
 
-        server = "http://" + ip + ":8080/";
-        this.ip = ip;
+        server = "http://" + url + "/";
+        this.url = url;
     }
 
     /**
@@ -663,7 +663,7 @@ public class ServerUtils {
     public void createStompSession(String ip) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
         StompSessionHandlerAdapter sessionHandler = new MySessionHandler(latch);
-        session = connect("ws://" + ip + ":8080/websocket", sessionHandler);
+        session = connect("ws://" + ip + "/websocket", sessionHandler);
         latch.await();
         boardCtrl.subscriber(session);
         boardOverviewCtrl.subscriber(session);

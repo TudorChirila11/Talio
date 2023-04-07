@@ -303,6 +303,7 @@ public class MainCtrl {
     public void showWelcomePage(){
         primaryStage.setTitle("Welcome page Overview: Welcome page");
         primaryStage.setScene(welcomePage);
+        welcomePageCtrl.requestFocus();
     }
 
     /**
