@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Bloom?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: #6096B4;" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardInformationCtrl">
+<AnchorPane prefHeight="494.0" prefWidth="678.0" style="-fx-background-color: #6096B4;" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardInformationCtrl">
    <children>
       <Text fx:id="title" layoutX="34.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Information">
          <font>
@@ -22,7 +30,7 @@
             <Font name="Gill Sans MT" size="16.0" />
          </font>
       </Text>
-      <Button id="removeButton" layoutX="488.0" layoutY="55.0" mnemonicParsing="false" onAction="#deleteCard" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
+      <Button id="removeButton" layoutX="574.0" layoutY="42.0" mnemonicParsing="false" onAction="#deleteCard" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
          <graphic>
             <ImageView fitHeight="30.0" fitWidth="20.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -31,10 +39,10 @@
             </ImageView>
          </graphic>
       </Button>
-      <Pane layoutX="52.0" layoutY="104.0" prefHeight="294.0" prefWidth="500.0" style="-fx-background-color: #BDCDD6; -fx-background-radius: 30; -fx-border-radius: 30; -fx-border-color: black;" stylesheets="@/client/stylesheets/Global.css">
+      <Pane layoutX="52.0" layoutY="104.0" prefHeight="362.0" prefWidth="571.0" style="-fx-background-color: #BDCDD6; -fx-background-radius: 30; -fx-border-radius: 30; -fx-border-color: black;" stylesheets="@/client/stylesheets/Global.css">
          <children>
-            <TextField id="subtaskName" fx:id="subtaskName" layoutX="350.0" layoutY="15.0" prefWidth="80" promptText="Enter Name" />
-            <Button id="addSubtaskButton" fx:id="addSubtaskButton" layoutX="430.0" layoutY="15.0" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
+            <TextField id="subtaskName" fx:id="subtaskName" layoutX="349.0" layoutY="24.0" prefHeight="25.0" prefWidth="144.0" promptText="Enter Name" />
+            <Button id="addSubtaskButton" fx:id="addSubtaskButton" layoutX="504.0" layoutY="18.0" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
                <graphic>
                   <ImageView fitHeight="30.0" fitWidth="20.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -48,7 +56,7 @@
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Text>
-            <TextField fx:id="cardName" layoutX="26.0" layoutY="37.0" />
+            <TextField fx:id="cardName" layoutX="26.0" layoutY="37.0" prefHeight="25.0" prefWidth="208.0" />
             <Text layoutX="30.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description:">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
@@ -60,33 +68,40 @@
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Text>
-            <TextArea fx:id="cardDescription" layoutX="23.0" layoutY="93.0" prefHeight="114.0" prefWidth="191.0" />
-            <MenuButton fx:id="tagChooserAdd" layoutX="28.0" layoutY="233.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="144.0" text="choose a tag" />
-            <Button fx:id="tagAdder" layoutX="178.0" layoutY="233.0" prefHeight="24.0" prefWidth="64.0" text="add tag" />
-            <MenuButton fx:id="tagChooserDelete" layoutX="28.0" layoutY="263.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="144.0" text="choose a tag" />
-            <Button fx:id="tagDeleter" layoutX="177.0" layoutY="263.0" text="delete tag" />
-            <Line endX="11.0" endY="187.39999389648438" layoutX="238.0" layoutY="87.0" startX="11.0" startY="-62.20000457763672" />
+            <TextArea fx:id="cardDescription" layoutX="23.0" layoutY="93.0" prefHeight="114.0" prefWidth="208.0" />
+            <MenuButton fx:id="tagChooserAdd" layoutX="28.0" layoutY="233.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="144.0" text="Choose a Tag" />
+            <Button fx:id="tagAdder" layoutX="178.0" layoutY="233.0" prefHeight="24.0" prefWidth="64.0" text="Add Tag" />
+            <MenuButton fx:id="tagChooserDelete" layoutX="28.0" layoutY="263.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="144.0" text="Choose a Tag" />
+            <Button fx:id="tagDeleter" layoutX="177.0" layoutY="263.0" text="Delete Tag" />
+            <Line endX="11.0" endY="258.6000061035156" layoutX="238.0" layoutY="87.0" startX="11.0" startY="-62.20000457763672" />
 
-            <Text layoutX="272.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subtasks:">
+            <Text layoutX="286.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subtasks:">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Text>
-            <Button layoutX="338.0" layoutY="250.0" mnemonicParsing="false" onAction="#goBack" style="-fx-border-color: black; -fx-border-radius: 5px;" text="Close" textFill="RED">
+            <Button layoutX="349.0" layoutY="316.0" mnemonicParsing="false" onAction="#goBack" style="-fx-border-color: black; -fx-border-radius: 5px;" text="Close" textFill="RED">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Button>
-            <Button layoutX="419.0" layoutY="250.0" mnemonicParsing="false" onAction="#addCard" style="-fx-border-radius: 5px; -fx-border-color: black;" text="Save" textFill="#0ea147">
+            <Button layoutX="422.0" layoutY="316.0" mnemonicParsing="false" onAction="#addCard" style="-fx-border-radius: 5px; -fx-border-color: black;" text="Save" textFill="#0ea147">
                <font>
                   <Font name="Gill Sans MT" size="16.0" />
                </font>
             </Button>
-            <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="270.0" layoutY="45.0" prefHeight="200.0" prefWidth="220.0">
+            <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="272.0" layoutY="62.0" prefHeight="200.0" prefWidth="276.0">
               <content>
-                <AnchorPane id="subtaskPane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="218.0" />
+                <AnchorPane id="subtaskPane" minHeight="0.0" minWidth="0.0" prefHeight="238.0" prefWidth="278.0" />
               </content>
             </ScrollPane>
+            <Text layoutX="30.0" layoutY="312.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Color Preset:">
+               <font>
+                  <Font name="Gill Sans MT" size="16.0" />
+               </font>
+            </Text>
+            <MenuButton fx:id="colorChooser" layoutX="28.0" layoutY="319.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="144.0" text="Choose a Color" />
+            <Button fx:id="resetColor" layoutX="184.0" layoutY="319.0" mnemonicParsing="false" text="Reset" />
          </children>
       </Pane>
       <MenuButton fx:id="collectionMenu" layoutX="114.0" layoutY="61.0" mnemonicParsing="false" text="Collection" />

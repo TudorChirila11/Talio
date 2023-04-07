@@ -104,7 +104,7 @@ public class ColorManagementCtrl implements Initializable {
             Color val = new Color((6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0, 1);
             boardBackground.setValue(val);
             System.out.println(currentBoard.getColor());
-            server.send("api/boards", currentBoard, session);
+            server.send("/app/boards", currentBoard, session);
         }
     }
 
@@ -118,10 +118,32 @@ public class ColorManagementCtrl implements Initializable {
         {
             Color val = new Color(0D, 0D,  0D, 1);
             boardFont.setValue(val);
-            server.send("api/boards", currentBoard, session);
+            server.send("/app/boards", currentBoard, session);
         }
     }
 
+    /**
+     * reset background color for collection
+     */
+    public void resetCollectionBackgroundColor() {
+        if (currentBoard.getCollectionColor() != null && currentBoard.getCollectionColor().size() == 6) {
+            Color val = new Color((11 * 16 + 13) / 255.0, (12 * 16 + 13) / 255.0,
+                    (13 * 16 + 6) / 255.0, 1);
+            collectionBackground.setValue(val);
+            server.send("/app/boards", currentBoard, session);
+        }
+    }
+
+    /**
+     * reset font color for collection
+     */
+    public void resetCollectionFontColor() {
+        if (currentBoard.getCollectionColor() != null && currentBoard.getCollectionColor().size() == 6) {
+            Color val = new Color(0D, 0D, 0D, 1);
+            collectionFont.setValue(val);
+            server.send("/app/boards", currentBoard, session);
+        }
+    }
 
     /**
      * This method passes the current board to this controller
@@ -147,7 +169,7 @@ public class ColorManagementCtrl implements Initializable {
      * it to the database
      */
     public void createColorPreset() {
-        Color fontColor = cardFont.getValue();
+       /* Color fontColor = cardFont.getValue();
         Color backgroundColor = cardBackground.getValue();
         if(colorPreset.equals(new ColorPreset())) {
             ColorPreset newColorPreset = new ColorPreset(new ArrayList<Double>(){{
@@ -160,7 +182,7 @@ public class ColorManagementCtrl implements Initializable {
                 }}, false);
             server.send("/app/colorPresets", newColorPreset, session);
         } else {
-            ColorPreset newColorPreset = new ColorPreset(colorPreset.getId(), colorPreset.getCards(),
+            ColorPreset newColorPreset = new ColorPreset(colorPreset.getId(),
                     new ArrayList<Double>(){{
                         add(fontColor.getRed());
                         add(fontColor.getGreen());
@@ -173,6 +195,7 @@ public class ColorManagementCtrl implements Initializable {
             server.send("/app/colorPresetsUpdate", newColorPreset, session);
         }
         refresh();
+        */
     }
 
     /**
@@ -187,29 +210,20 @@ public class ColorManagementCtrl implements Initializable {
             add(boardBackground.getValue().getRed());
             add(boardBackground.getValue().getGreen());
             add(boardBackground.getValue().getBlue()); }};
+
+        List<Double> color = new ArrayList<>(){{
+                add(collectionFont.getValue().getRed());
+                add(collectionFont.getValue().getGreen());
+                add(collectionFont.getValue().getBlue());
+                add(collectionBackground.getValue().getRed());
+                add(collectionBackground.getValue().getGreen());
+                add(collectionBackground.getValue().getBlue());
+            }};
         currentBoard.setColor(colors);
+        currentBoard.setCollectionColor(color);
         server.send("/app/boards", currentBoard, session);
     }
 
-    /**
-     * Updates the color of the
-     * collections in a board.
-     */
-    public void updateCollection() {
-        for (Collection collection : currentBoard.getCollections()) {
-            Collection newCollection = new Collection(collection.getId(), collection.getName(), collection.getBoardId(),
-                    collection.getCards(), new ArrayList<Double>(){{
-                            add(collectionFont.getValue().getRed());
-                            add(collectionFont.getValue().getGreen());
-                            add(collectionFont.getValue().getBlue());
-                            add(collectionBackground.getValue().getRed());
-                            add(collectionBackground.getValue().getGreen());
-                            add(collectionBackground.getValue().getBlue());
-                        }});
-            collection = newCollection;
-            server.send("/app/collectionsUpdate", newCollection, session);
-        }
-    }
 
     /**
      *

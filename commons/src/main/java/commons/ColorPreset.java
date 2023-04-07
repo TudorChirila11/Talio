@@ -14,13 +14,14 @@ public class ColorPreset {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    private List<Card> cards = new ArrayList<>();
 
     @ElementCollection
     private List<Double> color = new ArrayList<>();
 
     private Boolean isDefault;
+
+    @Column(name = "boardId")
+    private Long boardId;
 
     /**
      * Color preset constructor
@@ -31,19 +32,6 @@ public class ColorPreset {
      */
     public ColorPreset(Long id, List<Card> cards, List<Double> color, Boolean isDefault) {
         this.id = id;
-        this.cards = cards;
-        this.color = color;
-        this.isDefault = isDefault;
-    }
-
-    /**
-     * Color preset constructor
-     * @param cards the cards that the color preset is applied to
-     * @param color the color of the color preset
-     * @param isDefault if the color selected is default
-     */
-    public ColorPreset(List<Card> cards, List<Double> color, Boolean isDefault) {
-        this.cards = cards;
         this.color = color;
         this.isDefault = isDefault;
     }
@@ -72,13 +60,6 @@ public class ColorPreset {
         return id;
     }
 
-    /**
-     * Cards getter
-     * @return the cards that the color preset is applied to
-     */
-    public List<Card> getCards() {
-        return cards;
-    }
 
     /**
      * Color getter
@@ -123,7 +104,7 @@ public class ColorPreset {
         if (this == o) return true;
         if (!(o instanceof ColorPreset)) return false;
         ColorPreset that = (ColorPreset) o;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getCards(), that.getCards()) && Objects.equals(getColor(), that.getColor());
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getColor(), that.getColor());
     }
 
     /**
@@ -132,7 +113,7 @@ public class ColorPreset {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getCards(), getColor());
+        return Objects.hash(getId(), getColor());
     }
 
     /**
@@ -143,7 +124,6 @@ public class ColorPreset {
     public String toString() {
         return "ColorPreset{" +
                 "id=" + id +
-                ", cards=" + cards +
                 ", color=" + color +
                 '}';
     }

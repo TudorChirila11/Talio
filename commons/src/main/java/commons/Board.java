@@ -24,6 +24,9 @@ public class Board {
     @ElementCollection
     private List<Double> color = new ArrayList<>();
 
+    @ElementCollection
+    private List<Double> collectionColor = new ArrayList<>();
+
 
     /**
      * dummy board constructor
@@ -115,6 +118,22 @@ public class Board {
      */
     public void setColor(List<Double> color) {
         this.color = color;
+    }
+
+    /**
+     * Collection color getter method
+     * @return the collection color
+     */
+    public List<Double> getCollectionColor() {
+        return collectionColor;
+    }
+
+    /**
+     * Collection color setter method
+     * @param collectionColor the new collection color
+     */
+    public void setCollectionColor(List<Double> collectionColor) {
+        this.collectionColor = collectionColor;
     }
 
     /**

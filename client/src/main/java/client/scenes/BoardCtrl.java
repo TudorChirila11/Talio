@@ -163,7 +163,14 @@ public class BoardCtrl implements Initializable {
                 setBoardFontColor(fontColor);
             }
             else setBoardFontColor("");
-//            boardPane.getStyleClass().add("boardPane");
+
+            List<Double> color = currentBoard.getCollectionColor();
+            String styleBG = "";
+            String styleFont = "";
+            if(color!=null && color.size() ==6) {
+                styleBG = "-fx-background-color: " + new Color(color.get(3), color.get(4), color.get(5), 1.0).toString().replace("0x","#") + ";";
+                styleFont = "-fx-text-fill: " + new Color(color.get(0), color.get(1), color.get(2), 1.0).toString().replace("0x","#") + ";";
+            }
             boardLabel.setText(board.getName());
             boardLabel.setMaxWidth(Double.MAX_VALUE);
             AnchorPane.setLeftAnchor(boardLabel, 0.0);
@@ -180,7 +187,6 @@ public class BoardCtrl implements Initializable {
                 // Create a label for the collection name
                 Label collectionLabel = new Label(collectionName);
                 collectionLabel.getStyleClass().add("collectionLabel");
-
                 ListView<Card> collection = new ListView<>(list);
                 collection.getStyleClass().add("collection");
                 collection.setCellFactory(new CardCellFactory(mainCtrl, server, session));
@@ -200,6 +206,9 @@ public class BoardCtrl implements Initializable {
                 // Adding this to Hbox which contains each collection object + controls.
                 taskListsBox.getChildren().add(collectionVBox);
                 addTaskListControls(collectionLabel, collectionName, current, simpleAddTaskButton);
+
+                collectionLabel.setStyle(styleFont);
+                collection.setStyle(styleBG);
             }
 
             // Finally updating all the values in the pane with the current HBox
