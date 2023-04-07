@@ -241,7 +241,7 @@ public class Card {
      * @param colorPreset the color preset that'll replace the current color preset
      */
     public  void setColorPreset(ColorPreset colorPreset) {
-        colorPreset = colorPreset;
+        this.colorPreset = colorPreset;
     }
 
 

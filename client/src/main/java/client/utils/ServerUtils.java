@@ -418,6 +418,20 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Retrieves all color presets that belong to that specific board
+     * @param boardId get only the tags that belong to this board
+     * @return List of tags
+     */
+    public List<ColorPreset> getPresets(Long boardId) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/presets/"+boardId) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<ColorPreset>>() {
+                });
+    }
+
 
     public static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
 
