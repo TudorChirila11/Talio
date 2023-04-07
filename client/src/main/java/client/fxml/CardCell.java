@@ -86,8 +86,6 @@ public class CardCell extends ListCell<Card>  {
         editButton.setOnAction(event -> {
             mainCtrl.editCard(id);
         });
-
-
     }
 
     /**
@@ -134,7 +132,13 @@ public class CardCell extends ListCell<Card>  {
             else curr = card.getColorPreset();
             Color bg = new Color(curr.getColor().get(0), curr.getColor().get(1), curr.getColor().get(2), 1.0);
             Color font = new Color(curr.getColor().get(3), curr.getColor().get(4), curr.getColor().get(5), 1.0);
-            mainVBox.setStyle("-fx-background-color: " +bg.toString().replace("0x", "#"));
+
+            if(this.isSelected()){
+                mainVBox.setStyle("-fx-background-color: " +bg.toString().replace("0x", "#") + "; -fx-border-color: white;");
+            }else{
+                mainVBox.setStyle("-fx-background-color: " +bg.toString().replace("0x", "#"));
+            }
+
             titleLabel.setStyle("-fx-text-fill: "+ font.toString().replace("0x", "#"));
             descriptionLabel.setStyle("-fx-text-fill: "+ font.toString().replace("0x", "#"));
             doneSubtasks.setStyle("-fx-text-fill: "+ font.toString().replace("0x", "#"));

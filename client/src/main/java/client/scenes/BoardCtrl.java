@@ -6,10 +6,8 @@ import client.utils.ServerUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import commons.Card;
+import commons.*;
 import commons.Collection;
-import commons.Tag;
-import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -281,7 +279,6 @@ public class BoardCtrl implements Initializable {
                 if (oldCollection == newCollection)
                     newIndex = Math.min(newIndex, listView.getItems().size() - 1);
                 long oldIndex = sourceIndex;
-                //int currentIndex = getIndex(listView, event.getY());
                 Card d = server.changeCardIndex(oldCollection, oldIndex, newCollection, newIndex);
                 server.send("/app/collections", server.getCollectionById(oldCollection.getId()), session);
                 server.send("/app/collections", server.getCollectionById(newCollection.getId()), session);
@@ -323,7 +320,9 @@ public class BoardCtrl implements Initializable {
             CardCell cell = new CardCell(mainCtrl, server, session);
             cell.onMouseClickedProperty().set(event -> {
                 if (event.getClickCount() == 2) {
-                    mainCtrl.editCard(cell.getItem().getId());
+                    if(cell.getItem() != null){
+                        mainCtrl.editCard(cell.getItem().getId());
+                    }
                 }
             });
             cell.setOnDragDetected(event -> {
@@ -396,6 +395,7 @@ public class BoardCtrl implements Initializable {
             }
             // if a user presses the right key the selected item will the next listview's cell at the same index
             if (event.getCode() == KeyCode.RIGHT) {
+                listView.getSelectionModel().clearSelection();
                 selectFocus(listView, 1);
                 // Consume the event so that it is not processed further
                 event.consume();
@@ -403,13 +403,68 @@ public class BoardCtrl implements Initializable {
 
             // if a user presses the left key the selected item will the previous listview's cell at the same index
             if (event.getCode() == KeyCode.LEFT) {
+                listView.getSelectionModel().clearSelection();
                 selectFocus(listView, -1);
                 // Consume the event so that it is not processed further
                 event.consume();
             }
 
             createTagShortcut(listView, event);
+            createPresetShortcut(listView, event);
         });
+    }
+
+    /**
+     * This method creates a shortcut for choosing a preset
+     *
+     * @param listView the list view of the card
+     * @param event    the key event
+     */
+
+    private void createPresetShortcut(ListView<Card> listView, KeyEvent event) {
+        if (event.getCode() == KeyCode.C) {
+            var card = listView.getSelectionModel().getSelectedItem();
+            var alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setHeaderText("Select the preset you want to apply to the card:");
+            var presets = server.getPresets(currentBoard.getId());
+            // The user can now choose one preset out of the presets to apply to the card
+            var comboBox = new ComboBox<ColorPreset>();
+            comboBox.setCellFactory(param -> new ListCell<>() {
+                @Override
+                protected void updateItem(ColorPreset item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                    } else {
+                        setText("Preset: " + item.getId());
+                        Color background = new Color(item.getColor().get(0), item.getColor().get(1), item.getColor().get(2), 1.0);
+                        Color font = new Color(item.getColor().get(3), item.getColor().get(4), item.getColor().get(5), 1.0);
+                        setStyle("-fx-background-color: " + background.toString().replace("0x", "#") + "; -fx-text-fill: " + font.toString().replace("0x", "#") + ";");
+                    }
+                }
+            });
+            comboBox.setItems(FXCollections.observableArrayList(presets));
+            comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                Color background = new Color(newValue.getColor().get(0), newValue.getColor().get(1), newValue.getColor().get(2), 1.0);
+                Color font = new Color(newValue.getColor().get(3), newValue.getColor().get(4), newValue.getColor().get(5), 1.0);
+                comboBox.setStyle("-fx-background-color: " + background.toString().replace("0x", "#") + "; -fx-text-fill: " + font.toString().replace("0x", "#") + ";");
+            });
+            alert.getDialogPane().setContent(comboBox);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.OK) {
+                var preset = comboBox.getSelectionModel().getSelectedItem();
+                card.setColorPreset(preset);
+                try {
+                    server.send("/app/cards", card, session);
+                } catch (WebApplicationException e) {
+                    var alert2 = new Alert(Alert.AlertType.ERROR);
+                    alert2.initModality(Modality.APPLICATION_MODAL);
+                    alert2.setContentText(e.getMessage());
+                    alert2.showAndWait();
+                }
+            }
+        }
     }
 
     /**
@@ -427,6 +482,9 @@ public class BoardCtrl implements Initializable {
         // Find the adjacent ListView
         ListView adjacentListView = null;
         if (indexOfList >= 0 && indexOfList < children.size() - 1) {
+            if(i ==-1 && indexOfList == 0){
+                return;
+            }
             Node vbox = children.get(indexOfList + i);
             if (vbox instanceof VBox) {
                 ObservableList<Node> vboxChildren = ((VBox) vbox).getChildrenUnmodifiable();
@@ -686,7 +744,7 @@ public class BoardCtrl implements Initializable {
         int pos = 0;
         double cardSize = 100, error = 0;
         pos = (int) Math.min(y / (cardSize + error), sz);
-
+        pos = Math.max(0, pos);
         return pos;
     }
 
