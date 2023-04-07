@@ -420,8 +420,8 @@ public class ServerUtils {
 
     /**
      * Retrieves all color presets that belong to that specific board
-     * @param boardId get only the tags that belong to this board
-     * @return List of tags
+     * @param boardId get only the presets that belong to this board
+     * @return List of presets
      */
     public List<ColorPreset> getPresets(Long boardId) {
         return ClientBuilder.newClient(new ClientConfig()) //
@@ -429,6 +429,20 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<ColorPreset>>() {
+                });
+    }
+
+    /**
+     * Retrieves the default color preset
+     * @param boardId get only the default preset that belong to this board
+     * @return the default preset
+     */
+    public ColorPreset getDefaultPresets(Long boardId) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/presets/default/" + boardId) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<ColorPreset>() {
                 });
     }
 

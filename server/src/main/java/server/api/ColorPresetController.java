@@ -67,8 +67,19 @@ public class ColorPresetController {
      * @return List of tags objects
      */
     @GetMapping(path = {"/{id}"})
-    public List<Tag> getAllInBoard(@PathVariable("id") long boardId) {
+    public List<ColorPreset> getAllInBoard(@PathVariable("id") long boardId) {
         return repo.findByBoardId(boardId);
+    }
+
+
+    /**
+     * Hardcoded mapping all tags
+     * @param boardId the id which will be used to get only the tags that the client needs
+     * @return List of tags objects
+     */
+    @GetMapping(path = {"/default/{id}"})
+    public ColorPreset getDefaultInBoard(@PathVariable("id") long boardId) {
+        return repo.findByIsDefaultAndBoardId(true, boardId);
     }
 
     /**
