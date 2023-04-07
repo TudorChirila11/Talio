@@ -139,7 +139,7 @@ public class BoardOverviewCtrl implements Initializable {
                         boardsBox.getChildren().add(boardContent);
                     } catch (BadRequestException e) {
                         current = removeBoardFromClient(boardID, current);
-                        e.printStackTrace();
+                   //     e.printStackTrace();
                     }
                 }
                 scanner.close();

@@ -146,7 +146,8 @@ public class ColorManagementCtrl implements Initializable {
     public void refresh() {
         if(currentBoard == null)
             return;
-        clearFields();
+        updateColorFields();
+        presetSelector.getItems().clear();
         List<ColorPreset> presets = server.getPresets(currentBoard.getId());
         for (ColorPreset c : presets) {
 
@@ -165,6 +166,30 @@ public class ColorManagementCtrl implements Initializable {
             });
             presetSelector.getItems().add(i);
         }
+    }
+
+    /**
+     * updates the fields related to the color, according to currentBoard
+     */
+    private void updateColorFields() {
+        Object [] colObj = currentBoard.getColor().toArray();
+        Double[] col = new Double[colObj.length];
+        for(int i = 0; i < 6; ++i)
+            col[i] = (double) colObj[i];
+        Color c1 = new Color(col[0], col[1], col[2], 1.0);
+        Color c2 = new Color(col[3], col[4], col[5], 1.0);
+
+        colObj = currentBoard.getCollectionColor().toArray();
+        col = new Double[colObj.length];
+        for(int i = 0; i < 6; ++i)
+            col[i] = (double) colObj[i];
+        Color c3 = new Color(col[0], col[1], col[2], 1.0);
+        Color c4 = new Color(col[3], col[4], col[5], 1.0);
+
+        boardBackground.setValue(c2);
+        boardFont.setValue(c1);
+        collectionBackground.setValue(c4);
+        collectionFont.setValue(c3);
     }
 
     /**
