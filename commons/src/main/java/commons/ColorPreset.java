@@ -18,6 +18,7 @@ public class ColorPreset {
     @ElementCollection
     private List<Double> color = new ArrayList<>();
 
+    @Column(name = "isDefault")
     private Boolean isDefault;
 
     @Column(name = "boardId")
@@ -65,6 +66,21 @@ public class ColorPreset {
     }
 
     /**
+     * @return this object's boardId value
+     */
+    public Long getBoardId() {
+        return boardId;
+    }
+
+    /**
+     * setter
+     * @param boardId - board id
+     */
+    public void setBoardId(Long boardId) {
+        this.boardId = boardId;
+    }
+
+    /**
      * id getter
      * @return the color preset id
      */
@@ -85,7 +101,7 @@ public class ColorPreset {
      * Default getter
      * @return whether the color preset is set as default
      */
-    public Boolean getDefault() {
+    public Boolean getIsDefault() {
         return isDefault;
     }
 
@@ -128,15 +144,13 @@ public class ColorPreset {
         return Objects.hash(getId(), getColor());
     }
 
-    /**
-     * To String method
-     * @return the String representation
-     */
     @Override
     public String toString() {
         return "ColorPreset{" +
                 "id=" + id +
                 ", color=" + color +
+                ", isDefault=" + isDefault +
+                ", boardId=" + boardId +
                 '}';
     }
 }

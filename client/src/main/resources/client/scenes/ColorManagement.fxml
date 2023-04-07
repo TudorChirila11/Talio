@@ -84,14 +84,14 @@
                      <children>
                         <Button fx:id="addPreset" mnemonicParsing="false" onAction="#createColorPreset" prefHeight="25.0" prefWidth="59.0" text="Add" />
                         <VBox prefHeight="200.0" prefWidth="100.0" />
-                        <Button fx:id="defaultPreset" mnemonicParsing="false" prefHeight="26.0" prefWidth="87.0" text="Set Default" />
+                        <Button fx:id="defaultPreset" mnemonicParsing="false" onAction="#setDefaultPreset" prefHeight="26.0" prefWidth="87.0" text="Set Default" />
                      </children>
                   </VBox>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Button fx:id="editPreset" mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="Edit" />
+                        <Button fx:id="editPreset" mnemonicParsing="false" onAction="#editColorPreset" prefHeight="25.0" prefWidth="59.0" text="Save" />
                         <VBox prefHeight="200.0" prefWidth="100.0" />
-                        <Button fx:id="removePreset" mnemonicParsing="false" text="Remove" />
+                        <Button fx:id="removePreset" mnemonicParsing="false" onAction="#deletePreset" text="Remove" />
                      </children>
                   </VBox>
                </children>
@@ -99,7 +99,7 @@
             <HBox prefHeight="58.0" prefWidth="774.0">
                <children>
                   <HBox prefHeight="88.0" prefWidth="346.0" />
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
+                  <MenuButton fx:id="presetSelector" mnemonicParsing="false" text="Select preset...">
                     <items>
                       <MenuItem mnemonicParsing="false" text="Action 1" />
                       <MenuItem mnemonicParsing="false" text="Action 2" />

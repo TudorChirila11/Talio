@@ -32,6 +32,7 @@ public class ColorPresetController {
     @MessageMapping("/presets") // /app/presets
     @SendTo("/topic/update")
     public ColorPreset addPreset(ColorPreset p) {
+
         add(p);
         return p;
     }
@@ -114,6 +115,7 @@ public class ColorPresetController {
      */
     @PostMapping(path = {"/", ""})
     public ResponseEntity<ColorPreset> add(@RequestBody ColorPreset preset) {
+        System.out.println(preset);
         ColorPreset saved = repo.save(preset);
         return ResponseEntity.ok(preset);
     }

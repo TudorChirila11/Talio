@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import com.sun.scenario.effect.impl.prism.PrEffectHelper;
 import commons.Board;
 import commons.ColorPreset;
 import javafx.application.Platform;
@@ -10,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import org.springframework.messaging.simp.stomp.StompSession;
+import java.awt.color.*;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -151,17 +153,8 @@ public class ColorManagementCtrl implements Initializable {
      * @param board the board that the color is related to
      */
     public void initialize(Board board) {
-        List<ColorPreset> presets = server.getPresets(currentBoard.getId());
-        for (ColorPreset c : presets) {
-
-            MenuItem i = new MenuItem("Preset "+ c.getId());
-            i.setOnAction(event -> {
-                presetSelector.setText("Preset " + c.getId());
-                colorPreset = c;
-            });
-            presetSelector.getItems().add(i);
-        }
         currentBoard = board;
+        refresh();
     }
 
 
@@ -170,10 +163,26 @@ public class ColorManagementCtrl implements Initializable {
      * Method used to refresh the color preset list
      */
     public void refresh() {
-        /*if (colorPreset.equals(new ColorPreset())) {
-            cardFont.setValue(Color.BLACK);
-            cardBackground.setValue(Color.LIGHTBLUE);
-        }*/
+        presetSelector.getItems().clear();
+        List<ColorPreset> presets = server.getPresets(currentBoard.getId());
+        System.out.println(presets);
+        for (ColorPreset c : presets) {
+
+            String name = "Preset " + c.getId();
+            if(c.getIsDefault())
+                name+=" (Default) ";
+            MenuItem i = new MenuItem(name);
+            String finalName = name;
+            i.setOnAction(event -> {
+                presetSelector.setText(finalName);
+                colorPreset = c;
+                Color font = new Color(c.getColor().get(0), c.getColor().get(1), c.getColor().get(2), 1.0);
+                Color background = new Color(c.getColor().get(3), c.getColor().get(4), c.getColor().get(5), 1.0);
+                cardFont.setValue(font);
+                cardBackground.setValue(background);
+            });
+            presetSelector.getItems().add(i);
+        }
     }
 
     /**
@@ -189,8 +198,32 @@ public class ColorManagementCtrl implements Initializable {
                 add(cardBackground.getValue().getGreen());
                 add(cardBackground.getValue().getBlue());
             }};
+
         ColorPreset colorPreset1 = new ColorPreset(color, currentBoard.getId(), false);
-        server.send("/app/addPreset", colorPreset1, session);
+        System.out.println(colorPreset1);
+        colorPreset = server.savePreset(colorPreset1);
+        server.send("/app/addPreset", colorPreset, session);
+        refresh();
+    }
+
+    /**
+     *
+     */
+    public void editColorPreset()
+    {
+        System.out.println("edit happened");
+        List<Double> color = new ArrayList<>(){{
+            add(cardFont.getValue().getRed());
+            add(cardFont.getValue().getGreen());
+            add(cardFont.getValue().getBlue());
+            add(cardBackground.getValue().getRed());
+            add(cardBackground.getValue().getGreen());
+            add(cardBackground.getValue().getBlue());
+        }};
+        colorPreset.setColor(color);
+        server.savePreset(colorPreset);
+        //server.send("app/presets", colorPreset, session);
+        refresh();
     }
 
     /**
@@ -222,11 +255,24 @@ public class ColorManagementCtrl implements Initializable {
     /**
      * deletes this preset
      */
-    private void deletePreset()
+    public void deletePreset()
     {
+        System.out.println("delete happened");
         if(colorPreset == null)
             showError("No preset shown!");
-        server.send("app/presetsDelete", colorPreset, session);
+        server.deletePreset(colorPreset.getId());
+       // server.send("app/presetsDelete", colorPreset, session);
+        refresh();
+    }
+
+    /**
+     *
+     */
+    public void setDefaultPreset()
+    {
+        System.out.println("set default happened");
+        server.setDefaultPreset(colorPreset, currentBoard, session);
+        refresh();
     }
 
     /**

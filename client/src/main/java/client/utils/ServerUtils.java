@@ -572,6 +572,21 @@ public class ServerUtils {
     }
 
     /**
+     * saves this preset in the databse
+     * @param preset - the color preset stored in the databse
+     * @return the saved colorpreset
+     */
+    public ColorPreset savePreset(ColorPreset preset)
+    {
+        System.out.println(preset);
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/presets")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(preset, APPLICATION_JSON), ColorPreset.class);
+    }
+
+    /**
      * returns this card's board object
      * @param cardId - the card we want to search the board of
      * @return board object
@@ -731,6 +746,28 @@ public class ServerUtils {
         this.tagCreatorCtrl = tagCreatorCtrl;
         this.colorManagementCtrl = colorManagementCtrl;
         this.adminLogInCtrl = adminLogInCtrl;
+    }
+
+    public void setDefaultPreset(ColorPreset colorPreset, Board board, StompSession session) {
+        List<ColorPreset> presets = getPresets(board.getId());
+        for(ColorPreset preset : presets)
+            if(preset!=colorPreset)
+            {
+                preset.setIsDefault(false);
+                savePreset(preset);
+                //send("app/presets", preset, session);
+            }
+        colorPreset.setIsDefault(true);
+        savePreset(colorPreset);
+       // send("app/presets", colorPreset, session);
+    }
+
+    public Response deletePreset(Long id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/presets/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
     }
 
 }

@@ -27,6 +27,7 @@ public class Card {
 
     private String description;
 
+
     @ManyToOne
     private ColorPreset colorPreset;
 
