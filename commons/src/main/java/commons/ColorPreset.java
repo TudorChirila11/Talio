@@ -47,6 +47,18 @@ public class ColorPreset {
     }
 
     /**
+     * Color preset constructor
+     * @param color the color of the color preset
+     * @param boardId the id of the current board
+     * @param isDefault if the color selected is default
+     */
+    public ColorPreset(List<Double> color, Long boardId, Boolean isDefault) {
+        this.color = color;
+        this.boardId = boardId;
+        this.isDefault = isDefault;
+    }
+
+    /**
      * Dummy constructor
      */
     public ColorPreset() {

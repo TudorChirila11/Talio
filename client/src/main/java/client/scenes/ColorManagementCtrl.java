@@ -192,7 +192,7 @@ public class ColorManagementCtrl implements Initializable {
                 add(cardBackground.getValue().getGreen());
                 add(cardBackground.getValue().getBlue());
             }};
-        ColorPreset colorPreset1 = new ColorPreset(color, false);
+        ColorPreset colorPreset1 = new ColorPreset(color, currentBoard.getId(), false);
         server.send("/app/addPreset", colorPreset1, session);
     }
 
