@@ -103,7 +103,6 @@ public class ColorManagementCtrl implements Initializable {
     {
         Color val = new Color((6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0, 1);
         boardBackground.setValue(val);
-        System.out.println(currentBoard.getColor());
         server.send("/app/boards", currentBoard, session);
     }
 
@@ -153,7 +152,6 @@ public class ColorManagementCtrl implements Initializable {
     public void refresh() {
         presetSelector.getItems().clear();
         List<ColorPreset> presets = server.getPresets(currentBoard.getId());
-        System.out.println(presets);
         for (ColorPreset c : presets) {
 
             String name = "Preset " + c.getId();
@@ -188,18 +186,16 @@ public class ColorManagementCtrl implements Initializable {
             }};
 
         ColorPreset colorPreset1 = new ColorPreset(color, currentBoard.getId(), false);
-        System.out.println(colorPreset1);
         colorPreset = server.savePreset(colorPreset1);
         server.send("/app/addPreset", colorPreset, session);
         refresh();
     }
 
     /**
-     *
+     * edits preset colors
      */
     public void editColorPreset()
     {
-        System.out.println("edit happened");
         List<Double> color = new ArrayList<>(){{
             add(cardFont.getValue().getRed());
             add(cardFont.getValue().getGreen());
@@ -245,7 +241,6 @@ public class ColorManagementCtrl implements Initializable {
      */
     public void deletePreset()
     {
-        System.out.println("delete happened");
         if(colorPreset == null)
             showError("No preset shown!");
         server.deletePreset(colorPreset.getId());
@@ -258,7 +253,6 @@ public class ColorManagementCtrl implements Initializable {
      */
     public void setDefaultPreset()
     {
-        System.out.println("set default happened");
         server.setDefaultPreset(colorPreset, currentBoard, session);
         refresh();
     }

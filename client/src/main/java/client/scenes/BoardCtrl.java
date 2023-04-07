@@ -423,6 +423,7 @@ public class BoardCtrl implements Initializable {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 if (!input.getText().equals("")) {
                     Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()), server.getDefaultPresets(currentBoard.getId()));
+                    newCard.setColorPreset(null);
                     server.send("/app/cards", newCard, session);
                 } else {
                     showAlert("Please enter a title for the card");

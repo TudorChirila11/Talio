@@ -578,7 +578,6 @@ public class ServerUtils {
      */
     public ColorPreset savePreset(ColorPreset preset)
     {
-        System.out.println(preset);
         return ClientBuilder.newClient(new ClientConfig())
                 .target(server).path("api/presets")
                 .request(APPLICATION_JSON)
@@ -770,4 +769,9 @@ public class ServerUtils {
                 .delete();
     }
 
+    public ColorPreset getDefaultPresetForCard(Card card) {
+        Board b = getBoardOfCard(card.getId());
+        ColorPreset ans = getDefaultPresets(b.getId());
+        return ans;
+    }
 }

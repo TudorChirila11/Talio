@@ -176,7 +176,6 @@ public class CardController {
         }
         listeners.values().forEach(l -> {
             l.accept(id);
-            System.out.println("l has been reached" + l);
         });
 
         repo.deleteById(id);

@@ -103,13 +103,11 @@ public class BoardOverviewCtrl implements Initializable {
             try (Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress("google.com", 80));
                 path = "http___" + socket.getLocalAddress().getHostAddress().replaceAll("[^a-zA-Z0-9]", "_") + "_8080_";
-                System.out.println(path);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         boardFilePath = "boards_" + path + ".txt";
-        System.out.println(boardFilePath);
     }
 
     /**
@@ -125,7 +123,6 @@ public class BoardOverviewCtrl implements Initializable {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     long boardID = Long.parseLong(line.split(" -BOOL- ")[0]);
-                    System.out.println(boardID);
                     boolean created = line.split(" -BOOL- ")[1].equals("true");
                     try {
                         Board b = server.getBoardById(boardID);
@@ -448,7 +445,6 @@ public class BoardOverviewCtrl implements Initializable {
      * used if a user is an admin
      */
     public void addAllBoards() {
-        System.out.println("Added all boards");
         int size = 0;
         VBox boardsBox = new VBox(25);
         for (Board board : server.getBoards()) {
