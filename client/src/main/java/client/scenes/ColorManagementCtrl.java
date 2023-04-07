@@ -210,30 +210,19 @@ public class ColorManagementCtrl implements Initializable {
                 add(boardBackground.getValue().getGreen());
                 add(boardBackground.getValue().getBlue());
             }};
-
+        List<Double> color = new ArrayList<>(){{
+                add(collectionFont.getValue().getRed());
+                add(collectionFont.getValue().getGreen());
+                add(collectionFont.getValue().getBlue());
+                add(collectionBackground.getValue().getRed());
+                add(collectionBackground.getValue().getGreen());
+                add(collectionBackground.getValue().getBlue());
+            }};
         currentBoard.setColor(colors);
+        currentBoard.setCollectionColor(color);
         server.send("/app/boards", currentBoard, session);
     }
 
-    /**
-     * Updates the color of the
-     * collections in a board.
-     */
-    public void updateCollection() {
-        for (Collection collection : currentBoard.getCollections()) {
-            Collection newCollection = new Collection(collection.getId(), collection.getName(), collection.getBoardId(),
-                    collection.getCards(), new ArrayList<Double>(){{
-                            add(collectionFont.getValue().getRed());
-                            add(collectionFont.getValue().getGreen());
-                            add(collectionFont.getValue().getBlue());
-                            add(collectionBackground.getValue().getRed());
-                            add(collectionBackground.getValue().getGreen());
-                            add(collectionBackground.getValue().getBlue());
-                        }});
-            collection = newCollection;
-            server.send("/app/collectionsUpdate", newCollection, session);
-        }
-    }
 
     /**
      *
