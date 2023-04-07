@@ -144,6 +144,10 @@ public class ColorPreset {
         return Objects.hash(getId(), getColor());
     }
 
+    /**
+     * toString method for the ColorPreset object
+     * @return the string representation of a ColorPreset object
+     */
     @Override
     public String toString() {
         return "ColorPreset{" +
