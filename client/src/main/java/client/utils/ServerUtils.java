@@ -58,6 +58,7 @@ public class ServerUtils {
     private CardInformationCtrl cardInformationCtrl;
     private TagCreatorCtrl tagCreatorCtrl;
 
+    private ColorManagementCtrl colorManagementCtrl;
     private AdminLogInCtrl adminLogInCtrl;
 
 
@@ -417,6 +418,34 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Retrieves all color presets that belong to that specific board
+     * @param boardId get only the presets that belong to this board
+     * @return List of presets
+     */
+    public List<ColorPreset> getPresets(Long boardId) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/presets/"+boardId) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<ColorPreset>>() {
+                });
+    }
+
+    /**
+     * Retrieves the default color preset
+     * @param boardId get only the default preset that belong to this board
+     * @return the default preset
+     */
+    public ColorPreset getDefaultPresets(Long boardId) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/presets/default/" + boardId) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<ColorPreset>() {
+                });
+    }
+
 
     public static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
 
@@ -477,6 +506,7 @@ public class ServerUtils {
     }
 
 
+
     /**
      * switches the position of card from indexOld, Collection old to indexNew, Collection newCol
      *
@@ -512,6 +542,7 @@ public class ServerUtils {
                 .put(Entity.entity(newCard, APPLICATION_JSON), Card.class);
     }
 
+
     /**
      * returns this card object
      * @param id - card id
@@ -538,6 +569,20 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Subtask>>(){
                 });
+    }
+
+    /**
+     * saves this preset in the databse
+     * @param preset - the color preset stored in the databse
+     * @return the saved colorpreset
+     */
+    public ColorPreset savePreset(ColorPreset preset)
+    {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/presets")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(preset, APPLICATION_JSON), ColorPreset.class);
     }
 
     /**
@@ -625,6 +670,7 @@ public class ServerUtils {
         cardInformationCtrl.subscriber(session);
         tagCreatorCtrl.subscriber(session);
         adminLogInCtrl.subscriber(session);
+        colorManagementCtrl.subscriber(session);
     }
 
     /**
@@ -645,6 +691,7 @@ public class ServerUtils {
         }
         throw new IllegalStateException();
     }
+
 
     /**
      * This method sends everything that the stomp client receives to the consumer (client)
@@ -686,15 +733,61 @@ public class ServerUtils {
      * @param cardInformationCtrl a controller that uses websockets
      * @param tagCreatorCtrl a controller that uses websockets
      * @param adminLogInCtrl a controller that uses websockets
+     * @param colorManagementCtrl a controller that uses websockets
      */
+
     public void getControllers(BoardCtrl boardCtrl, BoardOverviewCtrl boardOverviewCtrl, TagOverviewCtrl tagOverviewCtrl, CardInformationCtrl cardInformationCtrl, TagCreatorCtrl tagCreatorCtrl,
-                               AdminLogInCtrl adminLogInCtrl){
+                               AdminLogInCtrl adminLogInCtrl, ColorManagementCtrl colorManagementCtrl){
         this.boardCtrl = boardCtrl;
         this.boardOverviewCtrl = boardOverviewCtrl;
         this.tagOverviewCtrl = tagOverviewCtrl;
         this.cardInformationCtrl = cardInformationCtrl;
         this.tagCreatorCtrl = tagCreatorCtrl;
+        this.colorManagementCtrl = colorManagementCtrl;
         this.adminLogInCtrl = adminLogInCtrl;
     }
 
+    /**
+     * Method to set a color preset as default for cards
+     * @param colorPreset the color preset to be set as default
+     * @param board the board that the color preset should be set as default in
+     * @param session the current session
+     */
+    public void setDefaultPreset(ColorPreset colorPreset, Board board, StompSession session) {
+        List<ColorPreset> presets = getPresets(board.getId());
+        for(ColorPreset preset : presets)
+            if(preset!=colorPreset)
+            {
+                preset.setIsDefault(false);
+                savePreset(preset);
+                //send("app/presets", preset, session);
+            }
+        colorPreset.setIsDefault(true);
+        savePreset(colorPreset);
+       // send("app/presets", colorPreset, session);
+    }
+
+    /**
+     * Method to delete a preset
+     * @param id the id of the color preset
+     * @return response
+     */
+    public Response deletePreset(Long id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/presets/" + id) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .delete();
+    }
+
+    /**
+     * method that returns the default preset this card should have
+     * @param card - the card we want to set the default preset of
+     * @return - ColorPreset object
+     */
+    public ColorPreset getDefaultPresetForCard(Card card) {
+        Board b = getBoardOfCard(card.getId());
+        ColorPreset ans = getDefaultPresets(b.getId());
+        return ans;
+    }
 }

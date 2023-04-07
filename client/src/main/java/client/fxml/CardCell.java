@@ -5,6 +5,7 @@ import client.scenes.MainCtrl;
 
 import client.utils.ServerUtils;
 import commons.Card;
+import commons.ColorPreset;
 import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
@@ -46,7 +47,9 @@ public class CardCell extends ListCell<Card>  {
 
     private List<Tag> tagList;
 
-    private VBox vBox;
+
+    @FXML
+    private VBox mainVBox;
 
     private Long id;
 
@@ -106,7 +109,7 @@ public class CardCell extends ListCell<Card>  {
     /**
      * Overriding the defined update Item for Custom Card Cell
      * @param card The new item for the cell.
-     * @param empty whether or not this cell represents data from the list. If it
+     * @param empty whether this cell represents data from the list. If it
      *        is empty, then it does not represent any domain data, but is a cell
      *        being used to render an "empty" row.
      */
@@ -125,9 +128,16 @@ public class CardCell extends ListCell<Card>  {
             descriptionLabel.setText(card.getDescription());
             doneSubtasks.setText(server.getDoneSubtasksForCard(id));
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-
-
-            //this is for showing all the tags in the card.
+            ColorPreset curr = null;
+            if(card.getColorPreset() == null)
+                curr = server.getDefaultPresetForCard(card);
+            else curr = card.getColorPreset();
+            Color bg = new Color(curr.getColor().get(0), curr.getColor().get(1), curr.getColor().get(2), 1.0);
+            Color font = new Color(curr.getColor().get(3), curr.getColor().get(4), curr.getColor().get(5), 1.0);
+            mainVBox.setStyle("-fx-background-color: " +bg.toString().replace("0x", "#"));
+            titleLabel.setStyle("-fx-text-fill: "+ font.toString().replace("0x", "#"));
+            descriptionLabel.setStyle("-fx-text-fill: "+ font.toString().replace("0x", "#"));
+            doneSubtasks.setStyle("-fx-text-fill: "+ font.toString().replace("0x", "#"));
             tagList = server.getTagsByCard(server.getCardById(card.getId()));
             tagInCardContainer.getChildren().removeAll(tagInCardContainer.getChildren());
             for (Tag tag : tagList) {
