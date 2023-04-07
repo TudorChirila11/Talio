@@ -101,14 +101,10 @@ public class ColorManagementCtrl implements Initializable {
      */
     public void resetBoardBackgroundColor()
     {
-        if(currentBoard.getColor() != null && currentBoard.getColor().size() == 6)
-        {
-
-            Color val = new Color((6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0, 1);
-            boardBackground.setValue(val);
-            System.out.println(currentBoard.getColor());
-            server.send("/app/boards", currentBoard, session);
-        }
+        Color val = new Color((6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0, 1);
+        boardBackground.setValue(val);
+        System.out.println(currentBoard.getColor());
+        server.send("/app/boards", currentBoard, session);
     }
 
     /**
@@ -116,36 +112,28 @@ public class ColorManagementCtrl implements Initializable {
      */
     public void resetBoardFontColor()
     {
-
-        if(currentBoard.getColor() != null && currentBoard.getColor().size() == 6)
-        {
-            Color val = new Color(0D, 0D,  0D, 1);
-            boardFont.setValue(val);
-            server.send("/app/boards", currentBoard, session);
-        }
+        Color val = new Color(0D, 0D,  0D, 1);
+        boardFont.setValue(val);
+        server.send("/app/boards", currentBoard, session);
     }
 
     /**
      * reset background color for collection
      */
     public void resetCollectionBackgroundColor() {
-        if (currentBoard.getCollectionColor() != null && currentBoard.getCollectionColor().size() == 6) {
-            Color val = new Color((11 * 16 + 13) / 255.0, (12 * 16 + 13) / 255.0,
-                    (13 * 16 + 6) / 255.0, 1);
-            collectionBackground.setValue(val);
-            server.send("/app/boards", currentBoard, session);
-        }
+        Color val = new Color((11 * 16 + 13) / 255.0, (12 * 16 + 13) / 255.0,
+                (13 * 16 + 6) / 255.0, 1);
+        collectionBackground.setValue(val);
+        server.send("/app/boards", currentBoard, session);
     }
 
     /**
      * reset font color for collection
      */
     public void resetCollectionFontColor() {
-        if (currentBoard.getCollectionColor() != null && currentBoard.getCollectionColor().size() == 6) {
-            Color val = new Color(0D, 0D, 0D, 1);
-            collectionFont.setValue(val);
-            server.send("/app/boards", currentBoard, session);
-        }
+        Color val = new Color(0D, 0D, 0D, 1);
+        collectionFont.setValue(val);
+        server.send("/app/boards", currentBoard, session);
     }
 
     /**
