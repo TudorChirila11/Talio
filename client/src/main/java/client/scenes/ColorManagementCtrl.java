@@ -3,18 +3,20 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
-import commons.Collection;
 import commons.ColorPreset;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -71,6 +73,9 @@ public class ColorManagementCtrl implements Initializable {
     private Button defaultPreset;
 
     private ColorPreset colorPreset;
+
+    @FXML
+    private MenuButton presetSelector;
 
 
     /**
@@ -150,8 +155,19 @@ public class ColorManagementCtrl implements Initializable {
      * @param board the board that the color is related to
      */
     public void initialize(Board board) {
+        List<ColorPreset> presets = server.getPresets(currentBoard.getId());
+        for (ColorPreset c : presets) {
+
+            MenuItem i = new MenuItem("Preset "+ c.getId());
+            i.setOnAction(event -> {
+                presetSelector.setText("Preset " + c.getId());
+                colorPreset = c;
+            });
+            presetSelector.getItems().add(i);
+        }
         currentBoard = board;
     }
+
 
 
     /**
