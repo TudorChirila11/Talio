@@ -24,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -36,6 +37,8 @@ public class BoardCtrl implements Initializable {
     @FXML
     public Button tagButton;
     public Button tagOverview;
+    @FXML
+    public AnchorPane boardPane;
 
     @FXML
     private Button addCollectionButton;
@@ -43,7 +46,8 @@ public class BoardCtrl implements Initializable {
     @FXML
     private Button addCardButton;
 
-
+    @FXML
+    private Button overviewBack;
     private Board currentBoard;
 
     @FXML
@@ -152,6 +156,23 @@ public class BoardCtrl implements Initializable {
     public void refresh(Board board) {
         currentBoard = board;
         if (currentBoard != null) {
+            List<Double> colour = currentBoard.getColor();
+            if(colour != null && colour.size() != 0){
+                boardPane.setStyle("-fx-background-color: " +
+                        new Color(colour.get(3), colour.get(4), colour.get(5), 1.0).toString().replace("0x", "#") +
+                        ";");
+                String fontColor = "-fx-text-fill: " +  new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#");
+                setBoardFontColor(fontColor);
+            }
+            else setBoardFontColor("");
+
+            List<Double> color = currentBoard.getCollectionColor();
+            String styleBG = "";
+            String styleFont = "";
+            if(color!=null && color.size() ==6) {
+                styleBG = "-fx-background-color: " + new Color(color.get(3), color.get(4), color.get(5), 1.0).toString().replace("0x","#") + ";";
+                styleFont = "-fx-text-fill: " + new Color(color.get(0), color.get(1), color.get(2), 1.0).toString().replace("0x","#") + ";";
+            }
             boardLabel.setText(board.getName());
             boardLabel.setMaxWidth(Double.MAX_VALUE);
             AnchorPane.setLeftAnchor(boardLabel, 0.0);
@@ -168,7 +189,6 @@ public class BoardCtrl implements Initializable {
                 // Create a label for the collection name
                 Label collectionLabel = new Label(collectionName);
                 collectionLabel.getStyleClass().add("collectionLabel");
-
                 ListView<Card> collection = new ListView<>(list);
                 collection.getStyleClass().add("collection");
                 collection.setCellFactory(new CardCellFactory(mainCtrl, server, session));
@@ -188,11 +208,28 @@ public class BoardCtrl implements Initializable {
                 // Adding this to Hbox which contains each collection object + controls.
                 taskListsBox.getChildren().add(collectionVBox);
                 addTaskListControls(collectionLabel, collectionName, current, simpleAddTaskButton);
+
+                collectionLabel.setStyle(styleFont);
+                collection.setStyle(styleBG);
             }
 
             // Finally updating all the values in the pane with the current HBox
             collectionsContainer.setContent(taskListsBox);
         }
+    }
+
+
+    /**
+     * Sets the board font color
+     * @param fontColor the new font color
+     */
+    public void setBoardFontColor(String fontColor)
+    {
+        tagButton.setStyle(fontColor);
+        tagOverview.setStyle(fontColor);
+        boardLabel.setStyle(fontColor);
+        addCardButton.setStyle(fontColor);
+        overviewBack.setStyle(fontColor);
     }
 
     /**
@@ -625,7 +662,8 @@ public class BoardCtrl implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 if (!input.getText().equals("")) {
-                    Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()));
+                    Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()), server.getDefaultPresets(currentBoard.getId()));
+                    newCard.setColorPreset(null);
                     server.send("/app/cards", newCard, session);
                 } else {
                     showAlert("Please enter a title for the card");
@@ -657,5 +695,13 @@ public class BoardCtrl implements Initializable {
      */
     public void showColorManagement() {
         mainCtrl.showColorManagement(currentBoard);
+    }
+
+    /**
+     * BoardPane getter
+     * @return the BoardPane
+     */
+    public AnchorPane getBoardPane() {
+        return boardPane;
     }
 }

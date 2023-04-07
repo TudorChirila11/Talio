@@ -27,6 +27,10 @@ public class Card {
 
     private String description;
 
+
+    @ManyToOne
+    private ColorPreset colorPreset;
+
     @Column(name = "collection_id")
     private Long collectionId;
 
@@ -50,6 +54,25 @@ public class Card {
      * @param collectionId the id of collection
      * @param index the index of this card inside its collection
      * @param subtasks - list of subtasks
+     * @param colorPreset - the color preset that the card uses
+     */
+    public Card(String title, String description, Long collectionId, Long index, List<Subtask> subtasks, ColorPreset colorPreset) {
+        this.title = title;
+        this.description = description;
+        this.collectionId = collectionId;
+        this.index = index;
+        this.subtasks = subtasks;
+        this.colorPreset = colorPreset;
+    }
+
+
+    /**
+     * the constructor of the card class
+     * @param title the name users can see
+     * @param description the description for the card
+     * @param collectionId the id of collection
+     * @param index the index of this card inside its collection
+     * @param subtasks - list of subtasks
      */
     public Card(String title, String description, Long collectionId, Long index, List<Subtask> subtasks) {
         this.title = title;
@@ -57,6 +80,23 @@ public class Card {
         this.collectionId = collectionId;
         this.index = index;
         this.subtasks = subtasks;
+    }
+
+    /**
+     * the constructor of the card class
+     * @param title the name users can see
+     * @param description the description for the card
+     * @param collection the id of collection
+     * @param index the id of the card inside its collection
+     * @param colorPreset the color preset that the card uses
+     */
+    public Card(String title, String description, Collection collection, Long index, ColorPreset colorPreset) {
+        this.title = title;
+        this.description = description;
+        this.collectionId = collection.getId();
+        this.index = index;
+        this.subtasks = new ArrayList<>();
+        this.colorPreset = colorPreset;
     }
 
     /**
@@ -204,6 +244,22 @@ public class Card {
      */
     public void setIndex(Long index) {
         this.index = index;
+    }
+
+    /**
+     * This is the getter for the color preset
+     * @return the current color preset
+     */
+    public ColorPreset getColorPreset() {
+        return colorPreset;
+    }
+
+    /**
+     * This is the setter for the color preset
+     * @param colorPreset the color preset that'll replace the current color preset
+     */
+    public  void setColorPreset(ColorPreset colorPreset) {
+        this.colorPreset = colorPreset;
     }
 
 

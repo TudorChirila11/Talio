@@ -19,6 +19,7 @@ import client.utils.ServerUtils;
 import client.scenes.AdminLogInCtrl;
 import com.google.inject.Inject;
 import commons.Board;
+import commons.ColorPreset;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
@@ -39,10 +40,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Scanner;
+import java.util.*;
 
 public class BoardOverviewCtrl implements Initializable {
 
@@ -105,13 +103,11 @@ public class BoardOverviewCtrl implements Initializable {
             try (Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress("google.com", 80));
                 path = "http___" + socket.getLocalAddress().getHostAddress().replaceAll("[^a-zA-Z0-9]", "_") + "_8080_";
-                System.out.println(path);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         boardFilePath = "boards_" + path + ".txt";
-        System.out.println(boardFilePath);
     }
 
     /**
@@ -127,7 +123,6 @@ public class BoardOverviewCtrl implements Initializable {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     long boardID = Long.parseLong(line.split(" -BOOL- ")[0]);
-                    System.out.println(boardID);
                     boolean created = line.split(" -BOOL- ")[1].equals("true");
                     try {
                         Board b = server.getBoardById(boardID);
@@ -144,7 +139,7 @@ public class BoardOverviewCtrl implements Initializable {
                         boardsBox.getChildren().add(boardContent);
                     } catch (BadRequestException e) {
                         current = removeBoardFromClient(boardID, current);
-                        e.printStackTrace();
+                   //     e.printStackTrace();
                     }
                 }
                 scanner.close();
@@ -344,10 +339,19 @@ public class BoardOverviewCtrl implements Initializable {
             String newName = result.get();
             if (!newName.isEmpty()) {
                 Board boardN = new Board(newName);
+                assignDefaultColors(boardN);
                 try {
                     Board b = server.addBoard(boardN);
                     server.send("/app/boards", b, session);
                     writeClientBoard(b, true);
+                    server.send("/app/presets", new ColorPreset(new ArrayList<Double>(){{
+                            add(147.0/255.0);
+                            add(191.0/255.0);
+                            add(207.0/255.0);
+                            add(0.0);
+                            add(0.0);
+                            add(0.0);
+                        }}, b.getId(), true), session);
                 } catch (WebApplicationException e) {
                     var alert = new Alert(Alert.AlertType.ERROR);
                     alert.initModality(Modality.APPLICATION_MODAL);
@@ -358,6 +362,18 @@ public class BoardOverviewCtrl implements Initializable {
             }
         }
         refresh();
+    }
+
+    /**
+     * assigns the default colors to the current board object
+     * @param boardN - the board we want to set the default colors of
+     */
+    private void assignDefaultColors(Board boardN) {
+        List<Double> boardColor = new ArrayList<>(List.of(0D, 0D, 0D, (6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0));
+        List<Double> collectionColor = new ArrayList<>(List.of( 0D, 0D, 0D, (11 * 16 + 13) / 255.0, (12 * 16 + 13) / 255.0,
+                (13 * 16 + 6) / 255.0));
+        boardN.setColor(boardColor);
+        boardN.setCollectionColor(collectionColor);
     }
 
     /**
@@ -442,7 +458,6 @@ public class BoardOverviewCtrl implements Initializable {
      * used if a user is an admin
      */
     public void addAllBoards() {
-        System.out.println("Added all boards");
         int size = 0;
         VBox boardsBox = new VBox(25);
         for (Board board : server.getBoards()) {
