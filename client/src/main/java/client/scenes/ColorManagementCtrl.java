@@ -147,8 +147,19 @@ public class ColorManagementCtrl implements Initializable {
         if(currentBoard == null)
             return;
         updateColorFields();
+        refreshColorChooser();
+    }
+
+
+    /**
+     * refreshes the color chooser
+     */
+    public void refreshColorChooser()
+    {
         presetSelector.getItems().clear();
         List<ColorPreset> presets = server.getPresets(currentBoard.getId());
+        colorPreset = null;
+        presetSelector.setText("Select...");
         for (ColorPreset c : presets) {
 
             String name = "Preset " + c.getId();
@@ -209,7 +220,7 @@ public class ColorManagementCtrl implements Initializable {
         ColorPreset colorPreset1 = new ColorPreset(color, currentBoard.getId(), false);
         colorPreset = server.savePreset(colorPreset1);
         server.send("/app/addPreset", colorPreset, session);
-        refresh();
+        refreshColorChooser();
     }
 
     /**
@@ -228,7 +239,7 @@ public class ColorManagementCtrl implements Initializable {
         colorPreset.setColor(color);
         server.savePreset(colorPreset);
         //server.send("app/presets", colorPreset, session);
-        refresh();
+        refreshColorChooser();
     }
 
     /**
@@ -264,10 +275,17 @@ public class ColorManagementCtrl implements Initializable {
     public void deletePreset()
     {
         if(colorPreset == null)
+        {
             showError("No preset shown!");
+            return;
+        }
+        if(colorPreset.getIsDefault()){
+            showError("Cannot delete default preset! Choose another default first.");
+            return;
+        }
         server.deletePreset(colorPreset.getId());
        // server.send("app/presetsDelete", colorPreset, session);
-        refresh();
+        refreshColorChooser();
     }
 
     /**
@@ -276,7 +294,7 @@ public class ColorManagementCtrl implements Initializable {
     public void setDefaultPreset()
     {
         server.setDefaultPreset(colorPreset, currentBoard, session);
-        refresh();
+        refreshColorChooser();
     }
 
     /**
