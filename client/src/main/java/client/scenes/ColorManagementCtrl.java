@@ -101,7 +101,6 @@ public class ColorManagementCtrl implements Initializable {
     {
         Color val = new Color((6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0, 1);
         boardBackground.setValue(val);
-        server.send("/app/boards", currentBoard, session);
     }
 
     /**
@@ -111,7 +110,6 @@ public class ColorManagementCtrl implements Initializable {
     {
         Color val = new Color(0D, 0D,  0D, 1);
         boardFont.setValue(val);
-        server.send("/app/boards", currentBoard, session);
     }
 
     /**
@@ -121,7 +119,6 @@ public class ColorManagementCtrl implements Initializable {
         Color val = new Color((11 * 16 + 13) / 255.0, (12 * 16 + 13) / 255.0,
                 (13 * 16 + 6) / 255.0, 1);
         collectionBackground.setValue(val);
-        server.send("/app/boards", currentBoard, session);
     }
 
     /**
@@ -130,7 +127,6 @@ public class ColorManagementCtrl implements Initializable {
     public void resetCollectionFontColor() {
         Color val = new Color(0D, 0D, 0D, 1);
         collectionFont.setValue(val);
-        server.send("/app/boards", currentBoard, session);
     }
 
     /**
@@ -148,7 +144,9 @@ public class ColorManagementCtrl implements Initializable {
      * Method used to refresh the color preset list
      */
     public void refresh() {
-        presetSelector.getItems().clear();
+        if(currentBoard == null)
+            return;
+        clearFields();
         List<ColorPreset> presets = server.getPresets(currentBoard.getId());
         for (ColorPreset c : presets) {
 
@@ -232,6 +230,7 @@ public class ColorManagementCtrl implements Initializable {
         currentBoard.setColor(colors);
         currentBoard.setCollectionColor(color);
         server.send("/app/boards", currentBoard, session);
+        showCurrentBoard();
     }
 
     /**
@@ -285,7 +284,19 @@ public class ColorManagementCtrl implements Initializable {
      * Goes back to the current board
      */
     public void showCurrentBoard() {
+        clearFields();
         mainCtrl.showBoard(currentBoard);
+    }
+
+    /**
+     * clears the fields of the current screen
+     */
+    private void clearFields() {
+        resetBoardBackgroundColor();
+        resetBoardFontColor();
+        resetCollectionBackgroundColor();
+        resetCollectionFontColor();
+        presetSelector.getItems().clear();
     }
 
 }

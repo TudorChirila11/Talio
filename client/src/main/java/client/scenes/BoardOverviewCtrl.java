@@ -339,6 +339,7 @@ public class BoardOverviewCtrl implements Initializable {
             String newName = result.get();
             if (!newName.isEmpty()) {
                 Board boardN = new Board(newName);
+                assignDefaultColors(boardN);
                 try {
                     Board b = server.addBoard(boardN);
                     server.send("/app/boards", b, session);
@@ -361,6 +362,18 @@ public class BoardOverviewCtrl implements Initializable {
             }
         }
         refresh();
+    }
+
+    /**
+     * assigns the default colors to the current board object
+     * @param boardN - the board we want to set the default colors of
+     */
+    private void assignDefaultColors(Board boardN) {
+        List<Double> boardColor = new ArrayList<>(List.of(0D, 0D, 0D, (6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0));
+        List<Double> collectionColor = new ArrayList<>(List.of( 0D, 0D, 0D, (11 * 16 + 13) / 255.0, (12 * 16 + 13) / 255.0,
+                (13 * 16 + 6) / 255.0));
+        boardN.setColor(boardColor);
+        boardN.setCollectionColor(collectionColor);
     }
 
     /**
