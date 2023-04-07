@@ -508,7 +508,7 @@ public class CardInformationCtrl implements Initializable {
      * @return A card object.
      */
     public Card getCard() {
-        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()));
+        return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()), server.getDefaultPresets(currentBoard.getId()));
     }
 
     /**
