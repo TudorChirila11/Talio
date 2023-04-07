@@ -39,6 +39,7 @@ public class CardInformationCtrl implements Initializable {
     private Tag currentTagAdd;
 
     private Tag currentTagDelete;
+    private ColorPreset currentColor;
 
     enum State {
         EDIT, CREATE, INACTIVE
@@ -81,6 +82,11 @@ public class CardInformationCtrl implements Initializable {
 
     private StompSession session;
 
+    @FXML
+    private MenuButton colorChooser;
+
+    @FXML
+    private Button resetColor;
     /**
      * sets the CardInformationCtrl's state field
      *
@@ -215,6 +221,29 @@ public class CardInformationCtrl implements Initializable {
         }
     }
 
+    /**
+     * sets up menu for choosing colors
+     */
+    public void setupMenuColor()
+    {
+        colorChooser.getItems().clear();
+        List<ColorPreset> presets = server.getPresets(currentBoard.getId());
+        if (currentBoard != null) {
+            for (ColorPreset c : presets) {
+                String name = "Preset " + c.getId();
+                System.out.println(name);
+                if(c.getIsDefault())
+                    name+=" (Default)";
+                MenuItem i = new MenuItem(name);
+                String finalName = name;
+                i.setOnAction(event -> {
+                    colorChooser.setText(finalName);
+                    currentColor = c;
+                });
+                colorChooser.getItems().add(i);
+            }
+        }
+    }
     /**
      * creates the 'Add subtask' option
      *
@@ -391,6 +420,7 @@ public class CardInformationCtrl implements Initializable {
             return;
         if (currentBoard != null) {
             setupTags();
+            setupMenuColor();
         }
         if (collectionCurrent == null)
             collectionMenu.setText("Select...");
