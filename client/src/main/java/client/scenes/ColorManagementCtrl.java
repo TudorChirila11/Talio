@@ -13,7 +13,6 @@ import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -182,33 +181,16 @@ public class ColorManagementCtrl implements Initializable {
      * it to the database
      */
     public void createColorPreset() {
-       /* Color fontColor = cardFont.getValue();
-        Color backgroundColor = cardBackground.getValue();
-        if(colorPreset.equals(new ColorPreset())) {
-            ColorPreset newColorPreset = new ColorPreset(new ArrayList<Double>(){{
-                    add(fontColor.getRed());
-                    add(fontColor.getGreen());
-                    add(fontColor.getBlue());
-                    add(backgroundColor.getRed());
-                    add(backgroundColor.getGreen());
-                    add(backgroundColor.getBlue());
-                }}, false);
-            server.send("/app/colorPresets", newColorPreset, session);
-        } else {
-            ColorPreset newColorPreset = new ColorPreset(colorPreset.getId(),
-                    new ArrayList<Double>(){{
-                        add(fontColor.getRed());
-                        add(fontColor.getGreen());
-                        add(fontColor.getBlue());
-                        add(backgroundColor.getRed());
-                        add(backgroundColor.getGreen());
-                        add(backgroundColor.getBlue());
-                    }}, colorPreset.getDefault());
-            colorPreset = newColorPreset;
-            server.send("/app/colorPresetsUpdate", newColorPreset, session);
-        }
-        refresh();
-        */
+        List<Double> color = new ArrayList<>(){{
+                add(cardFont.getValue().getRed());
+                add(cardFont.getValue().getGreen());
+                add(cardFont.getValue().getBlue());
+                add(cardBackground.getValue().getRed());
+                add(cardBackground.getValue().getGreen());
+                add(cardBackground.getValue().getBlue());
+            }};
+        ColorPreset colorPreset1 = new ColorPreset(color, false);
+        server.send("/app/addPreset", colorPreset1, session);
     }
 
     /**
