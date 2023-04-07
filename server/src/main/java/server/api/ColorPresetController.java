@@ -115,6 +115,6 @@ public class ColorPresetController {
     @PostMapping(path = {"/", ""})
     public ResponseEntity<ColorPreset> add(@RequestBody ColorPreset preset) {
         ColorPreset saved = repo.save(preset);
-        return ResponseEntity.ok(preset);
+        return ResponseEntity.ok(saved);
     }
 }

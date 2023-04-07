@@ -19,6 +19,7 @@ import client.utils.ServerUtils;
 import client.scenes.AdminLogInCtrl;
 import com.google.inject.Inject;
 import commons.Board;
+import commons.ColorPreset;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
@@ -39,10 +40,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Scanner;
+import java.util.*;
 
 public class BoardOverviewCtrl implements Initializable {
 
@@ -348,6 +346,14 @@ public class BoardOverviewCtrl implements Initializable {
                     Board b = server.addBoard(boardN);
                     server.send("/app/boards", b, session);
                     writeClientBoard(b, true);
+                    server.send("/app/presets", new ColorPreset(new ArrayList<Double>(){{
+                            add(147.0/255.0);
+                            add(191/255.0);
+                            add(207/255.0);
+                            add(0.0);
+                            add(0.0);
+                            add(0.0);
+                        }}, b.getId(), true), session);
                 } catch (WebApplicationException e) {
                     var alert = new Alert(Alert.AlertType.ERROR);
                     alert.initModality(Modality.APPLICATION_MODAL);
