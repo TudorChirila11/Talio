@@ -204,6 +204,14 @@ public class BoardCtrl implements Initializable {
                 // Adding this to Hbox which contains each collection object + controls.
                 taskListsBox.getChildren().add(collectionVBox);
                 addTaskListControls(collectionLabel, collectionName, current, simpleAddTaskButton);
+
+                List<Double> colors = current.getColor();
+                if(colors != null && colors.size() != 0) {
+                    collectionVBox.setStyle("-fx-background-color: " +
+                            new Color(colors.get(3), colors.get(4), colors.get(5), 1.0).toString().replace("0x", "#") +
+                            ";" +
+                            "-fx-text-fill: " +  new Color(colors.get(0), colors.get(1), colors.get(2), 1.0).toString().replace("0x", "#")+";");
+                }
             }
 
             // Finally updating all the values in the pane with the current HBox

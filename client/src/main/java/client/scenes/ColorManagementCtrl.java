@@ -11,7 +11,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
@@ -105,7 +104,7 @@ public class ColorManagementCtrl implements Initializable {
             Color val = new Color((6*16) /255.0, (9*16+6) / 255.0,  (11*16+4) / 255.0, 1);
             boardBackground.setValue(val);
             System.out.println(currentBoard.getColor());
-            server.send("api/boards", currentBoard, session);
+            server.send("/app/boards", currentBoard, session);
         }
     }
 
@@ -119,10 +118,36 @@ public class ColorManagementCtrl implements Initializable {
         {
             Color val = new Color(0D, 0D,  0D, 1);
             boardFont.setValue(val);
-            server.send("api/boards", currentBoard, session);
+            server.send("/app/boards", currentBoard, session);
         }
     }
 
+    /**
+     * reset background color for collection
+     */
+    public void resetCollectionBackgroundColor() {
+        for (Collection collection : currentBoard.getCollections()) {
+            if (collection.getColor() != null && collection.getColor().size() == 6) {
+                Color val = new Color((11 * 16 + 13) /255.0, (12 * 16 + 13) / 255.0,
+                        (13 * 16 + 6) / 255.0, 1);
+                collectionBackground.setValue(val);
+                server.send("/app/collections", collection, session);
+            }
+        }
+    }
+
+    /**
+     * reset font color for collection
+     */
+    public void resetCollectionFontColor() {
+        for (Collection collection : currentBoard.getCollections()) {
+            if (collection.getColor() != null && collection.getColor().size() == 6) {
+                Color val = new Color(0D, 0D, 0D, 1);
+                collectionFont.setValue(val);
+                server.send("/app/collections", collection, session);
+            }
+        }
+    }
 
     /**
      * This method passes the current board to this controller
@@ -182,13 +207,13 @@ public class ColorManagementCtrl implements Initializable {
      */
     public void updateBoard() {
         List<Double> colors = new ArrayList<Double>(){{
-            add(boardFont.getValue().getRed());
-            add(boardFont.getValue().getGreen());
-            add(boardFont.getValue().getBlue());
-            add(boardBackground.getValue().getRed());
-            add(boardBackground.getValue().getGreen());
-            add(boardBackground.getValue().getBlue());
-        }};
+                add(boardFont.getValue().getRed());
+                add(boardFont.getValue().getGreen());
+                add(boardFont.getValue().getBlue());
+                add(boardBackground.getValue().getRed());
+                add(boardBackground.getValue().getGreen());
+                add(boardBackground.getValue().getBlue());
+            }};
 
         currentBoard.setColor(colors);
         server.send("/app/boards", currentBoard, session);
