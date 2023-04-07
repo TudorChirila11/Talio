@@ -348,8 +348,8 @@ public class BoardOverviewCtrl implements Initializable {
                     writeClientBoard(b, true);
                     server.send("/app/presets", new ColorPreset(new ArrayList<Double>(){{
                             add(147.0/255.0);
-                            add(191/255.0);
-                            add(207/255.0);
+                            add(191.0/255.0);
+                            add(207.0/255.0);
                             add(0.0);
                             add(0.0);
                             add(0.0);
