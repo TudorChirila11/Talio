@@ -11,7 +11,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
@@ -181,15 +180,13 @@ public class ColorManagementCtrl implements Initializable {
      * when it is changed from the menu
      */
     public void updateBoard() {
-        List<Double> colors = new ArrayList<Double>(){{
+    List<Double> colors = new ArrayList<Double>(){{
             add(boardFont.getValue().getRed());
             add(boardFont.getValue().getGreen());
             add(boardFont.getValue().getBlue());
             add(boardBackground.getValue().getRed());
             add(boardBackground.getValue().getGreen());
-            add(boardBackground.getValue().getBlue());
-        }};
-
+            add(boardBackground.getValue().getBlue()); }};
         currentBoard.setColor(colors);
         server.send("/app/boards", currentBoard, session);
     }

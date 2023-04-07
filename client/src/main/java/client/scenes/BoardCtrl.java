@@ -44,7 +44,8 @@ public class BoardCtrl implements Initializable {
     @FXML
     private Button addCardButton;
 
-
+    @FXML
+    private Button overviewBack;
     private Board currentBoard;
 
     @FXML
@@ -153,21 +154,16 @@ public class BoardCtrl implements Initializable {
     public void refresh(Board board) {
         currentBoard = board;
         if (currentBoard != null) {
-
             List<Double> colour = currentBoard.getColor();
             if(colour != null && colour.size() != 0){
                 boardPane.setStyle("-fx-background-color: " +
                         new Color(colour.get(3), colour.get(4), colour.get(5), 1.0).toString().replace("0x", "#") +
-                        ";" +
-                        "-fx-text-fill: " +  new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#")+";");
-
-                System.out.println(boardPane.getStyle());
-                System.out.println("board id is " + currentBoard.getId());
-                System.out.println("its colors are " + colour);
+                        ";");
+                String fontColor = "-fx-text-fill: " +  new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#");
+                setBoardFontColor(fontColor);
             }
-            else boardPane.setStyle("");
+            else setBoardFontColor("");
 //            boardPane.getStyleClass().add("boardPane");
-
             boardLabel.setText(board.getName());
             boardLabel.setMaxWidth(Double.MAX_VALUE);
             AnchorPane.setLeftAnchor(boardLabel, 0.0);
@@ -209,6 +205,16 @@ public class BoardCtrl implements Initializable {
             // Finally updating all the values in the pane with the current HBox
             collectionsContainer.setContent(taskListsBox);
         }
+    }
+    
+
+    public void setBoardFontColor(String fontColor)
+    {
+        tagButton.setStyle(fontColor);
+        tagOverview.setStyle(fontColor);
+        boardLabel.setStyle(fontColor);
+        addCardButton.setStyle(fontColor);
+        overviewBack.setStyle(fontColor);
     }
 
     /**
