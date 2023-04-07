@@ -7,10 +7,7 @@ import commons.ColorPreset;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -238,6 +235,26 @@ public class ColorManagementCtrl implements Initializable {
         currentBoard.setColor(colors);
         currentBoard.setCollectionColor(color);
         server.send("/app/boards", currentBoard, session);
+    }
+
+    /**
+     * deletes this preset
+     */
+    private void deletePreset()
+    {
+        if(colorPreset == null)
+            showError("No preset shown!");
+        server.send("app/presetsDelete", colorPreset, session);
+    }
+
+    /**
+     * shows error with the given text
+     * @param text - text to be shown in the error
+     */
+    private void showError(String text) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setContentText(text);
+        a.show();
     }
 
 
