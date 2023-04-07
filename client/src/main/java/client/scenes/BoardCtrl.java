@@ -215,8 +215,12 @@ public class BoardCtrl implements Initializable {
             collectionsContainer.setContent(taskListsBox);
         }
     }
-    
 
+
+    /**
+     * Sets the board font color
+     * @param fontColor the new font color
+     */
     public void setBoardFontColor(String fontColor)
     {
         tagButton.setStyle(fontColor);

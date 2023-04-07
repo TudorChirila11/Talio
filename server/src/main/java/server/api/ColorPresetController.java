@@ -1,17 +1,14 @@
 package server.api;
 
-import commons.Board;
 import commons.ColorPreset;
 import commons.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
-import server.database.BoardRepository;
 import server.database.ColorPresetRepository;
 
 import java.util.List;
-import java.util.Random;
 
 @RestController
 @RequestMapping("/api/presets")

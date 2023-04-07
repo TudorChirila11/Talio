@@ -3,7 +3,6 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
-import commons.Collection;
 import commons.ColorPreset;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -203,13 +202,13 @@ public class ColorManagementCtrl implements Initializable {
      * when it is changed from the menu
      */
     public void updateBoard() {
-    List<Double> colors = new ArrayList<Double>(){{
-            add(boardFont.getValue().getRed());
-            add(boardFont.getValue().getGreen());
-            add(boardFont.getValue().getBlue());
-            add(boardBackground.getValue().getRed());
-            add(boardBackground.getValue().getGreen());
-            add(boardBackground.getValue().getBlue()); }};
+        List<Double> colors = new ArrayList<Double>(){{
+                add(boardFont.getValue().getRed());
+                add(boardFont.getValue().getGreen());
+                add(boardFont.getValue().getBlue());
+                add(boardBackground.getValue().getRed());
+                add(boardBackground.getValue().getGreen());
+                add(boardBackground.getValue().getBlue()); }};
 
         List<Double> color = new ArrayList<>(){{
                 add(collectionFont.getValue().getRed());
