@@ -117,6 +117,6 @@ public class ColorPresetController {
     public ResponseEntity<ColorPreset> add(@RequestBody ColorPreset preset) {
         System.out.println(preset);
         ColorPreset saved = repo.save(preset);
-        return ResponseEntity.ok(preset);
+        return ResponseEntity.ok(saved);
     }
 }

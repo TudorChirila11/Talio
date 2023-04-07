@@ -88,6 +88,23 @@ public class Card {
      * @param description the description for the card
      * @param collection the id of collection
      * @param index the id of the card inside its collection
+     * @param colorPreset the color preset that the card uses
+     */
+    public Card(String title, String description, Collection collection, Long index, ColorPreset colorPreset) {
+        this.title = title;
+        this.description = description;
+        this.collectionId = collection.getId();
+        this.index = index;
+        this.subtasks = new ArrayList<>();
+        this.colorPreset = colorPreset;
+    }
+
+    /**
+     * the constructor of the card class
+     * @param title the name users can see
+     * @param description the description for the card
+     * @param collection the id of collection
+     * @param index the id of the card inside its collection
      */
     public Card(String title, String description, Collection collection, Long index) {
         this.title = title;
