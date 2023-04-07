@@ -166,8 +166,10 @@ public class BoardCtrl implements Initializable {
                 System.out.println("its colors are " + colour);
             }
             else boardPane.setStyle("");
-//            boardPane.getStyleClass().add("boardPane");
-
+            List<Double> color = currentBoard.getCollectionColor();
+            String style = "-fx-background-color: " + new Color(color.get(3), color.get(4), color.get(5), 1.0).toString().replace("0x","#") +
+                    ";" +
+                    "-fx-text-fill " + new Color(color.get(0), color.get(1), color.get(2), 1.0).toString().replace("0x","#") + ";";
             boardLabel.setText(board.getName());
             boardLabel.setMaxWidth(Double.MAX_VALUE);
             AnchorPane.setLeftAnchor(boardLabel, 0.0);
@@ -205,13 +207,7 @@ public class BoardCtrl implements Initializable {
                 taskListsBox.getChildren().add(collectionVBox);
                 addTaskListControls(collectionLabel, collectionName, current, simpleAddTaskButton);
 
-                List<Double> colors = current.getColor();
-                if(colors != null && colors.size() != 0) {
-                    collectionVBox.setStyle("-fx-background-color: " +
-                            new Color(colors.get(3), colors.get(4), colors.get(5), 1.0).toString().replace("0x", "#") +
-                            ";" +
-                            "-fx-text-fill: " +  new Color(colors.get(0), colors.get(1), colors.get(2), 1.0).toString().replace("0x", "#")+";");
-                }
+                collection.setStyle(style);
             }
 
             // Finally updating all the values in the pane with the current HBox

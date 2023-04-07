@@ -126,13 +126,11 @@ public class ColorManagementCtrl implements Initializable {
      * reset background color for collection
      */
     public void resetCollectionBackgroundColor() {
-        for (Collection collection : currentBoard.getCollections()) {
-            if (collection.getColor() != null && collection.getColor().size() == 6) {
-                Color val = new Color((11 * 16 + 13) /255.0, (12 * 16 + 13) / 255.0,
-                        (13 * 16 + 6) / 255.0, 1);
-                collectionBackground.setValue(val);
-                server.send("/app/collections", collection, session);
-            }
+        if (currentBoard.getCollectionColor() != null && currentBoard.getCollectionColor().size() == 6) {
+            Color val = new Color((11 * 16 + 13) / 255.0, (12 * 16 + 13) / 255.0,
+                    (13 * 16 + 6) / 255.0, 1);
+            collectionBackground.setValue(val);
+            server.send("/app/boards", currentBoard, session);
         }
     }
 
@@ -140,12 +138,10 @@ public class ColorManagementCtrl implements Initializable {
      * reset font color for collection
      */
     public void resetCollectionFontColor() {
-        for (Collection collection : currentBoard.getCollections()) {
-            if (collection.getColor() != null && collection.getColor().size() == 6) {
-                Color val = new Color(0D, 0D, 0D, 1);
-                collectionFont.setValue(val);
-                server.send("/app/collections", collection, session);
-            }
+        if (currentBoard.getCollectionColor() != null && currentBoard.getCollectionColor().size() == 6) {
+            Color val = new Color(0D, 0D, 0D, 1);
+            collectionBackground.setValue(val);
+            server.send("/app/boards", currentBoard, session);
         }
     }
 
