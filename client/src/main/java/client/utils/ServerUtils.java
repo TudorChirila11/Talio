@@ -747,6 +747,12 @@ public class ServerUtils {
         this.adminLogInCtrl = adminLogInCtrl;
     }
 
+    /**
+     * Method to set a color preset as default for cards
+     * @param colorPreset the color preset to be set as default
+     * @param board the board that the color preset should be set as default in
+     * @param session the current session
+     */
     public void setDefaultPreset(ColorPreset colorPreset, Board board, StompSession session) {
         List<ColorPreset> presets = getPresets(board.getId());
         for(ColorPreset preset : presets)
@@ -761,6 +767,11 @@ public class ServerUtils {
        // send("app/presets", colorPreset, session);
     }
 
+    /**
+     * Method to delete a preset
+     * @param id the id of the color preset
+     * @return response
+     */
     public Response deletePreset(Long id) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(server).path("api/presets/" + id) //

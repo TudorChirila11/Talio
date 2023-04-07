@@ -2,7 +2,6 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import com.sun.scenario.effect.impl.prism.PrEffectHelper;
 import commons.Board;
 import commons.ColorPreset;
 import javafx.application.Platform;
@@ -11,7 +10,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import org.springframework.messaging.simp.stomp.StompSession;
-import java.awt.color.*;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -197,13 +195,13 @@ public class ColorManagementCtrl implements Initializable {
     public void editColorPreset()
     {
         List<Double> color = new ArrayList<>(){{
-            add(cardFont.getValue().getRed());
-            add(cardFont.getValue().getGreen());
-            add(cardFont.getValue().getBlue());
-            add(cardBackground.getValue().getRed());
-            add(cardBackground.getValue().getGreen());
-            add(cardBackground.getValue().getBlue());
-        }};
+                add(cardFont.getValue().getRed());
+                add(cardFont.getValue().getGreen());
+                add(cardFont.getValue().getBlue());
+                add(cardBackground.getValue().getRed());
+                add(cardBackground.getValue().getGreen());
+                add(cardBackground.getValue().getBlue());
+            }};
         colorPreset.setColor(color);
         server.savePreset(colorPreset);
         //server.send("app/presets", colorPreset, session);
