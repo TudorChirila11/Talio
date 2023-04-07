@@ -317,6 +317,7 @@ public class BoardCtrl implements Initializable {
 
     /**
      * This method initializes the shortcuts for the list view
+     *
      * @param listView the list view of the card
      */
     private void generalShortcuts(ListView<Card> listView) {
@@ -339,7 +340,7 @@ public class BoardCtrl implements Initializable {
             if (event.getCode() == KeyCode.E) {
                 var alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.initModality(Modality.APPLICATION_MODAL);
-                alert.setContentText("Change the title for the card:");
+                alert.setHeaderText("Change the title for the card:");
                 var textField = new TextField();
                 alert.getDialogPane().setContent(textField);
                 alert.showAndWait();
@@ -356,20 +357,69 @@ public class BoardCtrl implements Initializable {
                     }
                 }
             }
+            // if a user presses the right key the selected item will the next listview's cell at the same index
+            if (event.getCode() == KeyCode.RIGHT) {
+                selectFocus(listView, 1);
+                // Consume the event so that it is not processed further
+                event.consume();
+            }
+
+            // if a user presses the left key the selected item will the previous listview's cell at the same index
+            if (event.getCode() == KeyCode.LEFT) {
+                selectFocus(listView, -1);
+                // Consume the event so that it is not processed further
+                event.consume();
+            }
+
             createTagShortcut(listView, event);
         });
     }
 
     /**
-     * This method creates a shortcut for the tag creation
+     * This method selects the next or previous cell in the list view
+     *
      * @param listView the list view of the card
-     * @param event the event that is triggered
+     * @param i        the index of the cell
+     */
+    private void selectFocus(ListView<Card> listView, int i) {
+        VBox v = (VBox) listView.getParent();
+        int indexOfList = v.getParent().getChildrenUnmodifiable().indexOf(v);
+        int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+
+        ObservableList<Node> children = v.getParent().getChildrenUnmodifiable();
+        // Find the adjacent ListView
+        ListView adjacentListView = null;
+        if (indexOfList >= 0 && indexOfList < children.size() - 1) {
+            Node vbox = children.get(indexOfList + i);
+            if (vbox instanceof VBox) {
+                ObservableList<Node> vboxChildren = ((VBox) vbox).getChildrenUnmodifiable();
+                if (vboxChildren.size() > 1) {
+                    Node listViewNode = vboxChildren.get(1);
+                    if (listViewNode instanceof ListView) {
+                        adjacentListView = (ListView) listViewNode;
+                    }
+                }
+            }
+        }
+
+        // Select the item at the same index in the adjacent ListView
+        if (adjacentListView != null) {
+            adjacentListView.requestFocus();
+            adjacentListView.getSelectionModel().select(selectedIndex);
+        }
+    }
+
+    /**
+     * This method creates a shortcut for the tag creation
+     *
+     * @param listView the list view of the card
+     * @param event    the event that is triggered
      */
     private void createTagShortcut(ListView<Card> listView, KeyEvent event) {
-        if(event.getCode() == KeyCode.T){
+        if (event.getCode() == KeyCode.T) {
             var alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("Select the tags you want to add to the card:");
+            alert.setHeaderText("Select the tags you want to add to the card:");
             var card = listView.getSelectionModel().getSelectedItem();
             var tags = server.getTags(currentBoard.getId());
             var tagsOnCard = server.getTagsByCard(card);
@@ -384,7 +434,7 @@ public class BoardCtrl implements Initializable {
                 var checkBox = new CheckBox(t.getName());
                 checkBoxes.add(checkBox);
             }
-            if(checkBoxes.isEmpty()){
+            if (checkBoxes.isEmpty()) {
                 showAlert("There are no tags to add to the card.");
                 return;
             }
@@ -421,6 +471,7 @@ public class BoardCtrl implements Initializable {
 
     /**
      * This configures the drag and drop of a card (shortcut)
+     *
      * @param listView the list view of the card
      */
     private void dragAndDropShortcut(ListView<Card> listView) {
@@ -431,7 +482,7 @@ public class BoardCtrl implements Initializable {
                 if (index > 0) {
                     try {
                         Collection c1 = mapper.get(listView);
-                        if(c1 == null)
+                        if (c1 == null)
                             return;
                         Card d = server.changeCardIndex(c1, index, c1, index - 1);
                         server.send("/app/collections", server.getCollectionById(c1.getId()), session);
@@ -455,7 +506,7 @@ public class BoardCtrl implements Initializable {
                 if (index < listView.getItems().size() - 1) {
                     try {
                         Collection c1 = mapper.get(listView);
-                        if(c1 == null)
+                        if (c1 == null)
                             return;
                         Card d = server.changeCardIndex(c1, index, c1, index + 1);
                         server.send("/app/collections", server.getCollectionById(c1.getId()), session);
@@ -567,7 +618,6 @@ public class BoardCtrl implements Initializable {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Add Card");
             alert.setHeaderText("Add a new card to " + collection.getName());
-            alert.setContentText("Please enter the title of the card:");
             alert.initModality(Modality.APPLICATION_MODAL);
             TextField input = new TextField();
             input.setPromptText("Card Title");

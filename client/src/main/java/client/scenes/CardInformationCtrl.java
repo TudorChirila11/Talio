@@ -586,7 +586,7 @@ public class CardInformationCtrl implements Initializable {
      */
     private void setupShortcut() {
         Runnable runnable = () -> {
-            while (true){
+            while (!Thread.currentThread().isInterrupted()){
                 if(mainCtrl.getCardInformation() != null) {
                     mainCtrl.getCardInformation().setOnKeyPressed(event -> {
                         if (event.getCode().toString().equals("ESCAPE")) {
@@ -597,6 +597,7 @@ public class CardInformationCtrl implements Initializable {
                     });
                 }
             }
+            Thread.currentThread().stop();
         };
 
         Thread myThread = new Thread(runnable);
