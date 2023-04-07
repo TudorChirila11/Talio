@@ -146,6 +146,8 @@ public class CardInformationCtrl implements Initializable {
         setupCollectionMenu();
         card = new Card();
         collectionCurrent = null;
+        tagList = new ArrayList<>();
+        totalTagList = new ArrayList<>();
         //refresh();
     }
 
@@ -613,12 +615,38 @@ public class CardInformationCtrl implements Initializable {
         setState(CardInformationCtrl.State.EDIT);
         Board board = server.getBoardOfCard(cardId);
         setBoard(board);
+        setupShortcut();
+
         card.setSubtasks(server.getSubtasksOfCard(card.getId()));
         populateSubtasksScreen(card.getSubtasks());
         setupCollectionMenu();
         setTag();
         refresh();
 
+    }
+
+
+    /**
+     * sets up the shortcut for this scene
+     */
+    private void setupShortcut() {
+        Runnable runnable = () -> {
+            while (!Thread.currentThread().isInterrupted()){
+                if(mainCtrl.getCardInformation() != null) {
+                    mainCtrl.getCardInformation().setOnKeyPressed(event -> {
+                        if (event.getCode().toString().equals("ESCAPE")) {
+                            Platform.runLater(() -> {
+                                goBack();
+                            });
+                        }
+                    });
+                }
+            }
+            Thread.currentThread().stop();
+        };
+
+        Thread myThread = new Thread(runnable);
+        myThread.start();
     }
 
     /**
@@ -637,6 +665,7 @@ public class CardInformationCtrl implements Initializable {
         setState(CardInformationCtrl.State.CREATE);
         setCard(new Card());
         setBoard(board);
+        setupShortcut();
         setupCollectionMenu();
         setTag();
         refresh();
