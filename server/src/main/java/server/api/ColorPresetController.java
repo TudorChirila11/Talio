@@ -45,8 +45,25 @@ public class ColorPresetController {
      */
     @MessageMapping("/presetsDelete") // /app/presetsDelete
     @SendTo("/topic/update")
-    public ColorPreset deletePreset(ColorPreset p){
+    public ColorPreset deletePreset(ColorPreset p) {
         delete(p.getId());
+        return p;
+    }
+
+
+    /**
+     * This method receives and distributes presets between clients
+     * @param p the preset that the server has received and will send to all the clients on the network
+     * @return a board
+     */
+    @MessageMapping("/presetsDefaultChange") // /app/presetsDelete
+    @SendTo("/topic/update")
+    public ColorPreset defaultPreset(ColorPreset p) {
+        p.setIsDefault(true);
+        ColorPreset p1 = getDefaultInBoard(p.getBoardId());
+        p1.setIsDefault(false);
+        add(p1);
+        add(p);
         return p;
     }
 
