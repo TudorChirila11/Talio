@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,5 +49,45 @@ public class CollectionTest {
         Collection collection = new Collection(1L, "test collection");
         assertEquals("test collection", collection.getName());
     }
+
+    @Test
+    public void testCollectionWithAllParams() {
+        Long id = 1L;
+        String name = "Test Collection";
+        Board board = new Board("Test Board");
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card("Test Card"));
+        List<Double> color = new ArrayList<>();
+        color.add(0.1);
+        Collection collection = new Collection(id, name, board.getId(), cards, color);
+        assertEquals(id, collection.getId());
+        assertEquals(name, collection.getName());
+        assertEquals(board.getId(), collection.getBoardId());
+        assertEquals(cards, collection.getCards());
+        assertEquals(color, collection.getColor());
+    }
+
+    @Test
+    public void testCollectionConstructor() {
+        Long id = 1L;
+        String name = "My Collection";
+        Long boardId = 2L;
+        List<Card> cards = new ArrayList<>();
+        List<Double> color = new ArrayList<>();
+
+        Collection collection = new Collection (name, new Board(), cards, color);
+
+        assertNotNull(collection);
+    }
+
+    @Test
+    public void setColor() {
+        List<Double> color = new ArrayList<>();
+        color.add(0.1);
+        collection.setColor(color);
+        assertEquals(color, collection.getColor());
+    }
+
+
 
 }

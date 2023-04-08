@@ -27,6 +27,13 @@ class SubtaskTest {
     }
 
     @Test
+    void anotherConstructorTest()
+    {
+        Subtask sb = new Subtask(1L,  "name", 3L);
+        assertNotNull(sb);
+    }
+
+    @Test
     void setIndexTest() {
         sb.setIndex(213L);
         assertEquals(213L, sb.getIndex());

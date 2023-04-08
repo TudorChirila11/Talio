@@ -42,7 +42,8 @@ public class CardInformationCtrl implements Initializable {
     private ColorPreset currentColor;
 
     enum State {
-        EDIT, CREATE, INACTIVE
+        EDIT, CREATE, VIEW, INACTIVE
+
     }
 
     private final ServerUtils server;
@@ -53,13 +54,15 @@ public class CardInformationCtrl implements Initializable {
     private ArrayList<HBox> subtaskHBoxes;
 
 
-
     private State state;
 
     private Card card;
 
     @FXML
     private TextField cardName;
+
+    @FXML
+    private Button removeButton;
 
     @FXML
     private TextArea cardDescription;
@@ -390,7 +393,11 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * stores these subtasks into the database
+<<<<<<< HEAD
+     * @param c  - the id we want to store the list of subtasks in
+=======
      * @param c - the id we want to store the list of subtasks in
+>>>>>>> main
      */
     private void saveSubtasksCardId(Card c) {
         List<Subtask> subtasks = c.getSubtasks();
@@ -422,6 +429,48 @@ public class CardInformationCtrl implements Initializable {
         if (currentBoard != null) {
             setupTags();
             setupMenuColor();
+        }
+        setupCollectionMenu();
+        if(state == State.VIEW){
+            title.setText("View card");
+            scrollPane.setDisable(true);
+            cardName.setDisable(true);
+            cardDescription.setDisable(true);
+            subtaskName.setDisable(true);
+            addSubtaskButton.setDisable(true);
+            collectionMenu.setDisable(true);
+            collectionCurrent = server.getCollectionById(card.getCollectionId());
+            cardName.setText(card.getTitle());
+            cardDescription.setText(card.getDescription());
+            removeButton.setDisable(true);
+            tagAdder.setDisable(true);
+            tagDeleter.setDisable(true);
+            tagChooserAdd.setDisable(true);
+            tagChooserDelete.setDisable(true);
+            colorChooser.setDisable(true);
+        }else{
+            scrollPane.setDisable(false);
+            cardName.setDisable(false);
+            cardDescription.setDisable(false);
+            subtaskName.setDisable(false);
+            addSubtaskButton.setDisable(false);
+            collectionMenu.setDisable(false);
+            removeButton.setDisable(false);
+            tagAdder.setDisable(false);
+            tagDeleter.setDisable(false);
+            tagChooserAdd.setDisable(false);
+            tagChooserDelete.setDisable(false);
+            colorChooser.setDisable(false);
+        }
+        if (state == State.EDIT) {
+            ///Delete all subtasks from the database
+            title.setText("Edit card");
+            collectionCurrent = server.getCollectionById(card.getCollectionId());
+            cardName.setText(card.getTitle());
+            cardDescription.setText(card.getDescription());
+        } else if(state != State.VIEW) {
+            title.setText("Add card");
+            collectionCurrent = null;
         }
         if (collectionCurrent == null)
             collectionMenu.setText("Select...");
@@ -627,7 +676,19 @@ public class CardInformationCtrl implements Initializable {
 
 
     /**
-     * sets up the shortcut for this scene
+     * configures this controller to enter in 'View Card' Mode
+     * @param cardId - the Id of the card we want to view
+     */
+    public void setViewMode(Long cardId) {
+        setCard(getCardById(cardId));
+        setState(CardInformationCtrl.State.VIEW);
+        Board board = server.getBoardOfCard(cardId);
+        setBoard(board);
+        refresh();
+    }
+
+    /**
+     * sets up the shortcut for the card information scene
      */
     private void setupShortcut() {
         Runnable runnable = () -> {

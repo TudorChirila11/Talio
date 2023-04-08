@@ -94,6 +94,7 @@ public class TagOverviewCtrl implements Initializable{
      * Used to update the tag overview once entered and when the server notifies the client that something has changed
      */
     public void refresh() {
+
         if (currentBoard != null) {
             ListView<HBox> tagListView = new ListView<>();
             tagsList = tagService.getTags(currentBoard.getId());

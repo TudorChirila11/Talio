@@ -135,6 +135,7 @@ public class MainCtrl {
      */
     public void showBoardOverviewAdmin(boolean admin) {
         boardOverviewCtrl.setAdmin(admin);
+        boardCtrl.setAdmin(admin);
         primaryStage.setTitle("Board Overview");
         primaryStage.setScene(boardOverview);
     }
@@ -314,4 +315,16 @@ public class MainCtrl {
         primaryStage.setTitle("Keyboard Shortcuts Overview: Keyboard Shortcuts page");
         primaryStage.setScene(keyboardShortcut);
     }
+
+    /**
+     * Displays the cardInformation Scene when viewing card
+     * and enables the controller
+     * @param cardId the id of the card that is being identified
+     */
+    public void viewCard(Long cardId) {
+        cardInformationCtrl.setViewMode(cardId);
+        primaryStage.setTitle("View card");
+        primaryStage.setScene(cardInformation);
+    }
 }
+

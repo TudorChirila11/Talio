@@ -130,23 +130,26 @@ public class BoardOverviewCtrl implements Initializable {
                         HBox boardContent = new HBox(25);
                         Label boardLabel = new Label(b.getName());
                         Button copyKey = new Button();
-                        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().
-                                getResourceAsStream("/client/assets/key.png"))));
-                        Button openBoard = new Button("Open Board");
+                        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
+                        Button openBoard = new Button("Open");
                         Button delete = new Button("X");
+                        String lock = "unlock";
+                        if (b.isLocked()) lock = "lock";
+                        ImageView locked = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/" + lock + ".png"))));
+                        locked.setPreserveRatio(true);
+                        locked.setPickOnBounds(true);
+                        locked.setFitHeight(40);
+
                         prepareContent(boardLabel, copyKey, imageView, openBoard, delete, b, created);
-                        boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
+                        boardContent.getChildren().addAll(boardLabel, copyKey, locked, openBoard, delete);
                         boardsBox.getChildren().add(boardContent);
                     } catch (BadRequestException e) {
                         current = removeBoardFromClient(boardID, current);
-                   //     e.printStackTrace();
                     }
                 }
                 scanner.close();
                 if (!current.getName().equals(boardFilePath)) {
-                    if (!current.getName().equals("boardsTemp.txt")) {
-                        new File("boardsTemp.txt").delete();
-                    }
+                    if (!current.getName().equals("boardsTemp.txt")) new File("boardsTemp.txt").delete();
                     new File(boardFilePath).delete();
                     current.renameTo(new File(boardFilePath));
                     new File("boardsTest.txt").delete();
@@ -466,16 +469,25 @@ public class BoardOverviewCtrl implements Initializable {
             Label boardLabel = new Label(board.getName());
             Button copyKey = new Button();
             ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
-            Button openBoard = new Button("Open Board");
+            Button openBoard = new Button("Open");
             Button delete = new Button("X");
+
+            String lock = "unlock";
+            if (board.isLocked()) {
+                lock = "lock";
+            }
+            ImageView locked = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/" + lock + ".png"))));
+            locked.setPreserveRatio(true);
+            locked.setPickOnBounds(true);
+            locked.setFitHeight(40);
 
             prepareContent(boardLabel, copyKey, imageView, openBoard, delete, board, true);
 
-            boardContent.getChildren().addAll(boardLabel, copyKey, openBoard, delete);
+            boardContent.getChildren().addAll(boardLabel, copyKey, locked, openBoard, delete);
             boardsBox.getChildren().add(boardContent);
-            boardsBox.setPrefSize(600, 225 * size);
-            boardContainer.setContent(boardsBox);
         }
+        boardsBox.setPrefSize(600, 225 * size);
+        boardContainer.setContent(boardsBox);
     }
 
     /**

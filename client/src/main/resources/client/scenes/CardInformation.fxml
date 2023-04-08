@@ -30,7 +30,7 @@
             <Font name="Gill Sans MT" size="16.0" />
          </font>
       </Text>
-      <Button id="removeButton" layoutX="574.0" layoutY="42.0" mnemonicParsing="false" onAction="#deleteCard" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
+      <Button fx:id="removeButton"  id="removeButton" layoutX="488.0" layoutY="55.0" mnemonicParsing="false" onAction="#deleteCard" prefHeight="10.0" prefWidth="10.0" styleClass="imageButton">
          <graphic>
             <ImageView fitHeight="30.0" fitWidth="20.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                <image>
