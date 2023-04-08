@@ -132,9 +132,9 @@ public class BoardCtrl implements Initializable {
                 currentBoard.setPassword(null);
                 server.send("/app/boards", currentBoard, session);
                 currentBoard = server.getBoardById(currentBoard.getId());
-                isLocked = false;
                 addCollectionButton.setDisable(false);
                 addCardButton.setDisable(false);
+                refresh(currentBoard);
             }
         }
     }
@@ -226,7 +226,6 @@ public class BoardCtrl implements Initializable {
                 return;
             }
             writeNewPasswordToFile();
-            isLocked = false;
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
             refresh(currentBoard);
@@ -268,7 +267,7 @@ public class BoardCtrl implements Initializable {
                 dialog.setHeaderText("Enter a password for the board");
                 dialog.setContentText("Password:");
                 Optional<String> result = dialog.showAndWait();
-                if (result.isPresent()) {
+                if (result.isPresent() && !result.get().equals("")) {
                     currentBoard.setPassword(result.get());
                 }else{
                     return;
@@ -280,7 +279,7 @@ public class BoardCtrl implements Initializable {
                 dialog.setHeaderText("Enter the new password for the board");
                 dialog.setContentText("Password:");
                 Optional<String> result = dialog.showAndWait();
-                if (result.isPresent()) {
+                if (result.isPresent() && !result.get().equals(currentBoard.getPassword()) && !result.get().equals("")){
                     currentBoard.setPassword(result.get());
                     writeNewPasswordToFile();
                 }else{
@@ -389,22 +388,22 @@ public class BoardCtrl implements Initializable {
      * Set up lock button
      */
     private void lockSetup() {
+        currentBoard = server.getBoardById(currentBoard.getId());
         isLocked = currentBoard.isLocked();
+        isAccessible = passwordCheck();
         lockButton.setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.SECONDARY) && (isAccessible || isAdmin || !isLocked)) {
                 removeLock();
             } else {
                 if (isLocked && !isAccessible) {
-                    System.out.println("Lock button clicked");
                     unlockBoard();
                 } else {
-                    System.out.println("Lock button clicked");
                     lockBoard();
                 }
             }
         });
         if (!isAdmin) {
-            if (isLocked && !passwordCheck()) {
+            if (isLocked && !isAccessible) {
                 lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
                 addCollectionButton.setDisable(true);
                 addCardButton.setDisable(true);
@@ -418,7 +417,6 @@ public class BoardCtrl implements Initializable {
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
         }
-        isAccessible = passwordCheck();
     }
 
     /**
