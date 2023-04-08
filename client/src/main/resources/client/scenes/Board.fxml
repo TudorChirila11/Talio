@@ -29,7 +29,7 @@
             </content>
         </ScrollPane>
         <Button fx:id="addCardButton" layoutX="679.0" layoutY="454.0" onAction="#addCard" styleClass="defaultButton" text="Add Card" />
-        <Button fx:id="resetBoard" layoutX="657.0" layoutY="31.0" mnemonicParsing="false" onAction="#resetBoard" text="Reset Current Board" />
+<!--        <Button fx:id="resetBoard" layoutX="657.0" layoutY="31.0" mnemonicParsing="false" onAction="#resetBoard" text="Reset Current Board" />-->
       <HBox alignment="TOP_RIGHT" layoutX="0.0" layoutY="80.0" prefHeight="33.0" prefWidth="800.0">
          <children>
               <Label fx:id="boardLabel" prefHeight="33.0" prefWidth="97.0" styleClass="collectionLabel" textAlignment="CENTER" wrapText="true" />

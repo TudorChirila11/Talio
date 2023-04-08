@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.*;
 import commons.Collection;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -403,34 +404,37 @@ public class BoardCtrl implements Initializable {
      * Set up lock button
      */
     private void lockSetup() {
-        currentBoard = server.getBoardById(currentBoard.getId());
-        isLocked = currentBoard.isLocked();
-        isAccessible = passwordCheck();
-        lockButton.setOnMouseClicked(event -> {
-            if (event.getButton().equals(MouseButton.SECONDARY) && (isAccessible || isAdmin || !isLocked)) {
-                removeLock();
-            } else {
-                if (isLocked && !isAccessible) {
-                    unlockBoard();
+        try {
+            currentBoard = server.getBoardById(currentBoard.getId());
+            isLocked = currentBoard.isLocked();
+            isAccessible = passwordCheck();
+            lockButton.setOnMouseClicked(event -> {
+                if (event.getButton().equals(MouseButton.SECONDARY) && (isAccessible || isAdmin || !isLocked)) {
+                    removeLock();
                 } else {
-                    lockBoard();
+                    if (isLocked && !isAccessible) {
+                        unlockBoard();
+                    } else {
+                        lockBoard();
+                    }
                 }
-            }
-        });
-        if (!isAdmin) {
-            if (isLocked && !isAccessible) {
-                lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
-                addCollectionButton.setDisable(true);
-                addCardButton.setDisable(true);
+            });
+            if (!isAdmin) {
+                if (isLocked && !isAccessible) {
+                    lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
+                    addCollectionButton.setDisable(true);
+                    addCardButton.setDisable(true);
+                } else {
+                    lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
+                    addCollectionButton.setDisable(false);
+                    addCardButton.setDisable(false);
+                }
             } else {
                 lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
                 addCollectionButton.setDisable(false);
                 addCardButton.setDisable(false);
             }
-        } else {
-            lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
-            addCollectionButton.setDisable(false);
-            addCardButton.setDisable(false);
+        } catch (BadRequestException e) {
         }
     }
 
