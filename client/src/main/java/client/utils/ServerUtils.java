@@ -155,6 +155,20 @@ public class ServerUtils {
                 .get(Card.class);
 
     }
+
+    /**
+     * gets all cards in a server
+     * @return - all cards that exist on the server
+     */
+    public List<Card> getAllCards() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/cards/")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Card>>() {
+                });
+
+    }
     /**
      * deletes a card
      *
