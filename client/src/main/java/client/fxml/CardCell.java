@@ -170,9 +170,9 @@ public class CardCell extends ListCell<Card> {
                 mainVBox.setStyle("-fx-background-color: " + bg.toString().replace("0x", "#"));
             }
 
-            titleLabel.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#"));
-            descriptionLabel.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#"));
-            doneSubtasks.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#"));
+            titleLabel.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#")+";"+"-fx-font-size: 16px;-fx-padding: 1px 0 0 3px;");
+            descriptionLabel.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#")+";-fx-padding: 0 0 0 3px;");
+            doneSubtasks.setStyle("-fx-text-fill: " + font.toString().replace("0x", "#")+";");
             tagList = server.getTagsByCard(server.getCardById(card.getId()));
             tagInCardContainer.getChildren().removeAll(tagInCardContainer.getChildren());
             for (Tag tag : tagList) {

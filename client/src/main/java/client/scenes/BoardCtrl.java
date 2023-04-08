@@ -121,22 +121,38 @@ public class BoardCtrl implements Initializable {
      * Removes the lock of a board.
      */
     private void removeLock() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Remove lock");
-        dialog.setHeaderText("Remove lock");
-        dialog.setContentText("Please enter the password:");
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            if (result.get().equals(currentBoard.getPassword())) {
-                currentBoard.setLocked(false);
-                currentBoard.setPassword(null);
-                server.send("/app/boards", currentBoard, session);
-                currentBoard = server.getBoardById(currentBoard.getId());
-                isLocked = false;
-                addCollectionButton.setDisable(false);
-                addCardButton.setDisable(false);
+        if (isAdmin) {
+            currentBoard.setLocked(false);
+            currentBoard.setPassword(null);
+            server.send("/app/boards", currentBoard, session);
+            currentBoard = server.getBoardById(currentBoard.getId());
+            addCollectionButton.setDisable(false);
+            addCardButton.setDisable(false);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Lock removed");
+            alert.setHeaderText("Lock removed");
+            alert.setContentText("The lock has been removed");
+            alert.showAndWait();
+            refresh(currentBoard);
+        } else {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Remove lock");
+            dialog.setHeaderText("Remove lock");
+            dialog.setContentText("Please enter the password:");
+            Optional<String> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                if (result.get().equals(currentBoard.getPassword())) {
+                    currentBoard.setLocked(false);
+                    currentBoard.setPassword(null);
+                    server.send("/app/boards", currentBoard, session);
+                    currentBoard = server.getBoardById(currentBoard.getId());
+                    addCollectionButton.setDisable(false);
+                    addCardButton.setDisable(false);
+                    refresh(currentBoard);
+                }
             }
         }
+
     }
 
     /**
@@ -218,7 +234,7 @@ public class BoardCtrl implements Initializable {
             dialog.setHeaderText("Enter the password for the board");
             dialog.setContentText("Password:");
             Optional<String> result = dialog.showAndWait();
-            if(!result.isPresent()){
+            if (!result.isPresent()) {
                 return;
             }
             if (!result.get().equals(currentBoard.getPassword())) {
@@ -226,7 +242,6 @@ public class BoardCtrl implements Initializable {
                 return;
             }
             writeNewPasswordToFile();
-            isLocked = false;
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
             refresh(currentBoard);
@@ -268,22 +283,22 @@ public class BoardCtrl implements Initializable {
                 dialog.setHeaderText("Enter a password for the board");
                 dialog.setContentText("Password:");
                 Optional<String> result = dialog.showAndWait();
-                if (result.isPresent()) {
+                if (result.isPresent() && !result.get().equals("")) {
                     currentBoard.setPassword(result.get());
-                }else{
+                } else {
                     return;
                 }
-            }else {
+            } else {
                 // Changes the password of the board
                 TextInputDialog dialog = new TextInputDialog();
                 dialog.setTitle("Change Password");
                 dialog.setHeaderText("Enter the new password for the board");
                 dialog.setContentText("Password:");
                 Optional<String> result = dialog.showAndWait();
-                if (result.isPresent()) {
+                if (result.isPresent() && !result.get().equals(currentBoard.getPassword()) && !result.get().equals("")) {
                     currentBoard.setPassword(result.get());
                     writeNewPasswordToFile();
-                }else{
+                } else {
                     return;
                 }
             }
@@ -306,21 +321,20 @@ public class BoardCtrl implements Initializable {
         if (currentBoard != null) {
             lockSetup();
             List<Double> colour = currentBoard.getColor();
-            if(colour != null && colour.size() != 0){
+            if (colour != null && colour.size() != 0) {
                 boardPane.setStyle("-fx-background-color: " +
                         new Color(colour.get(3), colour.get(4), colour.get(5), 1.0).toString().replace("0x", "#") +
                         ";");
-                String fontColor = "-fx-text-fill: " +  new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#");
+                String fontColor = "-fx-text-fill: " + new Color(colour.get(0), colour.get(1), colour.get(2), 1.0).toString().replace("0x", "#");
                 setBoardFontColor(fontColor);
-            }
-            else setBoardFontColor("");
+            } else setBoardFontColor("");
 
             List<Double> color = currentBoard.getCollectionColor();
             String styleBG = "";
             String styleFont = "";
-            if(color!=null && color.size() ==6) {
-                styleBG = "-fx-background-color: " + new Color(color.get(3), color.get(4), color.get(5), 1.0).toString().replace("0x","#") + ";";
-                styleFont = "-fx-text-fill: " + new Color(color.get(0), color.get(1), color.get(2), 1.0).toString().replace("0x","#") + ";";
+            if (color != null && color.size() == 6) {
+                styleBG = "-fx-background-color: " + new Color(color.get(3), color.get(4), color.get(5), 1.0).toString().replace("0x", "#") + ";";
+                styleFont = "-fx-text-fill: " + new Color(color.get(0), color.get(1), color.get(2), 1.0).toString().replace("0x", "#") + ";";
             }
             boardLabel.setText(board.getName());
             boardLabel.setPrefWidth(300);
@@ -374,10 +388,10 @@ public class BoardCtrl implements Initializable {
 
     /**
      * Sets the board font color
+     *
      * @param fontColor the new font color
      */
-    public void setBoardFontColor(String fontColor)
-    {
+    public void setBoardFontColor(String fontColor) {
         tagButton.setStyle(fontColor);
         tagOverview.setStyle(fontColor);
         boardLabel.setStyle(fontColor);
@@ -389,22 +403,22 @@ public class BoardCtrl implements Initializable {
      * Set up lock button
      */
     private void lockSetup() {
+        currentBoard = server.getBoardById(currentBoard.getId());
         isLocked = currentBoard.isLocked();
+        isAccessible = passwordCheck();
         lockButton.setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.SECONDARY) && (isAccessible || isAdmin || !isLocked)) {
                 removeLock();
             } else {
                 if (isLocked && !isAccessible) {
-                    System.out.println("Lock button clicked");
                     unlockBoard();
                 } else {
-                    System.out.println("Lock button clicked");
                     lockBoard();
                 }
             }
         });
         if (!isAdmin) {
-            if (isLocked && !passwordCheck()) {
+            if (isLocked && !isAccessible) {
                 lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
                 addCollectionButton.setDisable(true);
                 addCardButton.setDisable(true);
@@ -418,7 +432,6 @@ public class BoardCtrl implements Initializable {
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
         }
-        isAccessible = passwordCheck();
     }
 
     /**
@@ -511,7 +524,7 @@ public class BoardCtrl implements Initializable {
             CardCell cell = new CardCell(mainCtrl, server, session, isAdmin, currentBoard, isAccessible);
             cell.onMouseClickedProperty().set(event -> {
                 if (event.getClickCount() == 2) {
-                    if(cell.getItem() != null){
+                    if (cell.getItem() != null) {
                         mainCtrl.editCard(cell.getItem().getId());
                     }
                 }
@@ -673,7 +686,7 @@ public class BoardCtrl implements Initializable {
         // Find the adjacent ListView
         ListView adjacentListView = null;
         if (indexOfList >= 0 && indexOfList < children.size() - 1) {
-            if(i ==-1 && indexOfList == 0){
+            if (i == -1 && indexOfList == 0) {
                 return;
             }
             Node vbox = children.get(indexOfList + i);
@@ -873,7 +886,7 @@ public class BoardCtrl implements Initializable {
      */
     private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
-        if (isLocked && !isAccessible && !isAdmin){
+        if (isLocked && !isAccessible && !isAdmin) {
             delete.setDisable(true);
             label.setDisable(true);
         }
@@ -973,6 +986,7 @@ public class BoardCtrl implements Initializable {
 
     /**
      * BoardPane getter
+     *
      * @return the BoardPane
      */
     public AnchorPane getBoardPane() {
