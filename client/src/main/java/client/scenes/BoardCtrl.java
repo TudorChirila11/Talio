@@ -132,7 +132,6 @@ public class BoardCtrl implements Initializable {
                 currentBoard.setPassword(null);
                 server.send("/app/boards", currentBoard, session);
                 currentBoard = server.getBoardById(currentBoard.getId());
-                System.out.println(currentBoard.getPassword());
                 addCollectionButton.setDisable(false);
                 addCardButton.setDisable(false);
                 refresh(currentBoard);
@@ -389,19 +388,16 @@ public class BoardCtrl implements Initializable {
      * Set up lock button
      */
     private void lockSetup() {
+        currentBoard = server.getBoardById(currentBoard.getId());
         isLocked = currentBoard.isLocked();
         isAccessible = passwordCheck();
-        System.out.println("isLocked: " + isLocked);
-        System.out.println("isAccessible: " + isAccessible);
         lockButton.setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.SECONDARY) && (isAccessible || isAdmin || !isLocked)) {
                 removeLock();
             } else {
                 if (isLocked && !isAccessible) {
-                    System.out.println("Unlock button clicked");
                     unlockBoard();
                 } else {
-                    System.out.println("Lock button clicked");
                     lockBoard();
                 }
             }
