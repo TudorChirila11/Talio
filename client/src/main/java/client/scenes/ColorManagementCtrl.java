@@ -218,9 +218,12 @@ public class ColorManagementCtrl implements Initializable {
             }};
 
         ColorPreset colorPreset1 = new ColorPreset(color, currentBoard.getId(), false);
-        colorPreset = server.savePreset(colorPreset1);
+        colorPreset1 = server.savePreset(colorPreset1);
         server.send("/app/addPreset", colorPreset, session);
         refreshColorChooser();
+        colorPreset = colorPreset1;
+        presetSelector.setText("Preset "+colorPreset.getId());
+
     }
 
     /**
@@ -236,6 +239,11 @@ public class ColorManagementCtrl implements Initializable {
                 add(cardBackground.getValue().getGreen());
                 add(cardBackground.getValue().getBlue());
             }};
+        if(colorPreset == null)
+        {
+            showError("You need to select a preset first!");
+            return;
+        }
         colorPreset.setColor(color);
         server.savePreset(colorPreset);
         //server.send("app/presets", colorPreset, session);
@@ -293,6 +301,11 @@ public class ColorManagementCtrl implements Initializable {
      */
     public void setDefaultPreset()
     {
+        if(colorPreset == null)
+        {
+            showError("You need to select a preset first!");
+            return;
+        }
         server.setDefaultPreset(colorPreset, currentBoard, session);
         refreshColorChooser();
     }

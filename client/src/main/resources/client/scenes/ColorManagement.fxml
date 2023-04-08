@@ -122,5 +122,6 @@
          </graphic>
       </Button>
       <Button id="saveButton" layoutX="652.0" layoutY="64.0" minWidth="41.0" mnemonicParsing="false" onAction="#updateBoard" prefHeight="26.0" prefWidth="92.0" styleClass="imageButton" text="Save changes" />
+      <Text layoutX="238.0" layoutY="482.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Warning!  Changes made in presets are automatically stored in the database." wrappingWidth="414.1366882324219" />
    </children>
 </AnchorPane>
