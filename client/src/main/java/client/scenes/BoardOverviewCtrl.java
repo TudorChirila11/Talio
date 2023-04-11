@@ -61,6 +61,9 @@ public class BoardOverviewCtrl implements Initializable {
     @FXML
     private Button backButton;
 
+    @FXML
+    private Button adminLoginButton;
+
 
     private AdminLogInCtrl adminLogInCtrl;
 
@@ -109,6 +112,10 @@ public class BoardOverviewCtrl implements Initializable {
         Tooltip tooltip3 = new Tooltip("Back to server choice.");
         tooltip3.setShowDelay(Duration.millis(100));
         backButton.setTooltip(tooltip3);
+
+        Tooltip tooltip4 = new Tooltip("To access admin features.");
+        tooltip4.setShowDelay(Duration.millis(100));
+        adminLoginButton.setTooltip(tooltip4);
     }
 
     /**

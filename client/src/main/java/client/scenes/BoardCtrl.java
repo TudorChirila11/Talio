@@ -42,6 +42,8 @@ public class BoardCtrl implements Initializable {
 
     @FXML
     public Button tagButton;
+
+    @FXML
     public Button tagOverview;
     @FXML
     public Button settingsButton;
@@ -119,7 +121,7 @@ public class BoardCtrl implements Initializable {
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard, new Tag()));
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
-        Tooltip tooltip = new Tooltip("Go to customization settings");
+        Tooltip tooltip = new Tooltip("Go to color management view");
         tooltip.setShowDelay(Duration.millis(100));
         settingsButton.setTooltip(tooltip);
         Tooltip tooltip1 = new Tooltip("Go back to the board overview");
@@ -355,13 +357,15 @@ public class BoardCtrl implements Initializable {
                 }
                 // Creating a vertical stacked box with the label -> collection -> simple add task add button
                 Button simpleAddTaskButton = new Button("+");
+                Tooltip tooltip = new Tooltip("Add a new simple card");
+                tooltip.setShowDelay(Duration.millis(100));
+                simpleAddTaskButton.setTooltip(tooltip);
 
                 if ((isLocked && !isAccessible && !isAdmin)) simpleAddTaskButton.setDisable(true);
 
                 VBox collectionVBox = new VBox(10);
                 collectionVBox.getChildren().addAll(collectionLabel, collection, simpleAddTaskButton);
 
-                // Adding this to Hbox which contains each collection object + controls.
                 taskListsBox.getChildren().add(collectionVBox);
                 addTaskListControls(collectionLabel, collectionName, current, simpleAddTaskButton);
 
@@ -873,7 +877,7 @@ public class BoardCtrl implements Initializable {
                 try {
                     server.send("/app/collections", randomC, session);
                     setCurrentBoard();
-                    showAlert("Collection added, scroll to the right if you can't see it.");
+                    showAlert("Collection added, shift + scroll to the right if you can't see it.");
                 } catch (WebApplicationException e) {
                     showAlert(e.getMessage());
                 }
@@ -891,6 +895,9 @@ public class BoardCtrl implements Initializable {
      */
     private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
+        Tooltip tooltip = new Tooltip("Delete Collection");
+        tooltip.setShowDelay(Duration.millis(100));
+        delete.setTooltip(tooltip);
         if (isLocked && !isAccessible && !isAdmin) {
             delete.setDisable(true);
             label.setDisable(true);

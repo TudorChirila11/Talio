@@ -100,6 +100,19 @@
     -fx-text-fill: blue;
 }
 
+.tagButton{
+    -fx-background-color: transparent;
+    -fx-font-size: 18;
+    -fx-text-fill: black;
+}
+
+.tagButton:hover{
+    -fx-background-color: transparent;
+    -fx-font-size: 18;
+    -fx-text-fill: blue;
+    -fx-effect: innershadow( gaussian , blue , 7 , 1 , 1 , 1 );
+}
+
 
 
 .simpleAddTaskButton{

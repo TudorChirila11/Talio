@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane id="boardOverviewPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardOverviewCtrl">
-    <Button layoutX="600.0" layoutY="20.0" mnemonicParsing="false" text="Admin Log In" onAction="#showAdminLoginPage"/>
+    <Button fx:id="adminLoginButton" layoutX="680.0" layoutY="20.0" mnemonicParsing="false" text="Admin Log In" styleClass="defaultButton" onAction="#showAdminLoginPage"/>
     <Button fx:id="backButton" id="backButton" layoutX="20.0" layoutY="20.0" minWidth="41.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton" onAction="#showWelcomePage">
         <graphic>
             <ImageView fitHeight="65.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
