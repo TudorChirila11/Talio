@@ -52,7 +52,8 @@ public class BoardCtrl implements Initializable {
 
     @FXML
     private Button overviewBack;
-    public Board currentBoard;
+
+    private Board currentBoard;
 
     @FXML
     private Label boardLabel;
@@ -120,7 +121,7 @@ public class BoardCtrl implements Initializable {
     /**
      * Removes the lock of a board.
      */
-    public void removeLock() {
+    private void removeLock() {
         if (isAdmin) {
             currentBoard.setLocked(false);
             currentBoard.setPassword(null);
@@ -214,7 +215,7 @@ public class BoardCtrl implements Initializable {
         } catch (WebApplicationException e) {
             showAlert(e.toString());
         }
-        setCurrentBoard(server.getBoardById(currentBoard.getId()));
+        currentBoard = server.getBoardById(currentBoard.getId());
     }
 
     /**
@@ -227,7 +228,7 @@ public class BoardCtrl implements Initializable {
     /**
      * Unlocks a board
      */
-    public void unlockBoard() {
+    private void unlockBoard() {
         try {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Password");
@@ -275,7 +276,7 @@ public class BoardCtrl implements Initializable {
     /**
      * Locks a board
      */
-    public void lockBoard() {
+    private void lockBoard() {
         try {
             if (currentBoard.getPassword() == null) {
                 TextInputDialog dialog = new TextInputDialog();
@@ -402,7 +403,7 @@ public class BoardCtrl implements Initializable {
     /**
      * Set up lock button
      */
-    public void lockSetup() {
+    private void lockSetup() {
         setCurrentBoard(server.getBoardById(currentBoard.getId()));
         isLocked = currentBoard.isLocked();
         isAccessible = passwordCheck();
@@ -439,7 +440,7 @@ public class BoardCtrl implements Initializable {
      *
      * @param s the string to be shown
      */
-    public void showAlert(String s) {
+    private void showAlert(String s) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText("Error");
