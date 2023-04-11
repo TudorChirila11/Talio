@@ -41,7 +41,7 @@ public class WelcomePageCtrl implements Initializable {
      * @param timeout the time in milliseconds that'll be the maximum timeout for the connection attempt.
      * @return boolean value that shows whether the website is accessible or not.
      */
-    public static boolean pingHost(String host, int port, int timeout) {
+    public boolean pingHost(String host, int port, int timeout) {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(host, port), timeout);
             return true;

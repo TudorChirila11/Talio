@@ -16,8 +16,6 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import client.utils.ServerUtils;
 import commons.Board;
 import commons.Tag;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
 
 public class TagOverviewCtrlTest {
 
