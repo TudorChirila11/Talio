@@ -58,6 +58,8 @@ public class BoardCtrl implements Initializable {
     private Button backButton;
 
     public Board currentBoard;
+    private Button overviewBack;
+
 
     @FXML
     private Label boardLabel;
@@ -137,7 +139,7 @@ public class BoardCtrl implements Initializable {
             currentBoard.setLocked(false);
             currentBoard.setPassword(null);
             server.send("/app/boards", currentBoard, session);
-            currentBoard = server.getBoardById(currentBoard.getId());
+            setCurrentBoard();
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -157,7 +159,7 @@ public class BoardCtrl implements Initializable {
                     currentBoard.setLocked(false);
                     currentBoard.setPassword(null);
                     server.send("/app/boards", currentBoard, session);
-                    currentBoard = server.getBoardById(currentBoard.getId());
+                    setCurrentBoard();
                     addCollectionButton.setDisable(false);
                     addCardButton.setDisable(false);
                     refresh(currentBoard);
@@ -291,7 +293,7 @@ public class BoardCtrl implements Initializable {
             }
             currentBoard.setLocked(true);
             server.send("/app/boards", currentBoard, session);
-            currentBoard = server.getBoardById(currentBoard.getId());
+            setCurrentBoard();
             refresh(currentBoard);
         } catch (WebApplicationException e) {
             showAlert(e.toString());
@@ -488,7 +490,7 @@ public class BoardCtrl implements Initializable {
                 server.send("/app/collections", server.getCollectionById(oldCollection.getId()), session);
                 server.send("/app/collections", server.getCollectionById(newCollection.getId()), session);
                 server.send("/app/cards", d, session);
-                currentBoard = server.getBoardById(currentBoard.getId());
+                setCurrentBoard();
                 refresh(currentBoard);
             }
         }
@@ -870,7 +872,7 @@ public class BoardCtrl implements Initializable {
                 Collection randomC = new Collection(newName, currentBoard);
                 try {
                     server.send("/app/collections", randomC, session);
-                    currentBoard = server.getBoardById(currentBoard.getId());
+                    setCurrentBoard();
                     showAlert("Collection added, scroll to the right if you can't see it.");
                 } catch (WebApplicationException e) {
                     showAlert(e.getMessage());
@@ -897,7 +899,7 @@ public class BoardCtrl implements Initializable {
         delete.setOnAction(event -> {
             try {
                 server.send("/app/collectionsDelete", collection, session);
-                currentBoard = server.getBoardById(currentBoard.getId());
+                setCurrentBoard();
             } catch (WebApplicationException e) {
                 showAlert(e.getMessage());
             }
@@ -915,7 +917,7 @@ public class BoardCtrl implements Initializable {
                     if (!newName.isEmpty()) {
                         collection.setName(newName);
                         server.send("/app/collections", collection, session);
-                        currentBoard = server.getBoardById(currentBoard.getId());
+                        setCurrentBoard();
                     }
                 }
             }
@@ -945,7 +947,7 @@ public class BoardCtrl implements Initializable {
                     Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()), server.getDefaultPresets(currentBoard.getId()));
                     newCard.setColorPreset(null);
                     server.send("/app/cards", newCard, session);
-                    currentBoard = server.getBoardById(currentBoard.getId());
+                    setCurrentBoard();
                 } else showAlert("Please enter a title for the card");
             }
         });
@@ -985,5 +987,25 @@ public class BoardCtrl implements Initializable {
      */
     public void showColorManagement() {
         mainCtrl.showColorManagement(currentBoard);
+    }
+
+    /**
+     * BoardPane getter
+     *
+     * @return the BoardPane
+     */
+    public AnchorPane getBoardPane() {
+        return boardPane;
+    }
+
+    /**
+     * The setter for the current board
+     */
+    public void setCurrentBoard() {
+        try {
+            currentBoard = server.getBoardById(currentBoard.getId());
+        } catch (WebApplicationException e) {
+            showAlert(e.getMessage());
+        }
     }
 }
