@@ -719,8 +719,8 @@ public class CardInformationCtrl implements Initializable {
         currentTagAdd = null;
         currentTagDelete = null;
         currentColor = null;
-        tagAdder.setText("choose a tag");
-        tagDeleter.setText("choose a tag");
+        tagAdder.setText("Add Tag");
+        tagDeleter.setText("Delete Tag");
         collectionCurrent = null;
         title.setText("Add card");
         setState(CardInformationCtrl.State.CREATE);

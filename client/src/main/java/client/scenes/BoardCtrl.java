@@ -52,6 +52,7 @@ public class BoardCtrl implements Initializable {
 
     @FXML
     private Button overviewBack;
+
     private Board currentBoard;
 
     @FXML
@@ -125,7 +126,7 @@ public class BoardCtrl implements Initializable {
             currentBoard.setLocked(false);
             currentBoard.setPassword(null);
             server.send("/app/boards", currentBoard, session);
-            currentBoard = server.getBoardById(currentBoard.getId());
+            setCurrentBoard(server.getBoardById(currentBoard.getId()));
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -145,7 +146,7 @@ public class BoardCtrl implements Initializable {
                     currentBoard.setLocked(false);
                     currentBoard.setPassword(null);
                     server.send("/app/boards", currentBoard, session);
-                    currentBoard = server.getBoardById(currentBoard.getId());
+                    setCurrentBoard(server.getBoardById(currentBoard.getId()));
                     addCollectionButton.setDisable(false);
                     addCardButton.setDisable(false);
                     refresh(currentBoard);
@@ -161,7 +162,7 @@ public class BoardCtrl implements Initializable {
      *
      * @return true if the board id and password match the current board
      */
-    private boolean passwordCheck() {
+    public boolean passwordCheck() {
         File file = new File("password.txt");
         if (file.exists()) {
             try {
@@ -253,7 +254,7 @@ public class BoardCtrl implements Initializable {
     /**
      * Writes the new password to a file
      */
-    private void writeNewPasswordToFile() {
+    public void writeNewPasswordToFile() {
         // Writes board id and password to a file
         File file = new File("password.txt");
         if (!file.exists()) {
@@ -304,7 +305,7 @@ public class BoardCtrl implements Initializable {
             }
             currentBoard.setLocked(true);
             server.send("/app/boards", currentBoard, session);
-            currentBoard = server.getBoardById(currentBoard.getId());
+            setCurrentBoard(server.getBoardById(currentBoard.getId()));
             refresh(currentBoard);
         } catch (WebApplicationException e) {
             showAlert(e.toString());
@@ -317,7 +318,7 @@ public class BoardCtrl implements Initializable {
      * @param board the current Board
      */
     public void refresh(Board board) {
-        currentBoard = board;
+        setCurrentBoard(board);
         if (currentBoard != null) {
             lockSetup();
             List<Double> colour = currentBoard.getColor();
@@ -403,7 +404,7 @@ public class BoardCtrl implements Initializable {
      * Set up lock button
      */
     private void lockSetup() {
-        currentBoard = server.getBoardById(currentBoard.getId());
+        setCurrentBoard(server.getBoardById(currentBoard.getId()));
         isLocked = currentBoard.isLocked();
         isAccessible = passwordCheck();
         lockButton.setOnMouseClicked(event -> {
@@ -486,7 +487,7 @@ public class BoardCtrl implements Initializable {
                 server.send("/app/collections", server.getCollectionById(oldCollection.getId()), session);
                 server.send("/app/collections", server.getCollectionById(newCollection.getId()), session);
                 server.send("/app/cards", d, session);
-                currentBoard = server.getBoardById(currentBoard.getId());
+                setCurrentBoard(server.getBoardById(currentBoard.getId()));
                 refresh(currentBoard);
             }
         }
@@ -868,7 +869,7 @@ public class BoardCtrl implements Initializable {
                 Collection randomC = new Collection(newName, currentBoard);
                 try {
                     server.send("/app/collections", randomC, session);
-                    currentBoard = server.getBoardById(currentBoard.getId());
+                    setCurrentBoard(server.getBoardById(currentBoard.getId()));
                 } catch (WebApplicationException e) {
                     showAlert(e.getMessage());
                 }
@@ -894,7 +895,7 @@ public class BoardCtrl implements Initializable {
         delete.setOnAction(event -> {
             try {
                 server.send("/app/collectionsDelete", collection, session);
-                currentBoard = server.getBoardById(currentBoard.getId());
+                setCurrentBoard(server.getBoardById(currentBoard.getId()));
             } catch (WebApplicationException e) {
                 showAlert(e.getMessage());
             }
@@ -912,7 +913,7 @@ public class BoardCtrl implements Initializable {
                     if (!newName.isEmpty()) {
                         collection.setName(newName);
                         server.send("/app/collections", collection, session);
-                        currentBoard = server.getBoardById(currentBoard.getId());
+                        setCurrentBoard(server.getBoardById(currentBoard.getId()));
                     }
                 }
             }
@@ -942,7 +943,7 @@ public class BoardCtrl implements Initializable {
                     Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()), server.getDefaultPresets(currentBoard.getId()));
                     newCard.setColorPreset(null);
                     server.send("/app/cards", newCard, session);
-                    currentBoard = server.getBoardById(currentBoard.getId());
+                    setCurrentBoard(server.getBoardById(currentBoard.getId()));
                 } else showAlert("Please enter a title for the card");
             }
         });
@@ -991,5 +992,13 @@ public class BoardCtrl implements Initializable {
      */
     public AnchorPane getBoardPane() {
         return boardPane;
+    }
+
+    /**
+     * The setter for the current board
+     * @param currentBoard the new current board
+     */
+    public void setCurrentBoard(Board currentBoard) {
+        this.currentBoard = currentBoard;
     }
 }

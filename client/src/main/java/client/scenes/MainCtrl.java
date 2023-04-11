@@ -37,10 +37,6 @@ public class MainCtrl {
 
     private Scene board;
 
-    private CollectionOverviewCtrl collectionOverviewCtrl;
-
-    private Scene collection;
-
     private WelcomePageCtrl welcomePageCtrl;
 
     private Scene welcomePage;
@@ -73,7 +69,6 @@ public class MainCtrl {
      * @param primaryStage primary stage (active)
      * @param board board scene
      * @param cardInfo cardInfo scene
-     * @param collection collection scene
      * @param welcomePage welcomePage scene
      * @param keyboardShortcut keyboardShortcut scene
      * @param tagCreator tagCreator scene
@@ -83,10 +78,10 @@ public class MainCtrl {
      * @param colorManagement colorManagement scene
      */
     public void initialize(Stage primaryStage, Pair<BoardCtrl, Parent> board, Pair<CardInformationCtrl, Parent> cardInfo,
-                           Pair<CollectionOverviewCtrl, Parent> collection, Pair<WelcomePageCtrl, Parent> welcomePage,
-                           Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut, Pair<TagCreatorCtrl, Parent> tagCreator,
-                           Pair<TagOverviewCtrl, Parent> tagOverview, Pair<BoardOverviewCtrl, Parent> boardOverview,
-                            Pair<AdminLogInCtrl, Parent> adminLogIn, Pair<ColorManagementCtrl, Parent> colorManagement) {
+                           Pair<WelcomePageCtrl, Parent> welcomePage, Pair<KeyboardShortcutFCtrl, Parent> keyboardShortcut,
+                           Pair<TagCreatorCtrl, Parent> tagCreator, Pair<TagOverviewCtrl, Parent> tagOverview,
+                           Pair<BoardOverviewCtrl, Parent> boardOverview, Pair<AdminLogInCtrl, Parent> adminLogIn,
+                           Pair<ColorManagementCtrl, Parent> colorManagement) {
 
         this.primaryStage = primaryStage;
 
@@ -95,9 +90,6 @@ public class MainCtrl {
 
         this.boardCtrl = board.getKey();
         this.board = new Scene(board.getValue());
-
-        this.collectionOverviewCtrl = collection.getKey();
-        this.collection = new Scene(collection.getValue());
 
         this.welcomePageCtrl = welcomePage.getKey();
         this.welcomePage = new Scene(welcomePage.getValue());
@@ -221,15 +213,6 @@ public class MainCtrl {
     }
 
     /**
-     * Displays the collection Scene
-     * and enables the controller
-     */
-    public void showCollection(){
-        primaryStage.setTitle("Collection Overview: Collection");
-        primaryStage.setScene(collection);
-    }
-
-    /**
      * Displays the Admin Log In Scene
      * and enables the controller
      */
@@ -263,14 +246,6 @@ public class MainCtrl {
      */
     public Scene getCardInformation() {
         return cardInformation;
-    }
-
-    /**
-     * Getter for the collection field
-     * @return Scene - the collection scene
-     */
-    public Scene getCollection() {
-        return collection;
     }
 
     /**
