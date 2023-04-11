@@ -126,7 +126,7 @@ public class BoardCtrl implements Initializable {
             currentBoard.setLocked(false);
             currentBoard.setPassword(null);
             server.send("/app/boards", currentBoard, session);
-            setCurrentBoard(server.getBoardById(currentBoard.getId()));
+            setCurrentBoard();
             addCollectionButton.setDisable(false);
             addCardButton.setDisable(false);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -146,7 +146,7 @@ public class BoardCtrl implements Initializable {
                     currentBoard.setLocked(false);
                     currentBoard.setPassword(null);
                     server.send("/app/boards", currentBoard, session);
-                    setCurrentBoard(server.getBoardById(currentBoard.getId()));
+                    setCurrentBoard();
                     addCollectionButton.setDisable(false);
                     addCardButton.setDisable(false);
                     refresh(currentBoard);
@@ -305,7 +305,7 @@ public class BoardCtrl implements Initializable {
             }
             currentBoard.setLocked(true);
             server.send("/app/boards", currentBoard, session);
-            setCurrentBoard(server.getBoardById(currentBoard.getId()));
+            setCurrentBoard();
             refresh(currentBoard);
         } catch (WebApplicationException e) {
             showAlert(e.toString());
@@ -318,7 +318,7 @@ public class BoardCtrl implements Initializable {
      * @param board the current Board
      */
     public void refresh(Board board) {
-        setCurrentBoard(board);
+        currentBoard = board;
         if (currentBoard != null) {
             lockSetup();
             List<Double> colour = currentBoard.getColor();
@@ -404,7 +404,7 @@ public class BoardCtrl implements Initializable {
      * Set up lock button
      */
     private void lockSetup() {
-        setCurrentBoard(server.getBoardById(currentBoard.getId()));
+        setCurrentBoard();
         isLocked = currentBoard.isLocked();
         isAccessible = passwordCheck();
         lockButton.setOnMouseClicked(event -> {
@@ -487,7 +487,7 @@ public class BoardCtrl implements Initializable {
                 server.send("/app/collections", server.getCollectionById(oldCollection.getId()), session);
                 server.send("/app/collections", server.getCollectionById(newCollection.getId()), session);
                 server.send("/app/cards", d, session);
-                setCurrentBoard(server.getBoardById(currentBoard.getId()));
+                setCurrentBoard();
                 refresh(currentBoard);
             }
         }
@@ -869,7 +869,7 @@ public class BoardCtrl implements Initializable {
                 Collection randomC = new Collection(newName, currentBoard);
                 try {
                     server.send("/app/collections", randomC, session);
-                    setCurrentBoard(server.getBoardById(currentBoard.getId()));
+                    setCurrentBoard();
                 } catch (WebApplicationException e) {
                     showAlert(e.getMessage());
                 }
@@ -895,7 +895,7 @@ public class BoardCtrl implements Initializable {
         delete.setOnAction(event -> {
             try {
                 server.send("/app/collectionsDelete", collection, session);
-                setCurrentBoard(server.getBoardById(currentBoard.getId()));
+                setCurrentBoard();
             } catch (WebApplicationException e) {
                 showAlert(e.getMessage());
             }
@@ -913,7 +913,7 @@ public class BoardCtrl implements Initializable {
                     if (!newName.isEmpty()) {
                         collection.setName(newName);
                         server.send("/app/collections", collection, session);
-                        setCurrentBoard(server.getBoardById(currentBoard.getId()));
+                        setCurrentBoard();
                     }
                 }
             }
@@ -943,7 +943,7 @@ public class BoardCtrl implements Initializable {
                     Card newCard = new Card(input.getText(), "", collection, (long) (server.getCardsForCollection(collection).size()), server.getDefaultPresets(currentBoard.getId()));
                     newCard.setColorPreset(null);
                     server.send("/app/cards", newCard, session);
-                    setCurrentBoard(server.getBoardById(currentBoard.getId()));
+                    setCurrentBoard();
                 } else showAlert("Please enter a title for the card");
             }
         });
@@ -996,9 +996,12 @@ public class BoardCtrl implements Initializable {
 
     /**
      * The setter for the current board
-     * @param currentBoard the new current board
      */
-    public void setCurrentBoard(Board currentBoard) {
-        this.currentBoard = currentBoard;
+    public void setCurrentBoard() {
+        try {
+            currentBoard = server.getBoardById(currentBoard.getId());
+        } catch (WebApplicationException e) {
+            showAlert(e.getMessage());
+        }
     }
 }
