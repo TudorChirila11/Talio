@@ -419,6 +419,9 @@ public class BoardCtrl implements Initializable {
                     lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
                     addCollectionButton.setDisable(true);
                     addCardButton.setDisable(true);
+                    tagButton.setDisable(true);
+                    tagOverview.setDisable(true);
+                    settingsButton.setDisable(true);
                 } else {
                     if(isLocked){
                         Tooltip tooltip = new Tooltip("Click to change password. Right click to remove lock.");
@@ -432,13 +435,20 @@ public class BoardCtrl implements Initializable {
                     lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
                     addCollectionButton.setDisable(false);
                     addCardButton.setDisable(false);
+                    tagButton.setDisable(false);
+                    tagOverview.setDisable(false);
+                    settingsButton.setDisable(false);
                 }
             } else {
                 Tooltip tooltip = new Tooltip("Click to set/change password. Right click to remove lock.");
                 tooltip.setShowDelay(Duration.millis(100));
+                lockButton.setTooltip(tooltip);
                 lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
                 addCollectionButton.setDisable(false);
                 addCardButton.setDisable(false);
+                tagButton.setDisable(false);
+                tagOverview.setDisable(false);
+                settingsButton.setDisable(false);
             }
         } catch (BadRequestException e) {
         }
