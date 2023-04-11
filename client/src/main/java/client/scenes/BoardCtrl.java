@@ -404,7 +404,7 @@ public class BoardCtrl implements Initializable {
      * Set up lock button
      */
     private void lockSetup() {
-        setCurrentBoard();
+        currentBoard = server.getBoardById(currentBoard.getId());
         isLocked = currentBoard.isLocked();
         isAccessible = passwordCheck();
         lockButton.setOnMouseClicked(event -> {
