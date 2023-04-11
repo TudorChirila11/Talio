@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
@@ -30,6 +31,8 @@ public class ColorManagementCtrl implements Initializable {
     @FXML
     private ColorPicker boardFont;
 
+    @FXML
+    private Button backButton;
     @FXML
     private ColorPicker boardBackground;
 
@@ -84,6 +87,7 @@ public class ColorManagementCtrl implements Initializable {
     public ColorManagementCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+
     }
 
     /**
@@ -136,6 +140,9 @@ public class ColorManagementCtrl implements Initializable {
      */
     public void initialize(Board board) {
         currentBoard = board;
+        Tooltip t = new Tooltip("Back to board");
+        t.setShowDelay(Duration.millis(100));
+        backButton.setTooltip(t);
         refresh();
     }
 

@@ -92,6 +92,29 @@
     -fx-text-fill: blue;
 }
 
+.mainLabel{
+    -fx-font-size: 18pt;
+}
+
+.mainLabel:hover{
+    -fx-text-fill: blue;
+}
+
+.tagButton{
+    -fx-background-color: transparent;
+    -fx-font-size: 18;
+    -fx-text-fill: black;
+}
+
+.tagButton:hover{
+    -fx-background-color: transparent;
+    -fx-font-size: 18;
+    -fx-text-fill: blue;
+    -fx-effect: innershadow( gaussian , blue , 7 , 1 , 1 , 1 );
+}
+
+
+
 .simpleAddTaskButton{
     -fx-font-size: 10px;
     -fx-background-color: #00ff2b;
