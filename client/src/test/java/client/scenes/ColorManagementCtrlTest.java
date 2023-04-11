@@ -48,9 +48,4 @@ class ColorManagementCtrlTest {
     void initialize() {
         controller.initialize(null, null);
     }
-
-    @Test
-    void testInitialize() {
-        controller.initialize(null);
-    }
 }

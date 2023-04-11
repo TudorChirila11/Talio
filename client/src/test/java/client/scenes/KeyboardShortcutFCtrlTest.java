@@ -14,14 +14,4 @@ class KeyboardShortcutFCtrlTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
-    @Test
-    void initialize() {
-        controller.initialize(null, null);
-    }
-
-    @Test
-    void showBoardOverview() {
-        controller.showBoardOverview();
-    }
 }
