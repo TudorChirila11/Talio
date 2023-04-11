@@ -318,7 +318,7 @@ public class ColorManagementCtrl implements Initializable {
      * shows error with the given text
      * @param text - text to be shown in the error
      */
-    private void showError(String text) {
+    public void showError(String text) {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setContentText(text);
         a.show();

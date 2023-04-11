@@ -513,15 +513,6 @@ public class CardInformationCtrl implements Initializable {
         vbox.getChildren().addAll(subtaskHBoxes);
         scrollPane.setContent(vbox);
     }
-
-    /**
-     * resets the color from the menu
-     */
-    public void setResetColor()
-    {
-        currentColor = null;
-        colorChooser.setText("Select...");
-    }
     /**
      * Method to add Card to referencing Collection and
      * saving to database.
@@ -582,14 +573,6 @@ public class CardInformationCtrl implements Initializable {
      */
     public Card getCard() {
         return new Card(cardName.getText(), cardDescription.getText(), collectionCurrent, Long.valueOf(collectionCurrent.getCards().size()), server.getDefaultPresets(currentBoard.getId()));
-    }
-
-    /**
-     * To delete a card
-     * @param id of card
-     */
-    public void deleteCard(long id){
-        server.deleteCard(id);
     }
 
     /**
@@ -732,7 +715,7 @@ public class CardInformationCtrl implements Initializable {
         refresh();
     }
 
-    private void setTag() {
+    public void setTag() {
         if (currentBoard != null) {
             if (card.equals(new Card())) {
                 tagList = new ArrayList<>();
