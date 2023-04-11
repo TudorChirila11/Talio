@@ -19,6 +19,20 @@ public class ColorPresetTest {
     }
 
     @Test
+    public void testConstructorWithIdBoardIdColorIsDefault() {
+        Board board = new Board(123L, "test");
+        Long id = 1L;
+        List<Double> color = Arrays.asList(0.1, 0.2, 0.3);
+        Boolean isDefault = true;
+
+        ColorPreset colorPreset = new ColorPreset(id, board.getId(), color, isDefault);
+
+        assertEquals(id, colorPreset.getId());
+        assertEquals(color, colorPreset.getColor());
+        assertEquals(isDefault, colorPreset.getIsDefault());
+    }
+
+    @Test
     public void testConstructorWithIdCardsColorIsDefault() {
         Long id = 1L;
         List<Card> cards = Arrays.asList(new Card("test card"));
@@ -89,7 +103,7 @@ public class ColorPresetTest {
 
     @Test
     void testToString() {
-        ColorPreset preset = new ColorPreset(1L, null, List.of(1.0, 0.5, 0.0), false);
+        ColorPreset preset = new ColorPreset(1L, (Long) null, List.of(1.0, 0.5, 0.0), false);
         String expected = "ColorPreset{id=1, color=[1.0, 0.5, 0.0], isDefault=false, boardId=null}";
         assertEquals(expected, preset.toString());
     }

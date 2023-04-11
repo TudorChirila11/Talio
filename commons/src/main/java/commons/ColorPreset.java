@@ -27,6 +27,20 @@ public class ColorPreset {
     /**
      * Color preset constructor
      * @param id the id of the color preset
+     * @param boardId the cards that the color preset is applied to
+     * @param color the color of the color preset
+     * @param isDefault if the color selected is default
+     */
+    public ColorPreset(Long id, Long boardId, List<Double> color, Boolean isDefault) {
+        this.id = id;
+        this.boardId = boardId;
+        this.color = color;
+        this.isDefault = isDefault;
+    }
+
+    /**
+     * Color preset constructor
+     * @param id the id of the color preset
      * @param cards the cards that the color preset is applied to
      * @param color the color of the color preset
      * @param isDefault if the color selected is default

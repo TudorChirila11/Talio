@@ -82,6 +82,8 @@ public class BoardControllerTest {
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
 
-
-
+    @Test
+    void getAdminKey() {
+        sut.getAdminKey();
+    }
 }
