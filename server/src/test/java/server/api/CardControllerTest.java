@@ -159,4 +159,9 @@ class CardControllerTest {
         cardRepo.save(b);
         cardRepo.save(c);
     }
+
+    @Test
+    void getUpdates() {
+        sut.getUpdates();
+    }
 }
