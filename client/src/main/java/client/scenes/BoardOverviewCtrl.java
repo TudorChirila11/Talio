@@ -494,7 +494,9 @@ public class BoardOverviewCtrl implements Initializable {
      * Switch back to welcome page
      */
     public void showWelcomePage() {
+
         mainCtrl.showWelcomePage();
+        this.isAdmin = false;
     }
 
     /**

@@ -28,6 +28,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
+import javafx.util.Duration;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.File;
@@ -53,7 +54,7 @@ public class BoardCtrl implements Initializable {
 
     @FXML
     private Button overviewBack;
-    private Board currentBoard;
+    public Board currentBoard;
 
     @FXML
     private Label boardLabel;
@@ -68,7 +69,7 @@ public class BoardCtrl implements Initializable {
 
     private boolean isAccessible;
 
-    private boolean isAdmin;
+    public boolean isAdmin;
 
 
     HashMap<ListView<Card>, Collection> mapper;
@@ -162,7 +163,7 @@ public class BoardCtrl implements Initializable {
      *
      * @return true if the board id and password match the current board
      */
-    private boolean passwordCheck() {
+    public boolean passwordCheck() {
         File file = new File("password.txt");
         if (file.exists()) {
             try {
@@ -191,31 +192,6 @@ public class BoardCtrl implements Initializable {
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)), session);
         this.session = session;
-    }
-
-    /**
-     * Resets all stuff on the board.
-     */
-    public void resetBoard() {
-        try {
-            server.send("/app/collectionsDeleteAll", currentBoard, session);
-
-        } catch (WebApplicationException e) {
-            showAlert(e.toString());
-        }
-        try {
-            server.send("/app/cardsDeleteAll", new Card(), session);
-
-        } catch (WebApplicationException e) {
-            showAlert(e.toString());
-        }
-        try {
-            server.send("/app/tagsDeleteAll", new Tag(), session);
-
-        } catch (WebApplicationException e) {
-            showAlert(e.toString());
-        }
-        currentBoard = server.getBoardById(currentBoard.getId());
     }
 
     /**
@@ -254,7 +230,7 @@ public class BoardCtrl implements Initializable {
     /**
      * Writes the new password to a file
      */
-    private void writeNewPasswordToFile() {
+    public void writeNewPasswordToFile() {
         // Writes board id and password to a file
         File file = new File("password.txt");
         if (!file.exists()) {
@@ -421,15 +397,29 @@ public class BoardCtrl implements Initializable {
             });
             if (!isAdmin) {
                 if (isLocked && !isAccessible) {
+                    Tooltip tooltip = new Tooltip("This board is locked. Click to unlock");
+                    tooltip.setShowDelay(Duration.millis(100));
+                    lockButton.setTooltip(tooltip);
                     lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
                     addCollectionButton.setDisable(true);
                     addCardButton.setDisable(true);
                 } else {
+                    if(isLocked){
+                        Tooltip tooltip = new Tooltip("Click to change password. Right click to remove lock.");
+                        tooltip.setShowDelay(Duration.millis(100));
+                        lockButton.setTooltip(tooltip);
+                    }else {
+                        Tooltip tooltip = new Tooltip("Click to set password.");
+                        tooltip.setShowDelay(Duration.millis(100));
+                        lockButton.setTooltip(tooltip);
+                    }
                     lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
                     addCollectionButton.setDisable(false);
                     addCardButton.setDisable(false);
                 }
             } else {
+                Tooltip tooltip = new Tooltip("Click to set/change password. Right click to remove lock.");
+                tooltip.setShowDelay(Duration.millis(100));
                 lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
                 addCollectionButton.setDisable(false);
                 addCardButton.setDisable(false);
@@ -444,9 +434,7 @@ public class BoardCtrl implements Initializable {
      * @param s the string to be shown
      */
     private void showAlert(String s) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Error");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(s);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.showAndWait();
@@ -873,6 +861,7 @@ public class BoardCtrl implements Initializable {
                 try {
                     server.send("/app/collections", randomC, session);
                     currentBoard = server.getBoardById(currentBoard.getId());
+                    showAlert("Collection added, scroll to the right if you can't see it.");
                 } catch (WebApplicationException e) {
                     showAlert(e.getMessage());
                 }
@@ -986,14 +975,5 @@ public class BoardCtrl implements Initializable {
      */
     public void showColorManagement() {
         mainCtrl.showColorManagement(currentBoard);
-    }
-
-    /**
-     * BoardPane getter
-     *
-     * @return the BoardPane
-     */
-    public AnchorPane getBoardPane() {
-        return boardPane;
     }
 }
