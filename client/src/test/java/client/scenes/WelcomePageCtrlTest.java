@@ -41,16 +41,16 @@ class WelcomePageCtrlTest {
 
     @Test
     void pingHost() {
-        controller.pingHost("localhost", 8080, 1000);
+        assertFalse(controller.pingHost("test", 1234, 1000));
     }
 
     @Test
     void getServer() {
-        controller.getServer();
+        assertEquals(server, controller.getServer());
     }
 
     @Test
     void generateKey() {
-        controller.generateKey();
+        assertEquals(server.getAdminKey(), controller.generateKey());
     }
 }
