@@ -56,7 +56,6 @@ public class Main extends Application {
         var cardInformation = FXML.load(CardInformationCtrl.class, "client", "scenes", "CardInformation.fxml");
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         var board = FXML.load(BoardCtrl.class, "client", "scenes", "Board.fxml");
-        var collection = FXML.load(CollectionOverviewCtrl.class, "client", "scenes", "Collection.fxml");
         var welcomePage = FXML.load(WelcomePageCtrl.class, "client", "scenes", "WelcomePage.fxml");
         var keyboardShortcutPage = FXML.load(KeyboardShortcutFCtrl.class, "client", "scenes", "KeyboardShortcuts.fxml");
         var tagCreator = FXML.load(TagCreatorCtrl.class, "client", "scenes", "TagCreator.fxml");
@@ -65,7 +64,7 @@ public class Main extends Application {
         var adminLogIn = FXML.load(AdminLogInCtrl.class, "client", "scenes", "AdminLogIn.fxml");
         var colorManagement = FXML.load(ColorManagementCtrl.class, "client", "scenes", "ColorManagement.fxml");
 
-        mainCtrl.initialize(primaryStage, board, cardInformation, collection, welcomePage, keyboardShortcutPage,
+        mainCtrl.initialize(primaryStage, board, cardInformation, welcomePage, keyboardShortcutPage,
                 tagCreator, tagOverview, boardOverview, adminLogIn, colorManagement);
 
         KeyboardShortcutCtrl keyboardShortcutCtrl = new KeyboardShortcutCtrl(mainCtrl, primaryStage);
