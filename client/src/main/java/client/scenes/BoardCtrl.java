@@ -44,6 +44,8 @@ public class BoardCtrl implements Initializable {
     public Button tagButton;
     public Button tagOverview;
     @FXML
+    public Button settingsButton;
+    @FXML
     public AnchorPane boardPane;
 
     @FXML
@@ -53,7 +55,8 @@ public class BoardCtrl implements Initializable {
     private Button addCardButton;
 
     @FXML
-    private Button overviewBack;
+    private Button backButton;
+
     public Board currentBoard;
 
     @FXML
@@ -112,10 +115,17 @@ public class BoardCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        // Sets up the content of the Scroll Pane
         tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard, new Tag()));
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
-
+        Tooltip tooltip = new Tooltip("Go to customization settings");
+        tooltip.setShowDelay(Duration.millis(100));
+        settingsButton.setTooltip(tooltip);
+        Tooltip tooltip1 = new Tooltip("Go back to the board overview");
+        tooltip1.setShowDelay(Duration.millis(100));
+        backButton.setTooltip(tooltip1);
+        Tooltip tooltip2 = new Tooltip("Add a new collection");
+        tooltip2.setShowDelay(Duration.millis(100));
+        addCollectionButton.setTooltip(tooltip2);
         refresh(currentBoard);
     }
 
@@ -373,7 +383,7 @@ public class BoardCtrl implements Initializable {
         tagOverview.setStyle(fontColor);
         boardLabel.setStyle(fontColor);
         addCardButton.setStyle(fontColor);
-        overviewBack.setStyle(fontColor);
+        backButton.setStyle(fontColor);
     }
 
     /**

@@ -92,6 +92,16 @@
     -fx-text-fill: blue;
 }
 
+.mainLabel{
+    -fx-font-size: 18pt;
+}
+
+.mainLabel:hover{
+    -fx-text-fill: blue;
+}
+
+
+
 .simpleAddTaskButton{
     -fx-font-size: 10px;
     -fx-background-color: #00ff2b;

@@ -6,7 +6,14 @@
 
 <AnchorPane id="boardPane" fx:id="boardPane" prefHeight="512.0" prefWidth="800.0" stylesheets="@/client/stylesheets/Global.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
     <children>
-        <Button fx:id="overviewBack" layoutX="48.0" layoutY="43.0" mnemonicParsing="false" onAction="#boardOverview" styleClass="boardOverviewButton" text="Board Overview" />
+        <Button fx:id="backButton" id="backButton" layoutX="20.0" layoutY="20.0" minWidth="41.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton" onAction="#boardOverview">
+            <graphic>
+                <ImageView fitHeight="65.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/client/assets/back.png" />
+                    </image>
+                </ImageView>
+            </graphic></Button>
         <ImageView id="tailoLogo" fitHeight="85.0" fitWidth="142.0" layoutX="333.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@/client/assets/tailo.png" />
@@ -29,12 +36,11 @@
             </content>
         </ScrollPane>
         <Button fx:id="addCardButton" layoutX="679.0" layoutY="454.0" onAction="#addCard" styleClass="defaultButton" text="Add Card" />
-<!--        <Button fx:id="resetBoard" layoutX="657.0" layoutY="31.0" mnemonicParsing="false" onAction="#resetBoard" text="Reset Current Board" />-->
       <HBox alignment="TOP_RIGHT" layoutX="0.0" layoutY="80.0" prefHeight="33.0" prefWidth="800.0">
          <children>
               <Label fx:id="boardLabel" prefHeight="33.0" prefWidth="97.0" styleClass="collectionLabel" textAlignment="CENTER" wrapText="true" />
-              <Button id="tagButton" fx:id="tagOverview" minWidth="41.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="86.0" text="all tags" />
-              <Button id="tagButton" fx:id="tagButton" minWidth="41.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="111.0" text="create tag" />
+              <Button id="tagButton" styleClass="mainLabel" fx:id="tagOverview" minWidth="41.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="86.0" text="all tags" />
+              <Button id="tagButton" styleClass="mainLabel" fx:id="tagButton" minWidth="41.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="111.0" text="create tag" />
              <Button fx:id="lockButton" layoutX="750.0" layoutY="450.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
                  <graphic>
                      <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
