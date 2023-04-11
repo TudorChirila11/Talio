@@ -68,6 +68,7 @@ public class TagCreatorCtrl implements Initializable {
      */
     public void refresh() {
         if (tag.equals(new Tag())) {
+            createTagButton.setText("create tag");
             tagDescription.setText("");
             tagColour.setValue(Color.WHITE);
             tagTextColour.setValue(Color.BLACK);
