@@ -22,10 +22,10 @@ public class TestTagRepository implements TagRepository {
     TestTagRepository() {
         board = new Board(1L, "board");
         tags = new ArrayList<>(){{
-            add(new Tag(1L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
-            add(new Tag(2L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
-            add(new Tag(3L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
-        }};
+                add(new Tag(1L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
+                add(new Tag(2L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
+                add(new Tag(3L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
+            }};
     }
 
     /**
