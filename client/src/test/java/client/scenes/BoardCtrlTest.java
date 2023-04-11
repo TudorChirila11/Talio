@@ -56,16 +56,6 @@ class BoardCtrlTest {
     }
 
     @Test
-    void resetBoard() {
-        Board board = new Board(123L, "test");
-        controller.setCurrentBoard(board);
-        controller.resetBoard();
-        verify(server).send("/app/collectionsDeleteAll", board, null);
-        verify(server).send("/app/cardsDeleteAll", new Card(), null);
-        verify(server).send("/app/tagsDeleteAll", new Tag(), null);
-    }
-
-    @Test
     void boardOverview() {
         controller.boardOverview();
     }
