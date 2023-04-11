@@ -112,7 +112,7 @@
             </HBox>
          </children>
       </VBox>
-      <Button id="backButton" layoutX="40.0" layoutY="22.0" minWidth="41.0" mnemonicParsing="false" onAction="#showCurrentBoard" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
+      <Button fx:id="backButton" id="backButton" layoutX="40.0" layoutY="22.0" minWidth="41.0" mnemonicParsing="false" onAction="#showCurrentBoard" prefHeight="30.0" prefWidth="40.0" styleClass="imageButton">
          <graphic>
             <ImageView fitHeight="65.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
                <image>

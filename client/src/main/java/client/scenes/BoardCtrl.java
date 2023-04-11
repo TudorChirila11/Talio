@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.*;
 import commons.Collection;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -27,6 +28,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
+import javafx.util.Duration;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.File;
@@ -40,7 +42,11 @@ public class BoardCtrl implements Initializable {
 
     @FXML
     public Button tagButton;
+
+    @FXML
     public Button tagOverview;
+    @FXML
+    public Button settingsButton;
     @FXML
     public AnchorPane boardPane;
 
@@ -51,9 +57,11 @@ public class BoardCtrl implements Initializable {
     private Button addCardButton;
 
     @FXML
+    private Button backButton;
+
+    public Board currentBoard;
     private Button overviewBack;
 
-    private Board currentBoard;
 
     @FXML
     private Label boardLabel;
@@ -68,7 +76,7 @@ public class BoardCtrl implements Initializable {
 
     private boolean isAccessible;
 
-    private boolean isAdmin;
+    public boolean isAdmin;
 
 
     HashMap<ListView<Card>, Collection> mapper;
@@ -111,10 +119,17 @@ public class BoardCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         collectionsContainer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         collectionsContainer.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        // Sets up the content of the Scroll Pane
         tagButton.setOnAction(event -> mainCtrl.showTagCreation(currentBoard, new Tag()));
         tagOverview.setOnAction(event -> mainCtrl.showTagOverview(currentBoard));
-
+        Tooltip tooltip = new Tooltip("Go to color management view");
+        tooltip.setShowDelay(Duration.millis(100));
+        settingsButton.setTooltip(tooltip);
+        Tooltip tooltip1 = new Tooltip("Go back to the board overview");
+        tooltip1.setShowDelay(Duration.millis(100));
+        backButton.setTooltip(tooltip1);
+        Tooltip tooltip2 = new Tooltip("Add a new collection");
+        tooltip2.setShowDelay(Duration.millis(100));
+        addCollectionButton.setTooltip(tooltip2);
         refresh(currentBoard);
     }
 
@@ -191,31 +206,6 @@ public class BoardCtrl implements Initializable {
     public void subscriber(StompSession session) {
         server.registerForCollections("/topic/update", Object.class, c -> Platform.runLater(() -> refresh(currentBoard)), session);
         this.session = session;
-    }
-
-    /**
-     * Resets all stuff on the board.
-     */
-    public void resetBoard() {
-        try {
-            server.send("/app/collectionsDeleteAll", currentBoard, session);
-
-        } catch (WebApplicationException e) {
-            showAlert(e.toString());
-        }
-        try {
-            server.send("/app/cardsDeleteAll", new Card(), session);
-
-        } catch (WebApplicationException e) {
-            showAlert(e.toString());
-        }
-        try {
-            server.send("/app/tagsDeleteAll", new Tag(), session);
-
-        } catch (WebApplicationException e) {
-            showAlert(e.toString());
-        }
-        currentBoard = server.getBoardById(currentBoard.getId());
     }
 
     /**
@@ -367,13 +357,15 @@ public class BoardCtrl implements Initializable {
                 }
                 // Creating a vertical stacked box with the label -> collection -> simple add task add button
                 Button simpleAddTaskButton = new Button("+");
+                Tooltip tooltip = new Tooltip("Add a new simple card");
+                tooltip.setShowDelay(Duration.millis(100));
+                simpleAddTaskButton.setTooltip(tooltip);
 
                 if ((isLocked && !isAccessible && !isAdmin)) simpleAddTaskButton.setDisable(true);
 
                 VBox collectionVBox = new VBox(10);
                 collectionVBox.getChildren().addAll(collectionLabel, collection, simpleAddTaskButton);
 
-                // Adding this to Hbox which contains each collection object + controls.
                 taskListsBox.getChildren().add(collectionVBox);
                 addTaskListControls(collectionLabel, collectionName, current, simpleAddTaskButton);
 
@@ -397,41 +389,68 @@ public class BoardCtrl implements Initializable {
         tagOverview.setStyle(fontColor);
         boardLabel.setStyle(fontColor);
         addCardButton.setStyle(fontColor);
-        overviewBack.setStyle(fontColor);
+        backButton.setStyle(fontColor);
     }
 
     /**
      * Set up lock button
      */
     private void lockSetup() {
-        currentBoard = server.getBoardById(currentBoard.getId());
-        isLocked = currentBoard.isLocked();
-        isAccessible = passwordCheck();
-        lockButton.setOnMouseClicked(event -> {
-            if (event.getButton().equals(MouseButton.SECONDARY) && (isAccessible || isAdmin || !isLocked)) {
-                removeLock();
-            } else {
-                if (isLocked && !isAccessible) {
-                    unlockBoard();
+        try {
+            currentBoard = server.getBoardById(currentBoard.getId());
+            isLocked = currentBoard.isLocked();
+            isAccessible = passwordCheck();
+            lockButton.setOnMouseClicked(event -> {
+                if (event.getButton().equals(MouseButton.SECONDARY) && (isAccessible || isAdmin || !isLocked)) {
+                    removeLock();
                 } else {
-                    lockBoard();
+                    if (isLocked && !isAccessible) {
+                        unlockBoard();
+                    } else {
+                        lockBoard();
+                    }
                 }
-            }
-        });
-        if (!isAdmin) {
-            if (isLocked && !isAccessible) {
-                lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
-                addCollectionButton.setDisable(true);
-                addCardButton.setDisable(true);
+            });
+            if (!isAdmin) {
+                if (isLocked && !isAccessible) {
+                    Tooltip tooltip = new Tooltip("This board is locked. Click to unlock");
+                    tooltip.setShowDelay(Duration.millis(100));
+                    lockButton.setTooltip(tooltip);
+                    lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/lock.png")))));
+                    addCollectionButton.setDisable(true);
+                    addCardButton.setDisable(true);
+                    tagButton.setDisable(true);
+                    tagOverview.setDisable(true);
+                    settingsButton.setDisable(true);
+                } else {
+                    if(isLocked){
+                        Tooltip tooltip = new Tooltip("Click to change password. Right click to remove lock.");
+                        tooltip.setShowDelay(Duration.millis(100));
+                        lockButton.setTooltip(tooltip);
+                    }else {
+                        Tooltip tooltip = new Tooltip("Click to set password.");
+                        tooltip.setShowDelay(Duration.millis(100));
+                        lockButton.setTooltip(tooltip);
+                    }
+                    lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
+                    addCollectionButton.setDisable(false);
+                    addCardButton.setDisable(false);
+                    tagButton.setDisable(false);
+                    tagOverview.setDisable(false);
+                    settingsButton.setDisable(false);
+                }
             } else {
+                Tooltip tooltip = new Tooltip("Click to set/change password. Right click to remove lock.");
+                tooltip.setShowDelay(Duration.millis(100));
+                lockButton.setTooltip(tooltip);
                 lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
                 addCollectionButton.setDisable(false);
                 addCardButton.setDisable(false);
+                tagButton.setDisable(false);
+                tagOverview.setDisable(false);
+                settingsButton.setDisable(false);
             }
-        } else {
-            lockButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/unlock.png")))));
-            addCollectionButton.setDisable(false);
-            addCardButton.setDisable(false);
+        } catch (BadRequestException e) {
         }
     }
 
@@ -441,9 +460,7 @@ public class BoardCtrl implements Initializable {
      * @param s the string to be shown
      */
     private void showAlert(String s) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Error");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(s);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.showAndWait();
@@ -870,6 +887,7 @@ public class BoardCtrl implements Initializable {
                 try {
                     server.send("/app/collections", randomC, session);
                     setCurrentBoard();
+                    showAlert("Collection added, shift + scroll to the right if you can't see it.");
                 } catch (WebApplicationException e) {
                     showAlert(e.getMessage());
                 }
@@ -887,6 +905,9 @@ public class BoardCtrl implements Initializable {
      */
     private void addTaskListControls(Label label, String listName, Collection collection, Button simpleAddTaskButton) {
         Button delete = new Button("X");
+        Tooltip tooltip = new Tooltip("Delete Collection");
+        tooltip.setShowDelay(Duration.millis(100));
+        delete.setTooltip(tooltip);
         if (isLocked && !isAccessible && !isAdmin) {
             delete.setDisable(true);
             label.setDisable(true);

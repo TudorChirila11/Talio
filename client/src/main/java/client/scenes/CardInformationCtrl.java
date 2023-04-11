@@ -151,6 +151,11 @@ public class CardInformationCtrl implements Initializable {
         collectionCurrent = null;
         tagList = new ArrayList<>();
         totalTagList = new ArrayList<>();
+        Tooltip tooltip = new Tooltip("Click to add a subtask");
+        addSubtaskButton.setTooltip(tooltip);
+        tooltip.setShowDelay(new javafx.util.Duration(100));
+        Tooltip deleteTooltip = new Tooltip("Click to delete this card");
+        removeButton.setTooltip(deleteTooltip);
         //refresh();
     }
 
@@ -393,11 +398,7 @@ public class CardInformationCtrl implements Initializable {
 
     /**
      * stores these subtasks into the database
-<<<<<<< HEAD
-     * @param c  - the id we want to store the list of subtasks in
-=======
      * @param c - the id we want to store the list of subtasks in
->>>>>>> main
      */
     private void saveSubtasksCardId(Card c) {
         List<Subtask> subtasks = c.getSubtasks();

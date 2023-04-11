@@ -34,6 +34,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import javafx.util.Duration;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.io.*;
@@ -50,6 +51,18 @@ public class BoardOverviewCtrl implements Initializable {
 
     @FXML
     private TextField boardKey;
+
+    @FXML
+    private Button joinBoard;
+
+    @FXML
+    private Button addButton;
+
+    @FXML
+    private Button backButton;
+
+    @FXML
+    private Button adminLoginButton;
 
 
     private AdminLogInCtrl adminLogInCtrl;
@@ -88,6 +101,21 @@ public class BoardOverviewCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Tooltip tooltip = new Tooltip("Join board with copied key.");
+        tooltip.setShowDelay(Duration.millis(100));
+        joinBoard.setTooltip(tooltip);
+
+        Tooltip tooltip2 = new Tooltip("Create a new board.");
+        tooltip2.setShowDelay(Duration.millis(100));
+        addButton.setTooltip(tooltip2);
+
+        Tooltip tooltip3 = new Tooltip("Back to server choice.");
+        tooltip3.setShowDelay(Duration.millis(100));
+        backButton.setTooltip(tooltip3);
+
+        Tooltip tooltip4 = new Tooltip("To access admin features.");
+        tooltip4.setShowDelay(Duration.millis(100));
+        adminLoginButton.setTooltip(tooltip4);
     }
 
     /**
@@ -129,17 +157,26 @@ public class BoardOverviewCtrl implements Initializable {
                         size++;
                         HBox boardContent = new HBox(25);
                         Label boardLabel = new Label(b.getName());
+                        Tooltip labelTooltip = new Tooltip("Double click to rename.");
+                        labelTooltip.setShowDelay(Duration.millis(100));
+                        labelTooltip.setStyle("-fx-font-size: 8px;");
+                        boardLabel.setTooltip(labelTooltip);
                         Button copyKey = new Button();
                         ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/key.png"))));
                         Button openBoard = new Button("Open");
                         Button delete = new Button("X");
                         String lock = "unlock";
                         if (b.isLocked()) lock = "lock";
+                        Tooltip tooltip = new Tooltip("Copy key to clipboard");
+                        tooltip.setShowDelay(Duration.millis(100));
+                        copyKey.setTooltip(tooltip);
+                        Tooltip tooltip2 = new Tooltip("Delete board");
+                        tooltip2.setShowDelay(Duration.millis(100));
+                        delete.setTooltip(tooltip2);
                         ImageView locked = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/client/assets/" + lock + ".png"))));
                         locked.setPreserveRatio(true);
                         locked.setPickOnBounds(true);
                         locked.setFitHeight(40);
-
                         prepareContent(boardLabel, copyKey, imageView, openBoard, delete, b, created);
                         boardContent.getChildren().addAll(boardLabel, copyKey, locked, openBoard, delete);
                         boardsBox.getChildren().add(boardContent);
@@ -494,7 +531,9 @@ public class BoardOverviewCtrl implements Initializable {
      * Switch back to welcome page
      */
     public void showWelcomePage() {
+
         mainCtrl.showWelcomePage();
+        this.isAdmin = false;
     }
 
     /**
