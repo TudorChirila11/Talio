@@ -714,6 +714,9 @@ public class CardInformationCtrl implements Initializable {
         refresh();
     }
 
+    /**
+     * A method used to make sure that the tagList and totalTagList both have only the appropriate tags
+     */
     public void setTag() {
         if (currentBoard != null) {
             if (card.equals(new Card())) {
