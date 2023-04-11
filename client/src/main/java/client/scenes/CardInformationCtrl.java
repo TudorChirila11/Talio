@@ -151,7 +151,6 @@ public class CardInformationCtrl implements Initializable {
         collectionCurrent = null;
         tagList = new ArrayList<>();
         totalTagList = new ArrayList<>();
-        //refresh();
     }
 
     /**
