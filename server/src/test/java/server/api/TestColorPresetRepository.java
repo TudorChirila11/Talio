@@ -14,26 +14,29 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class TestColorPresetRepository implements ColorPresetRepository {
-    private ArrayList<ColorPreset> ColorPresets;
+    private ArrayList<ColorPreset> colorPresets;
 
     TestColorPresetRepository()
     {
-        ColorPresets = new ArrayList<>();
+        colorPresets = new ArrayList<>();
+        colorPresets.add(new ColorPreset(1L, 1L, new ArrayList<Double>(), true));
+        colorPresets.add(new ColorPreset(2L, 1L, new ArrayList<Double>(), false));
+        colorPresets.add(new ColorPreset(3L, 1L, new ArrayList<Double>(), false));
     }
 
     /**
-     * Method for getting all ColorPresets
-     * @return ColorPresets
+     * Method for getting all colorPresets
+     * @return colorPresets
      */
     @Override
     public List<ColorPreset> findAll() {
-        return ColorPresets;
+        return colorPresets;
     }
 
     /**
-     * Method for getting all ColorPresets
+     * Method for getting all colorPresets
      * @param sort
-     * @return ColorPresets
+     * @return colorPresets
      */
     @Override
     public List<ColorPreset> findAll(Sort sort) {
@@ -41,9 +44,9 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Method for getting ColorPresets
+     * Method for getting colorPresets
      * @param pageable
-     * @return ColorPresets
+     * @return colorPresets
      */
     @Override
     public Page<ColorPreset> findAll(Pageable pageable) {
@@ -51,9 +54,9 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Method for getting all the ColorPresets that have a specific id
+     * Method for getting all the colorPresets that have a specific id
      * @param longs must not be {@literal null} nor contain any {@literal null} values.
-     * @return ColorPresets with the specified id
+     * @return colorPresets with the specified id
      */
     @Override
     public List<ColorPreset> findAllById(Iterable<Long> longs) {
@@ -76,12 +79,12 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     @Override
     public void deleteById(Long aLong) {
         ColorPreset toBeDeleted = null;
-        for(ColorPreset s: ColorPresets)
+        for(ColorPreset s: colorPresets)
         {
             if(s.getId() == (long) aLong)
                 toBeDeleted = s;
         }
-        ColorPresets.remove(toBeDeleted);
+        colorPresets.remove(toBeDeleted);
     }
 
     /**
@@ -94,7 +97,7 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Deleting all ColorPresets with the specified id
+     * Deleting all colorPresets with the specified id
      * @param longs must not be {@literal null}. Must not contain {@literal null} elements.
      */
     @Override
@@ -103,7 +106,7 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * delete all ColorPresets
+     * delete all colorPresets
      * @param entities must not be {@literal null}. Must not contain {@literal null} elements.
      */
     @Override
@@ -112,11 +115,11 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Delete all ColorPresets
+     * Delete all colorPresets
      */
     @Override
     public void deleteAll() {
-        ColorPresets = new ArrayList<>();
+        colorPresets = new ArrayList<>();
     }
 
     /**
@@ -127,7 +130,7 @@ public class TestColorPresetRepository implements ColorPresetRepository {
      */
     @Override
     public <S extends ColorPreset> S save(S entity) {
-        ColorPresets.add(entity);
+        colorPresets.add(entity);
         return entity;
     }
 
@@ -135,7 +138,7 @@ public class TestColorPresetRepository implements ColorPresetRepository {
      * Save multiple entities
      * @param entities must not be {@literal null} nor must it contain {@literal null}.
      * @param <S>
-     * @return the list of ColorPresets that were added
+     * @return the list of colorPresets that were added
      */
     @Override
     public <S extends ColorPreset> List<S> saveAll(Iterable<S> entities) {
@@ -150,7 +153,7 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     @Override
     public Optional<ColorPreset> findById(Long aLong) {
         Optional<ColorPreset> res = Optional.empty();
-        for(ColorPreset s : ColorPresets)
+        for(ColorPreset s : colorPresets)
         {
             if(s.getId() == (long) aLong)
                 res = Optional.of(s);
@@ -165,7 +168,7 @@ public class TestColorPresetRepository implements ColorPresetRepository {
      */
     @Override
     public boolean existsById(Long aLong) {
-        for(ColorPreset s : ColorPresets)
+        for(ColorPreset s : colorPresets)
         {
             if(s.getId() == (long) aLong)
                 return true;
@@ -193,10 +196,10 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Save a list of ColorPresets and flush
+     * Save a list of colorPresets and flush
      * @param entities entities to be saved. Must not be {@literal null}.
      * @param <S>
-     * @return the list of ColorPresets that were added
+     * @return the list of colorPresets that were added
      */
     @Override
     public <S extends ColorPreset> List<S> saveAllAndFlush(Iterable<S> entities) {
@@ -246,7 +249,7 @@ public class TestColorPresetRepository implements ColorPresetRepository {
      */
     @Override
     public ColorPreset getById(Long aLong) {
-        for(ColorPreset s : ColorPresets)
+        for(ColorPreset s : colorPresets)
         {
             if(s.getId() == (long) aLong)
                 return s;
@@ -266,10 +269,10 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Method for finding all ColorPresets
+     * Method for finding all colorPresets
      * @param example must not be {@literal null}.
      * @param <S>
-     * @return list of ColorPresets
+     * @return list of colorPresets
      */
     @Override
     public <S extends ColorPreset> List<S> findAll(Example<S> example) {
@@ -277,11 +280,11 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Method for finding all ColorPresets
+     * Method for finding all colorPresets
      * @param example must not be {@literal null}.
      * @param sort    the {@link Sort} specification to sort the results by, must not be {@literal null}.
      * @param <S>
-     * @return list of ColorPresets
+     * @return list of colorPresets
      */
     @Override
     public <S extends ColorPreset> List<S> findAll(Example<S> example, Sort sort) {
@@ -289,11 +292,11 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Method for finding all ColorPresets
+     * Method for finding all colorPresets
      * @param example  must not be {@literal null}.
      * @param pageable can be {@literal null}.
      * @param <S>
-     * @return list if ColorPresets
+     * @return list if colorPresets
      */
     @Override
     public <S extends ColorPreset> Page<S> findAll(Example<S> example, Pageable pageable) {
@@ -301,7 +304,7 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Method for counting ColorPresets
+     * Method for counting colorPresets
      * @param example the {@link Example} to count instances for. Must not be {@literal null}.
      * @param <S>
      * @return 0
@@ -334,8 +337,8 @@ public class TestColorPresetRepository implements ColorPresetRepository {
     }
 
     /**
-     * Method for finding ColorPresets by the Board id
-     * @param boardId the id using which this method will find all the necessary ColorPresets
+     * Method for finding colorPresets by the Board id
+     * @param boardId the id using which this method will find all the necessary colorPresets
      * @return
      */
     @Override
@@ -343,8 +346,13 @@ public class TestColorPresetRepository implements ColorPresetRepository {
         return null;
     }
 
+    /**
+     * @param isDefault the boolean which is used to get the right preset
+     * @param boardId   the id using which this method will find the necessary default preset
+     * @return a color preset
+     */
     @Override
     public ColorPreset findByIsDefaultAndBoardId(Boolean isDefault, Long boardId) {
-        return null;
+        return new ColorPreset();
     }
 }

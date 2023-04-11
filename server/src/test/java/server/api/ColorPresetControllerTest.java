@@ -2,20 +2,21 @@ package server.api;
 
 import commons.Board;
 import commons.Card;
-import commons.Tag;
+import commons.ColorPreset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 class ColorPresetControllerTest {
 
-    private TestTagRepository repo;
+    private TestColorPresetRepository repo;
 
-    private TagController sut;
+    private ColorPresetController sut;
 
-    private Tag a, b, c;
+    private ColorPreset a, b, c;
 
     private Board board;
 
@@ -23,51 +24,46 @@ class ColorPresetControllerTest {
     public void setup()
     {
         board = new Board(1L, "board");
-        a = new Tag(1L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>());
-        b = new Tag(2L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>());
-        c = new Tag(3L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>());
-        repo = new TestTagRepository();
-        sut = new TagController(repo);
+        a = new ColorPreset(1L, 1L, new ArrayList<Double>(), true);
+        b = new ColorPreset(2L, 1L, new ArrayList<Double>(), false);
+        c = new ColorPreset(3L, 1L, new ArrayList<Double>(), false);
+        repo = new TestColorPresetRepository();
+        sut = new ColorPresetController(repo);
     }
 
 
 
     @Test
-    void addTag() {
-        sut.addTag(a);
-        sut.addTag(b);
-        sut.addTag(c);
+    void addColorPreset() {
+        sut.addPreset(a);
+        sut.addPreset(b);
+        sut.addPreset(c);
     }
 
     @Test
-    void deleteTag() {
-        sut.deleteTag(a);
-    }
-
-    @Test
-    void editTag() {
-        b.setName("woah, I am a diferrent tag!");
-        sut.editTag(b);
-    }
-
-    @Test
-    void deleteAllTags() {
-        sut.deleteAllTags(new Tag());
+    void deleteColorPreset() {
+        sut.deletePreset(a);
     }
 
     @Test
     void getAll() {
-        List<Tag> tagList = sut.getAll();
+        List<ColorPreset> ColorPresetList = sut.getAll();
     }
 
     @Test
     void getAllInBoard() {
-        List<Tag> totalTagList = sut.getAllInBoard(board.getId());
+        List<ColorPreset> totalColorPresetList = sut.getAllInBoard(board.getId());
     }
 
     @Test
-    void getAllInCard() {
-        List<Tag> cardTagList = sut.getAllInCard(new Card().getId());
+    void defaultPreset() {
+        sut.defaultPreset(b);
+    }
+
+    @Test
+    void getDefaultInBoard() {
+        ColorPreset defaultPreset = sut.getDefaultInBoard(1L);
+        assertEquals(new ColorPreset(), defaultPreset);
     }
 
     @Test
@@ -78,12 +74,6 @@ class ColorPresetControllerTest {
     @Test
     void delete() {
         sut.delete(a.getId());
+        sut.delete(123L);
     }
-
-    @Test
-    void updateTag() {
-        sut.updateTag(b.getId(), b);
-    }
-
-
 }

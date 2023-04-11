@@ -118,4 +118,26 @@ class SubtaskControllerTest {
     {
         assertEquals(NOT_FOUND, sut.updateSubtask(1, a).getStatusCode());
     }
+
+    @Test
+    void add() {
+        sut.add(new Subtask());
+    }
+
+    @Test
+    void delete() {
+        sut.delete(123L);
+    }
+
+    @Test
+    void deleteAll() {
+        sut.deleteAll(new Subtask());
+    }
+
+    @Test
+    void storeSubtaskInCard() {
+        sut.storeSubtasksInCard(123L, new ArrayList<Subtask>(){{
+            add(new Subtask());
+        }});
+    }
 }

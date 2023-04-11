@@ -1,5 +1,6 @@
 package server.api;
 
+import commons.Board;
 import commons.Tag;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -16,9 +17,15 @@ import java.util.function.Function;
 public class TestTagRepository implements TagRepository {
     private ArrayList<Tag> tags;
 
-    TestTagRepository()
-    {
-        tags = new ArrayList<>();
+    private Board board;
+
+    TestTagRepository() {
+        board = new Board(1L, "board");
+        tags = new ArrayList<>(){{
+            add(new Tag(1L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
+            add(new Tag(2L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
+            add(new Tag(3L, "tag", board.getId(), new ArrayList<Long>(), new ArrayList<Double>()));
+        }};
     }
 
     /**
